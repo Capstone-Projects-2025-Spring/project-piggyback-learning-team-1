@@ -10,7 +10,7 @@
 </div>
 
 <div align="center">
-  <img src="smart-pig.gif" alt="Smart Pig GIF">
+  <img src="pig-glasses.gif" alt="Smart Pig GIF">
 </div>
 
 
