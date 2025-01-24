@@ -9,6 +9,9 @@
 
 </div>
 
+<div align="center">
+  <img src="smart-pig.gif" alt="Smart Pig GIF">
+</div>
 
 
 
