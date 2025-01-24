@@ -11,6 +11,7 @@
 
 <div align="center">
   <img src="pig-glasses.gif" alt="Smart Pig GIF">
+  <h1>Pam the Pig</h1>
 </div>
 
 
