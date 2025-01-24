@@ -1,8 +1,0 @@
-{
-  "name": "CIS4398 Docusaurus Dev Container",
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {}
-  },
-  "onCreateCommand": "cd documentation && yarn install"
-}
