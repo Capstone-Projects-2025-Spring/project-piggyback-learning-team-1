@@ -11,7 +11,7 @@
 
 <div align="center">
   <img src="pig-glasses.gif" alt="Smart Pig GIF">
-  <h1>Ham the Pig</h1>
+  <h3>Hammy the Pig</h3>
 </div>
 
 
