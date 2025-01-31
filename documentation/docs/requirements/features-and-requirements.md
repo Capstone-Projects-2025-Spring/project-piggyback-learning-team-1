@@ -21,3 +21,16 @@ Skip Question\
 Requirements related to this feature:\
 -User should be able to click a skip button to skip the question 
 
+
+
+## Non-Functional Requirements
+### Authentication & Access Control:
+- Users must log in via OAuth (Google, Facebook, or email authentication).
+- Only authenticated users can access quizzes and save progress.
+### User-Friendly Interface:
+- Quiz interactions should require minimal clicks.
+- Users should be able to navigate between videos and quizzes easily.
+### Cross-Platform Compatibility:
+- The system should work seamlessly on desktop, tablet, and mobile devices (responsive design).
+- Supported browsers: Chrome, Edge, Firefox, Safari (latest versions).
+
