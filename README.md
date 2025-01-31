@@ -13,7 +13,7 @@
 <div align="center">
 
   
-  <img src="documentation/static/img/pig-glasses.gif" alt="Smart Pig GIF"/>
+  <img src="https://raw.githubusercontent.com/Capstone-Projects-2025-Spring/project-piggyback-learning-team-1/refs/heads/hirabBranch/documentation/static/img/pig-glasses.gif" alt="Smart Pig GIF"/>
   <h3>Hammy the Pig</h3>
 
 
