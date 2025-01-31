@@ -13,7 +13,7 @@
 <div align="center">
 
   
-  <img src="/img/pig-glasses.gif" alt="Smart Pig GIF"/>
+  <img src="documentation/static/img/pig-glasses.gif" alt="Smart Pig GIF"/>
   <h3>Hammy the Pig</h3>
 
 
