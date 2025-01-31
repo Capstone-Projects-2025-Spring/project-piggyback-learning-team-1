@@ -9,7 +9,7 @@ This diagram shows a Next.js app that allows users to interact with media conten
 <div align="center">
 
 
-![systemblock](/img/systemblock.png)
+![systemblock](/img/System_Block_v1.png)
   <h3>System Block Diagram V1</h3>
 
 
