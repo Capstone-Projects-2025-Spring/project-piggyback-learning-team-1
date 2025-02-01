@@ -10,7 +10,7 @@ This document provides a structured breakdown of what you will encounter on each
 ## Requirements Specification
 
 
-This page offers a high-level overview of the end product with narrative and graphical explanations. You will find:
+This section offers a high-level overview of the end product with narrative and graphical explanations. You will find:
 
 - A **system overview** briefly describing the purpose and scope of the system
 - A **system block diagram**, along with a description of it defining basic functionality and interactions
@@ -21,3 +21,6 @@ This page offers a high-level overview of the end product with narrative and gra
 
 ## System Architecture
 
+This section will provide you with an overview of the system’s structure, tools, and code management practices, ensuring a well-organized and maintainable development process. It includes:
+
+- A **design page** Outlines the system’s architectural framework, key components, and scalability considerations

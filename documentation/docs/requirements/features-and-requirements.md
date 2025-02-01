@@ -33,7 +33,7 @@ sidebar_position: 4
     <li>Requirements related to this feature:</li>
         <ul>
             <li>User should receieve a recap at the end of the video</li>
-            <li>Answers and explanations of the questions from the video will be recapped 
+            <li>Answers and explanations of the questions from the video will be recapped</li> 
             <li>User should get a summary of what they got wrong and right</li>
         </ul>
     <li>Feature:</li>
