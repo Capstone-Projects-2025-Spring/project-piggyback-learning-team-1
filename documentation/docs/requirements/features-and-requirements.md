@@ -70,5 +70,44 @@ sidebar_position: 4
         <ul>
             <li>Introduce rewards, levels, or achievements for completing interactive learning activities</li>
             <li>Should track how many questions the user has answered</li>
+            <li>Experience and level up system</li>
+        </ul>
+</ul>
+
+## Nonfunctional Requirements
+<ul>
+    <li>Feature:</li>
+        <ul>
+            <li>Log In</li>
+        </ul>
+    <li>Requirements related to this feature:</li>
+        <ul>
+            <li>Users should be able to log in with a username and password</li>
+        </ul>
+    <li>Feature:</li>
+        <ul>
+            <li>Scalability and Performance</li>
+        </ul>
+    <li>Requirements related to this feature:</li>
+        <ul>
+            <li>System should be able to support at least twenty concurrent users</li>
+            <li>Questions should be able to load efficiently</li>
+        </ul>
+    <li>Feature:</li>
+        <ul>
+            <li>Cross-Platform Compatability</li>
+        </ul>
+    <li>Requirements related to this feature:</li>
+        <ul>
+            <li>User should be able the application from different device types and screen sizes</li>
+        </ul>
+    <li>Feature:</li>
+        <ul>
+            <li>User Analytics</li>
+        </ul>
+    <li>Requirements related to this feature:</li>
+        <ul>
+            <li>Administrators should be able to view analytics on user engagement and learning outcomes</li>
+            <li>Adminstrators should be able to view data to assess effectiveness of content</li>
         </ul>
 </ul>
