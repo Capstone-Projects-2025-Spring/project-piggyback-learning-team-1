@@ -3,9 +3,14 @@ sidebar_position: 5
 ---
 # Use-case descriptions
 
-# *User View*
-
+# User View
 ## User Plays Video
+1. User visits website or deployment site 
+2. User browses selection of available videos on various topics
+3. User can roll over video to view description of content
+4. User selects a video by clicking on the icon
+5. Video starts playing automatically
+
 1. User visits website or deployment site 
 2. User browses selection of available videos on various topics
 3. User can roll over video to view description of content
@@ -39,10 +44,14 @@ sidebar_position: 5
 3. Option to exit back to main menu is presented
 
 # *Instructor View*
-
 ## Instructor uses predetermined pin to switch to Teacher Mode
-1. 
+1. Teacher uses same equipment item that student uses to access application
+2. Teacher presses the "Switch" icon to switch to Teacher Mode
+3. Applicaion prompts teacher to input predetermined pin
+4. Once pin is approved, mode switches from "Student" to "Teacher" mode
+
 ## Teacher chooses learning goal for student from menu
+
 ### A. Teacher can view past questions + answers asked to student
 ### B. Teacher can change learning goal for student
 ### C. Teacher can deactivate program for student
