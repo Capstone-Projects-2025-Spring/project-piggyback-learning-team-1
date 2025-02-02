@@ -4,6 +4,11 @@ sidebar_position: 3
 
 # General Requirements
 
+To use our application, users will need the following:
+
+- Internet Access
+- A Desktop Device
+
 The system should allow users (e.g., students) to interact with educational videos and achieve assigned learning objectives.
 
 - Users should be able to view videos and engage with Multiple Choice Questions (MCQs) to reinforce learning.
