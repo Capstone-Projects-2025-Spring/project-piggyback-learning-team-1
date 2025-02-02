@@ -1,11 +1,16 @@
 ---
 sidebar_position: 5
 ---
-
 # Use-case descriptions
 
-# *User View*
+# User View
 ## User Plays Video
+1. User visits website or deployment site 
+2. User browses selection of available videos on various topics
+3. User can roll over video to view description of content
+4. User selects a video by clicking on the icon
+5. Video starts playing automatically
+
 1. User visits website or deployment site 
 2. User browses selection of available videos on various topics
 3. User can roll over video to view description of content
@@ -50,3 +55,4 @@ sidebar_position: 5
 ### A. Teacher can view past questions + answers asked to student
 ### B. Teacher can change learning goal for student
 ### C. Teacher can deactivate program for student
+
