@@ -5,6 +5,7 @@ sidebar_position: 5
 
 # User View
 ## User Plays Video
+*As a user, I want to watch my chosen video*
 1. User visits website or deployment site 
 2. User browses selection of available videos on various topics
 3. User can roll over video to view description of content
@@ -12,6 +13,7 @@ sidebar_position: 5
 5. Video starts playing automatically
 
 ## User Answers a question
+*As a user, I want to answer the question to continue the video*
 1. Video pauses automatically
 2. Question based on the current screen pops up
 3. Set of multiple choice questions pop up under question
@@ -29,32 +31,38 @@ sidebar_position: 5
 3. Option button to continue the video pops up
 
 ## User Continues the Video
+*As a user, I want to continue the video*
 1. Video resumes after pressing the continue button
 2. Question process repeats every few minutes of video until end
 
 ## User Reviews Question Log
+*As a user, I want to review my past questions*
 1. Video ends and log of questions asked pops up 
 2. User can scroll over and expand questions asked during video
 3. Option to exit back to main menu is presented
 
-# *Instructor View*
+# Instructor View
 ## Instructor uses predetermined pin to switch to Teacher Mode
+*As a user, I want to switch the mode*
 1. Teacher uses same equipment item that student uses to access application
 2. Teacher presses the "Switch" icon to switch to Teacher Mode
 3. Applicaion prompts teacher to input predetermined pin
 4. Once pin is approved, mode switches from "Student" to "Teacher" mode
 
 ### A. Teacher chooses/changes learning goal for student from menu
+*As a user, I want to change the learning goal for my student*
 1. Teacher naviagetes to "Menu" option
 2. Teacher selects learning goal from drop down
 3. Teacher confirms selection and exists back to main selection
 
 ### B. Teacher can view past questions + answers asked to student
+*As a user, I want to view the question history of my student*
 1. Teacher naviagtes to "Question History" option
 2. Teacher can views questions answered both correctly and incorrectly
 3. Teacher can choose to discard or flag questions 
 
 ### C. Teacher can deactivate program for student
+*As a user, I want to deactivate the program for my student*
 1. Teacher navigates to "Deactivate" option
 2. Teacher will be prompted to confirm selection
 3. Program exists to main page
