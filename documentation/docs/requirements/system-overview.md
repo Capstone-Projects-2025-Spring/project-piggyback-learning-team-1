@@ -49,11 +49,6 @@ The platform is hosted on Vercel using a Next.js application for the front-end. 
 4. **User Interaction:** User answers the MCQ; results are shown (correct/incorrect).
 5. **Data Storage:** Answer results are sent to DynamoDB, linked to the user’s ID.
 6. **Progress Retrieval:** System pulls analytics from DynamoDB to display performance metrics.
-
-## 6. Compatibility and Integration
-- **Cloud-Ready:** Hosted on Vercel for easy scalability.
-- **AWS Services Integration:** Utilizes S3 for media storage and DynamoDB for fast, flexible database management.
-- **Responsive Design:** Ensures smooth performance on desktops, tablets, and smartphones.
  
 ## 7. Background
 
