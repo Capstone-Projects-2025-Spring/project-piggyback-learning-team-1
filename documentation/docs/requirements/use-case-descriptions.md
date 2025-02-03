@@ -11,12 +11,6 @@ sidebar_position: 5
 4. User selects a video by clicking on the icon
 5. Video starts playing automatically
 
-1. User visits website or deployment site 
-2. User browses selection of available videos on various topics
-3. User can roll over video to view description of content
-4. User selects a video by clicking on the icon
-5. Video starts playing automatically
-
 ## User Answers a question
 1. Video pauses automatically
 2. Question based on the current screen pops up
@@ -50,9 +44,18 @@ sidebar_position: 5
 3. Applicaion prompts teacher to input predetermined pin
 4. Once pin is approved, mode switches from "Student" to "Teacher" mode
 
-## Teacher chooses learning goal for student from menu
+### A. Teacher chooses/changes learning goal for student from menu
+1. Teacher naviagetes to "Menu" option
+2. Teacher selects learning goal from drop down
+3. Teacher confirms selection and exists back to main selection
 
-### A. Teacher can view past questions + answers asked to student
-### B. Teacher can change learning goal for student
+### B. Teacher can view past questions + answers asked to student
+1. Teacher naviagtes to "Question History" option
+2. Teacher can views questions answered both correctly and incorrectly
+3. Teacher can choose to discard or flag questions 
+
 ### C. Teacher can deactivate program for student
+1. Teacher navigates to "Deactivate" option
+2. Teacher will be prompted to confirm selection
+3. Program exists to main page
 
