@@ -54,3 +54,8 @@ The platform is hosted on Vercel using a Next.js application for the front-end. 
 - **Cloud-Ready:** Hosted on Vercel for easy scalability.
 - **AWS Services Integration:** Utilizes S3 for media storage and DynamoDB for fast, flexible database management.
 - **Responsive Design:** Ensures smooth performance on desktops, tablets, and smartphones.
+ 
+## 7. Background
+
+Similar products include YuJa Video Quizzes and Kaltura Video Quizzes, both of which embed multiple-choice questions directly into videos to enhance learner engagement and assess comprehension. YuJa focuses on real-time interaction, while Kaltura features timeline markers for quiz points and instant feedback. Our platform builds on these concepts with by offering quizzes on content that is not meant strictly for education. 
+
