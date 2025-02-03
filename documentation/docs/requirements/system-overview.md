@@ -18,6 +18,8 @@ The platform is hosted on Vercel using a Next.js application for the front-end. 
 
 ## 3. System Block Diagram Components
 
+![System_Block_Design_V1](https://github.com/user-attachments/assets/b3c291db-bf45-4f3b-8015-febfc8636a4f)
+
 ### Front-End (Next.js Application):
 - **User Interface:** Displays videos, MCQs, and result screens.
 - **Event-Driven MCQs:** MCQs appear at predefined video timestamps (fetched from S3).
