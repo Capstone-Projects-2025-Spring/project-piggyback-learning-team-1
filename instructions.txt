@@ -1,0 +1,4 @@
+cd into pigletprep
+npm install
+npm run build
+npm start
