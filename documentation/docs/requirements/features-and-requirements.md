@@ -9,10 +9,10 @@ sidebar_position: 4
         <ul>
             <li>Questions will be related to the video to guide and enhance learning</li>
             <li>Questions will be generated using a large language model and an object detection model</li>
-            <li>Quizz questions will include varied interaction types (text-based, voice-based, touch-based)</li>
+            <li>Quiz questions will include varied interaction types (text-based, voice-based, touch-based)</li>
         </ul>
     <li>The video will pause when the user receives the question</li>
-    <li>The video will rewind if the incorrect answer is selected, the same incorrect answer cannot be selected twice</li>
+    <li>The video will rewind if an incorrect answer is selected; the same incorrect answer cannot be selected twice</li>
         <ul>
             <li>User should be able to rewind the video if they are unsure about the answer</li>
         </ul>
@@ -29,7 +29,7 @@ sidebar_position: 4
 ## Nonfunctional Requirements
 <ul>
     <li>Administrators will be able to view analytics on user engagement and learning outcomes</li>
-    <li>Admistrators will have access to data to assess effectiveness of content</li>
+    <li>Administrators will have access to data to assess effectiveness of content</li>
     <li>System must be able to support at least ten concurrent users</li>
         <ul>
             <li>The use of a cloud service provider will allow Piglet Prep to scale with demand</li>
