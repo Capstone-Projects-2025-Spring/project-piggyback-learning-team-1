@@ -24,7 +24,7 @@ export default function Home() {
       onAnimationComplete={() => setAnimationComplete(true)}
     >
       <motion.h1
-        className="text-6xl font-extrabold flex items-center justify-center"
+        className="text-6xl font-extrabold flex items-center justify-center ml-16"
         initial={{ scale: 0.6 }}
         animate={{ scale: 3, opacity: 0 }}
         transition={{ duration: 5 }}
