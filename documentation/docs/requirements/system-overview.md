@@ -4,53 +4,14 @@ sidebar_position: 1
 
 # System Overview
 
-## 1. Project Introduction
-This website is a child-friendly video platform designed to offer interactive educational content. Videos are enhanced with embedded Multiple Choice Questions (MCQs) to engage children and assess their understanding as they watch. The system allows users to sign in, track their progress, and review performance analytics.
+# Project Abstract
 
-## 2. System Description
-The platform is hosted on Vercel using a Next.js application for the front-end. Videos are embedded with 3-5 MCQs triggered at specific timestamps. User interactions, such as answering questions, are tracked and stored in DynamoDB, with media and question data managed via Amazon S3.
+This document outlines a progressive web application designed as a child-friendly interactive video platform. The platform enhances educational engagement by embedding Multiple Choice Questions (MCQs) into videos at strategic timestamps. Users view performance analytics and and interact with educational content in an engaging way. By integrating quizzes into videos, the platform fosters an interactive learning experience, reinforcing comprehension and retention.
 
-### Key Features:
-- **User Authentication:** Allows users to sign in and save their progress.
-- **Interactive Videos:** Periodic MCQs pop up to test comprehension.
-- **Progress Tracking:** Stores user responses and performance after each video.
-- **Data Analytics:** Tracks user performance metrics like correctness and attempts.
+## Conceptual Design
 
-## 3. System Block Diagram Components
+The frontend of the application is developed using Next.js, providing a responsive user interface and seamless video playback experience. The application is hosted on Vercel for efficient deployment and scalability. User authentication is implemented to allow personalized progress tracking. The backend, also hosted on Vercel, handles business logic, manages API communications, and interacts with the database. Data is stored in DynamoDB, where user responses, video progress, and performance analytics are recorded. Video content and quiz metadata (such as question prompts and timestamps) are managed through Amazon S3.
 
-![System_Block_Design_V1](https://github.com/user-attachments/assets/b3c291db-bf45-4f3b-8015-febfc8636a4f)
+## Background
 
-### Front-End (Next.js Application):
-- **User Interface:** Displays videos, MCQs, and result screens.
-- **Event-Driven MCQs:** MCQs appear at predefined video timestamps (fetched from S3).
-- **User Authentication:** Handles sign-in and session management.
-
-### Back-End (Hosted on Vercel):
-- **Business Logic:** Manages video playback events, triggers MCQs, and handles data interactions with DynamoDB.
-- **API Communication:** Facilitates data flow between the front-end and back-end services.
-
-### Database (DynamoDB):
-- **User Data Storage:** Saves user profiles, video progress, and quiz performance.
-- **Analytics Generation:** Computes metrics like the percentage of correct/incorrect answers and attempts.
-
-### Storage (Amazon S3):
-- **Media Storage:** Hosts video content and MCQ metadata (in JSON format).
-- **Question Metadata:** Includes details like question ID, text, and timestamp for triggering during video playback.
-
-## 4. Interfaces Between Components
-- **Front-End ↔ S3 Bucket:** Retrieves video content and MCQ JSON files.
-- **Front-End ↔ DynamoDB (via API):** Sends user quiz responses and requests progress data.
-- **Back-End ↔ DynamoDB:** Handles data queries for user performance and analytics.
-
-## 5. Data Flow
-1. **User Login:** Authenticated via the front-end.
-2. **Video Playback Starts:** Video content streamed from S3.
-3. **MCQ Trigger:** Front-end fetches questions from S3 based on predefined timestamps.
-4. **User Interaction:** User answers the MCQ; results are shown (correct/incorrect).
-5. **Data Storage:** Answer results are sent to DynamoDB, linked to the user’s ID.
-6. **Progress Retrieval:** System pulls analytics from DynamoDB to display performance metrics.
- 
-## 7. Background
-
-Similar products include YuJa Video Quizzes and Kaltura Video Quizzes, both of which embed multiple-choice questions directly into videos to enhance learner engagement and assess comprehension. YuJa focuses on real-time interaction, while Kaltura features timeline markers for quiz points and instant feedback. Our platform builds on these concepts with by offering quizzes on content that is not meant strictly for education. 
-
+Similar platforms, such as YuJa Video Quizzes and Kaltura Video Quizzes, integrate interactive questions into videos to enhance engagement. YuJa emphasizes real-time interaction, while Kaltura features timeline markers for quiz integration. Our platform builds on these concepts by extending interactive quizzes beyond strictly educational content, making it a versatile tool for various age groups and content types. The system’s emphasis on seamless user experience, personalized tracking, and data-driven insights distinguishes it from existing solutions.
