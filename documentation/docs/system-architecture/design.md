@@ -125,7 +125,7 @@ In the case that our application architecture needs to pivot, we briefly provide
 <ul>
         <li>Architectures</li>
                 <ul>
-                        <li>Monolithic: A single application to handle all functions, with one Node.js backend, a database such as MySQL, and Next.js frontend.
+                        <li>Monolithic: A single application to handle all functions, with one Node.js backend, a database such as MySQL, and Next.js frontend.</li>
                 </ul>
         <li>Tools</li>
                 <ul>
