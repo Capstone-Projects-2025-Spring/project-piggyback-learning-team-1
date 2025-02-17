@@ -50,6 +50,7 @@ The video begins, pausing periodically for questions.
 - Questions are fetched from the database and presented as MCQs.
 - The answer validation happens, with either a correct/incorrect response.
 - The user can retry or skip (if allowed), and the video resumes until the end.
+
 At the end, a Question Log shows all questions from the session.
 <div align="center">
 
@@ -80,9 +81,11 @@ Deactivate Program:
 USER Table:
 - Contains basic user info like userId, username, and email.
 - userId acts as the primary identifier.
+
 PROGRESS Table:
 - Tracks each user's interaction with videos.
 - Contains progressId (unique record ID), userId (foreign key referencing the USER table), videoId (foreign key referencing the VIDEO table), a quiz score, and a timestamp for when the progress was recorded.
+
 VIDEO Table:
 - Holds information about each video ,videoId (primary key), title, and url to the YouTube video.
 Relationships:
@@ -106,7 +109,9 @@ Relationships:
 - Editors: VS Code with ESLint
 - Test Tools: Jest
 ### Version Control
-- Tool: Git
+Tool: 
+- Git
+
 Procedures:
 - Main branch for production-ready code.
 - Feature branches for new functionality.
@@ -129,8 +134,8 @@ In the case that our application architecture needs to pivot, we briefly provide
                 </ul>
         <li>Tools</li>
                 <ul>
-                        <li>Frameworks: Vue.js, React.js, Gatsby, HTML Static Site<li>
-                        <li>Storage: Other storage APIs such as Firebase may provide us with features that AWS does not currently support. 
+                        <li>Frameworks: Vue.js, React.js, Gatsby, HTML Static Site</li>
+                        <li>Storage: Other storage APIs such as Firebase may provide us with features that AWS does not currently support</li>
                 </ul>
 </ul>
 Our non-functional requirements are detailed on our Docusaurus page.
