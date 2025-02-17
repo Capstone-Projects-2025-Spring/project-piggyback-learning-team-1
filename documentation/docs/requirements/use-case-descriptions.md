@@ -35,11 +35,13 @@ sidebar_position: 5
 1. Video pauses automatically
 2. Question based on the current screen pops up
 3. Set of multiple choice questions pop up under question
-4. Video does not play until question is answered
-5. User selects an answer by clicking on
+4. Time pops up in corner counting down time
+5. Video does not play until question is answered or timer runs out
+6. User selects an answer by clicking on it
 
 ### A. User Answers Incorrectly
 1. User receives notification of incorrect answer
+2. Video rewinds back to last checkpoint
 2. User receives hint about correct answer
 3. User answers question again, either repeating incorrect process or moving to correct process
 
@@ -48,11 +50,17 @@ sidebar_position: 5
 2. Explanation of the question is given
 3. Option button to continue the video pops up
 
-### Ba. User Skips Question
+### C. User Skips Question
 *As a user, I want to skip this question*
-1. User can opt to skip a question by pressing the "Skip Question" option, offered in addition to the multiple choice answers after initially answering incorrectly (cannot skip unanswered question)
+1. User can opt to skip a question by pressing the "Skip Question" option
 2. Explanation of the question is given
 3. Option button to continue the video pops up
+
+### D. Question Times Out
+*As a user, I did not answer this question in time*
+1. Video rewinds back to last checkpoint
+2. User receives hint about correct answer
+3. User answers question again, either repeating incorrect process or moving to correct process
 
 ## User Continues the Video
 *As a user, I want to continue the video*
