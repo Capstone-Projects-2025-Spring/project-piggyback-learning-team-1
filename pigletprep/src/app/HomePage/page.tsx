@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { ImProfile } from "react-icons/im";
+import PinLockPage from "../components/PinLockPage"; 
 
 // Declare global types for the YouTube API to pass the linter
 // extends the global window object to include the YT object
@@ -26,6 +28,7 @@ export default function HomePage() {
   const [showQuestion, setShowQuestion] = useState(false); // whether to show the quiz overlay
   const [showThumbnails, setShowThumbnails] = useState(true); // whether to show the thumbnails grid
   const videoRef = useRef<HTMLDivElement>(null);
+  const [showPinLock, setShowPinLock] = useState(false); // State to show/hide the PIN lock modal
 
   // Initialize the YouTube player when the API is ready
   useEffect(() => {
@@ -110,6 +113,13 @@ export default function HomePage() {
           Back
         </button>
       )}
+  
+      {/*Icon for PIN Page */}
+      <ImProfile
+        className="absolute top-4 right-4 text-3xl cursor-pointer"
+        // Set state to true when the icon is clicked, showing the PIN lock modal
+        onClick={() => setShowPinLock(true)}
+      />
 
       <motion.h1
         className="text-4xl font-bold border-b-4 border-[#FFC0CB] pb-1 m-12"
@@ -185,6 +195,16 @@ export default function HomePage() {
       <footer className="w-full p-4 bg-darkgreen text-white flex justify-center items-center mt-20">
         <p>&copy; Piglet Prep 2025. All rights reserved.</p>
       </footer>
+
+      <AnimatePresence>
+        {showPinLock && (
+          <PinLockPage // Component rendered when showPinLock is true
+            // Thesse are the functions that will be passed down to the PinLockPage component as props
+            onClose={() => setShowPinLock(false)} 
+            onSuccess={() => setShowPinLock(false)} 
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
