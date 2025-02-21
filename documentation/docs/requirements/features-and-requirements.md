@@ -28,9 +28,37 @@ sidebar_position: 4
 
 ## Nonfunctional Requirements
 <ul>
+
+    <li>Feature:</li>
+        <ul>
+            <li>Log In</li>
+        </ul>
+    <li>Requirements related to this feature:</li>
+        <ul>
+            <li>Users should be able to log in with a username and password</li>
+        </ul>
+    <li>Feature:</li>
+        <ul>
+            <li>Scalability and Performance</li>
+        </ul>
+    <li>Requirements related to this feature:</li>
+        <ul>
+            <li>Questions should be able to load efficiently</li>
+        </ul>
+    <li>Feature:</li>
+        <ul>
+            <li>Cross-Platform Compatability</li>
+        </ul>
+    <li>Requirements related to this feature:</li>
+        <ul>
+            <li>User should be able the application from different device types and screen sizes</li>
+        </ul>
+    <li>Feature:</li>
+
     <li>Administrators will be able to view analytics on user engagement and learning outcomes</li>
     <li>Administrators will have access to data to assess effectiveness of content</li>
     <li>System must be able to support at least ten concurrent users</li>
+
         <ul>
             <li>The use of a cloud service provider will allow Piglet Prep to scale with demand</li>
         </ul>
