@@ -5,77 +5,30 @@ sidebar_position: 4
 # Features and Requirements
 ## Functional Requirements
 <ul>
-    <li>Feature:</li>
+    <li>Users will be able to receive multiple choice questions at critical points</li>
         <ul>
-            <li> Multiple Choice Questions</li>
+            <li>Questions will be related to the video to guide and enhance learning</li>
+            <li>Questions will be generated using a large language model and an object detection model</li>
+            <li>Quiz questions will include varied interaction types (text-based, voice-based, touch-based)</li>
         </ul>
-    <li>Requirements related to this feature:</li>
+    <li>The video will pause when the user receives the question</li>
+    <li>The video will rewind if an incorrect answer is selected; the same incorrect answer cannot be selected twice</li>
         <ul>
-            <li>User will receieve multiple choice questions at critical points in the video</li>
-            <li>Multiple choice questions will be related to the video to guide and enhance learning</li>
-            <li>Video will pause when the user receieves the question</li>
-            <li>User should be able to choose correct or incorrect choices, as well as answer again if they answer incorrectly</li>
-            <li>User should not be able to select the same answer again</li>
             <li>User should be able to rewind the video if they are unsure about the answer</li>
         </ul>
-    <li>Feature:</li>
-        <ul>
-            <li>Skip Question Option</li>
+    <li>Users shall have the option to skip the question</li>
+    <li>Users will receive a recap at the end of the video that includes explanations for correct and incorrect answers</li>
+         <ul>   
+            <li>Users will see a summary of their correct and incorrect responses</li>
         </ul>
-    <li>Requirements related to this feature:</li>
-        <ul>
-            <li>-User should be able to click a skip button to skip the question if first answer is incorrect </li>
-        </ul>
-    <li>Feature:</li>
-        <ul>
-            <li>Recap</li>
-        </ul>
-    <li>Requirements related to this feature:</li>
-        <ul>
-            <li>User should receieve a recap at the end of the video</li>
-            <li>Answers and explanations of the questions from the video will be recapped</li> 
-            <li>User should get a summary of what they got wrong and right</li>
-        </ul>
-    <li>Feature:</li>
-        <ul>
-            <li>Difficulty Setting</li>
-        </ul>
-    <li>Requirements related to this feature:</li>
-        <ul>
-            <li>User should be able to configure the difficulty (beginner, intermediate, advanced)</li>
-            <li>Question difficulty should adjust based on setting selected by the user</li>
-        </ul>
-    <li>Feature:</li>
-        <ul>
-            <li>Multiple Languages</li>
-        </ul>
-    <li>Requirements related to this feature:</li>
-        <ul>
-            <li>User should be able to choose different languages for dual immersion</li>
-            <li>Questions will be asked in the language chosen by the user</li>
-        </ul>
-    <li>Feature:</li>
-        <ul>
-            <li>Frequency of Questions</li>
-        </ul>
-    <li>Requirements for this feature:</li>
-        <ul>
-            <li>User should be able to configure the frequency of questions asked (not often, often, very often)</li>
-        </ul>
-    <li>Feature:</li>
-        <ul>
-            <li>Levels/Achievements System</li>
-        </ul>
-    <li>Requirements for this feature:</li>
-        <ul>
-            <li>Introduce rewards, levels, or achievements for completing interactive learning activities</li>
-            <li>Should track how many questions the user has answered</li>
-            <li>Experience and level up system</li>
-        </ul>
+    <li>Users will be able to configure question difficulty (beginner, intermediate, advanced)</li>
+    <li>Users will be able to configure the frequency of questions (not often, often, very often)</li>
+    <li>Users will be able to select a preferred language for questions and explanations</li>
 </ul>
 
 ## Nonfunctional Requirements
 <ul>
+
     <li>Feature:</li>
         <ul>
             <li>Log In</li>
@@ -101,12 +54,17 @@ sidebar_position: 4
             <li>User should be able the application from different device types and screen sizes</li>
         </ul>
     <li>Feature:</li>
+
+    <li>Administrators will be able to view analytics on user engagement and learning outcomes</li>
+    <li>Administrators will have access to data to assess effectiveness of content</li>
+    <li>System must be able to support at least ten concurrent users</li>
+
         <ul>
-            <li>User Analytics</li>
+            <li>The use of a cloud service provider will allow Piglet Prep to scale with demand</li>
         </ul>
-    <li>Requirements related to this feature:</li>
+    <li>Questions and videos must be able to load efficiently to ensure a seamless user experience</li>
         <ul>
-            <li>Administrators should be able to view analytics on user engagement and learning outcomes</li>
-            <li>Adminstrators should be able to view data to assess effectiveness of content</li>
+            <li>The system should be able to load within 5ms</li>
         </ul>
+    <li>The application must be accessible from different device types and screen sizes</li>
 </ul>
