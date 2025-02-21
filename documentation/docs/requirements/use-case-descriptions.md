@@ -75,23 +75,13 @@ sidebar_position: 5
 
 # Instructor View
 ## Instructor uses predetermined pin to switch to Teacher Mode
-*As a user, I want to switch the mode*
+*As a user, I want to view the student metrics*
 1. Teacher uses same equipment item that student uses to access application
 2. Teacher presses the "Switch" icon to switch to Teacher Mode
 3. Applicaion prompts teacher to input predetermined pin
 4. Once pin is approved, mode switches from "Student" to "Teacher" mode
+5. Metrics abotu student progress appear on screen
 
-### A. Teacher chooses/changes learning goal for student from menu
-*As a user, I want to change the learning goal for my student*
-1. Teacher naviagetes to "Menu" option
-2. Teacher selects learning goal from drop down
-3. Teacher confirms selection and exists back to main selection
-
-### B. Teacher can view past questions + answers asked to student
-*As a user, I want to view the question history of my student*
-1. Teacher naviagtes to "Question History" option
-2. Teacher can views questions answered both correctly and incorrectly
-3. Teacher can choose to discard or flag questions 
 
 ### C. Teacher can deactivate program for student
 *As a user, I want to deactivate the program for my student*
