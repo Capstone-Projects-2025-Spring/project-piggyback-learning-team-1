@@ -90,7 +90,6 @@ sidebar_position: 4
         </ul>
     <li>Requirements related to this feature:</li>
         <ul>
-            <li>System should be able to support at least twenty concurrent users</li>
             <li>Questions should be able to load efficiently</li>
         </ul>
     <li>Feature:</li>
