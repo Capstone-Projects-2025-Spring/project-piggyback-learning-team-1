@@ -1,0 +1,9 @@
+{
+    "entryPoints": ["src/app/HomePage/page.tsx", "src/app/MetricsPage/page.tsx"],
+    "out": "/Users/noelchacko/Documents/Repos/project-piggyback-learning-team-1/documentation/docs/api-specification",
+    "plugin": ["typedoc-plugin-markdown"],
+    "excludeInternal": true,
+    "excludePrivate": true,
+    "tsconfig": "tsconfig.json"
+  }
+  
