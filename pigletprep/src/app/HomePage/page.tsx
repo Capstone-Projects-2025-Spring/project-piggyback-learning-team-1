@@ -5,11 +5,8 @@ import Image from "next/image";
 import { ImProfile } from "react-icons/im";
 import PinLockPage from "../components/PinLockPage"; 
 
-/**
- * Extend the global window object to include YouTube API properties.
- *
- * @global
- */
+// Declare global types for the YouTube API to pass the linter
+// extends the global window object to include the YT object
 declare global {
   interface Window {
     YT: typeof YT;
@@ -17,11 +14,6 @@ declare global {
   }
 }
 
-/**
- * An array of YouTube video IDs used to load videos.
- *
- * @type {string[]}
- */
 const videoIds = [
   "vCkhJeom7zU",
   "4Unv7rw5HNk",
@@ -30,12 +22,6 @@ const videoIds = [
   "QM2-MX1Lz-A",
 ];
 
-/**
- * The HomePage component renders the main page that includes the YouTube video player,
- * video thumbnails grid, quiz overlay, and PIN lock modal.
- *
- * @returns {JSX.Element} The rendered HomePage component.
- */
 export default function HomePage() {
   const [player, setPlayer] = useState<YT.Player | null>(null);
   const [currentVideoId, setCurrentVideoId] = useState(videoIds[0]); // holds ID of the current video
@@ -44,10 +30,7 @@ export default function HomePage() {
   const videoRef = useRef<HTMLDivElement>(null);
   const [showPinLock, setShowPinLock] = useState(false); // State to show/hide the PIN lock modal
 
-  /**
-   * Initializes the YouTube player when the YouTube Iframe API is ready.
-   * The player is created only if the video container is available and the player isn't already set.
-   */
+  // Initialize the YouTube player when the API is ready
   useEffect(() => {
     const initPlayer = () => {
       if (videoRef.current && !player) {
@@ -56,18 +39,7 @@ export default function HomePage() {
           width: "900",
           videoId: currentVideoId,
           events: {
-            /**
-             * Plays the video as soon as the player is ready.
-             *
-             * @param {YT.PlayerEvent} event - The player ready event.
-             */
             onReady: (event: YT.PlayerEvent) => event.target.playVideo(),
-            /**
-             * Monitors the video playback state and pauses the video after 10 seconds,
-             * then displays the quiz overlay.
-             *
-             * @param {YT.OnStateChangeEvent} event - The state change event.
-             */
             onStateChange: (event: YT.OnStateChangeEvent) => {
               if (event.data === window.YT.PlayerState.PLAYING) {
                 // Check every second until 10 seconds have passed
@@ -86,10 +58,9 @@ export default function HomePage() {
       }
     };
 
-    // Assign initPlayer to be called when the YouTube API is ready.
     window.onYouTubeIframeAPIReady = initPlayer;
 
-    // Load the YouTube API script if it isn't already present.
+    // Load the YouTube API script if it isn't already present
     if (!window.YT) {
       if (!document.querySelector("script[src='https://www.youtube.com/iframe_api']")) {
         const tag = document.createElement("script");
@@ -103,10 +74,7 @@ export default function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /**
-   * Effect to load a new video when the current video ID changes.
-   * If the player exists and supports video loading, the new video is loaded and the quiz overlay is hidden.
-   */
+  // When the current video changes, load the new video if the player exists
   useEffect(() => {
     if (player && typeof player.loadVideoById === "function") {
       player.loadVideoById(currentVideoId);
@@ -114,21 +82,13 @@ export default function HomePage() {
     }
   }, [currentVideoId, player]);
 
-  /**
-   * Handles the click event on a video thumbnail.
-   * Sets the current video ID to the clicked video's ID and hides the thumbnails grid.
-   *
-   * @param {string} id - The ID of the video to load.
-   */
+  // Thumbnail click handler, sets the current video ID and hides thumbnails
   const handleThumbnailClick = (id: string) => {
     setCurrentVideoId(id);
     setShowThumbnails(false);
   };
 
-  /**
-   * Handles the back button click.
-   * Pauses the video (if playing), shows the thumbnails grid, and hides the quiz overlay.
-   */
+  // back button handler, pauses video and shows thumbnails
   const handleBack = () => {
     if (player) {
       player.pauseVideo();
@@ -154,7 +114,7 @@ export default function HomePage() {
         </button>
       )}
   
-      {/* Icon for PIN Page */}
+      {/*Icon for PIN Page */}
       <ImProfile
         className="absolute top-4 right-4 text-3xl cursor-pointer"
         // Set state to true when the icon is clicked, showing the PIN lock modal
@@ -238,15 +198,10 @@ export default function HomePage() {
 
       <AnimatePresence>
         {showPinLock && (
-          <PinLockPage
-            /**
-             * Callback invoked when the PIN lock modal is closed.
-             */
-            onClose={() => setShowPinLock(false)}
-            /**
-             * Callback invoked when the PIN lock is successfully entered.
-             */
-            onSuccess={() => setShowPinLock(false)}
+          <PinLockPage // Component rendered when showPinLock is true
+            // Thesse are the functions that will be passed down to the PinLockPage component as props
+            onClose={() => setShowPinLock(false)} 
+            onSuccess={() => setShowPinLock(false)} 
           />
         )}
       </AnimatePresence>
