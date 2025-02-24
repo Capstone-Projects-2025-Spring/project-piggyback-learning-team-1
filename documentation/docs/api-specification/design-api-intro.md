@@ -1,41 +1,71 @@
 ---
 sidebar_position: 1
-description: What should be in this section.
 ---
 
-Design Document - Part II API
-=============================
+# HomePage.tsx  
 
-**Purpose**
+## `export default function HomePage()`
 
-This Design Document gives the complete design of the software implementation. This information should be in structured comments (e.g. Javadoc) in the source files. We encourage the use of a documentation generation tool to generate a draft of your API that you can augment to include the following details.
+This component is the main entry point for **Piglet Prep**. It handles video playback via the YouTube Iframe API, displays an interactive quiz overlay after a set duration, and integrates a secure PIN lock modal.
 
-**Requirements**
+* **Description:** Renders a dynamic homepage with video content, thumbnails for navigation, and interactive elements such as a quiz and PIN lock.
 
-In addition to the general documentation requirements the Design Document - Part II API will contain:
+## `const [player, setPlayer]`
 
-General review of the software architecture for each module specified in Design Document - Part I Architecture. Please include your class diagram as an important reference.
+Holds the instance of the YouTube player used to control video playback.
 
-**For each class define the data fields, methods.**
+## `const [currentVideoId, setCurrentVideoId]`
 
-The purpose of the class.
+Stores the YouTube video ID for the currently playing video.
 
-The purpose of each data field.
+## `const [showQuestion, setShowQuestion]`
 
-The purpose of each method
+Determines whether the quiz overlay is displayed after a specific video playback duration.
 
-Pre-conditions if any.
+## `const [showThumbnails, setShowThumbnails]`
 
-Post-conditions if any.
+Controls the visibility of the video thumbnails grid for navigation.
 
-Parameters and data types
+## `const videoRef`
 
-Return value and output variables
+A React ref attached to the DOM element that embeds the YouTube player.
 
-Exceptions thrown\* (PLEASE see note below for details).
+## `const [showPinLock, setShowPinLock]`
 
-An example of an auto-generated and then augmented API specification is here ([Fiscal Design Document 2\_API.docx](https://templeu.instructure.com/courses/106563/files/16928898?wrap=1 "Fiscal Design Document 2_API.docx") )
+Manages the visibility of the PIN lock modal to secure access.
 
-This group developed their API documentation by hand ([Design Document Part 2 API-1\_MovieMatch.docx](https://templeu.instructure.com/courses/106563/files/16928899?wrap=1 "Design Document Part 2 API-1_MovieMatch.docx") )
+## `useEffect` (YouTube API & Player Initialization)
 
-\*At the top level, or where appropriate, all exceptions should be caught and an error message that is meaningful to the user generated. It is not OK to say ("xxxx has encountered a problem and will now close (OK?)". Error messages and recovery procedures should be documented in the User’s Manual.
+Initializes the YouTube player when the API is ready, loads the necessary script if not already present, and sets up event listeners to manage video playback.
+
+## `handleThumbnailClick(id: string)`
+
+Updates the current video by setting a new video ID and hides the thumbnails grid.
+
+* **Parameters:**
+  * `id` — `string` representing the selected YouTube video ID.
+
+## `handleBack()`
+
+Pauses the video playback and re-displays the thumbnails grid while hiding the quiz overlay.
+
+---
+
+# MetricsDashboard.tsx  
+
+## `export default MetricsDashboard`
+
+This component displays user engagement metrics and video statistics for **Piglet Prep**. It provides an overview of popular videos and key performance indicators.
+
+
+## `const popularVideos`
+
+A static array containing metadata for popular videos, including titles and dates.
+
+## `handleGoBack()`
+
+Navigates the user back to the previous page using Next.js routing.
+
+* **Behavior:** Triggers a route change to return to the HomePage.
+
+---

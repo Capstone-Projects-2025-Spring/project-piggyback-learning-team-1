@@ -30,10 +30,6 @@ sidebar_position: 4
 <ul>
     <li>Administrators will be able to view analytics on user engagement and learning outcomes</li>
     <li>Administrators will have access to data to assess effectiveness of content</li>
-    <li>System must be able to support at least ten concurrent users</li>
-        <ul>
-            <li>The use of a cloud service provider will allow Piglet Prep to scale with demand</li>
-        </ul>
     <li>Questions and videos must be able to load efficiently to ensure a seamless user experience</li>
         <ul>
             <li>The system should be able to load within 5ms</li>
