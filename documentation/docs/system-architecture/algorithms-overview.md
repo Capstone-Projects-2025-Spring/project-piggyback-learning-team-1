@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 ---
-
+# Algorithms Overview
 ## Algorithms Employed
 - GenAI Vision Model: Generates MCQs from video content.
 - Engagement Scoring: Tracks user interactions to dynamically adjust video recommendations and save metrics to the profile
