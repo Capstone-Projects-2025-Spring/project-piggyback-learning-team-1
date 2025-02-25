@@ -86,6 +86,7 @@ export default function HomePage() {
   const handleThumbnailClick = (id: string) => {
     setCurrentVideoId(id);
     setShowThumbnails(false);
+    setShowQuestion(false);
   };
 
   // back button handler, pauses video and shows thumbnails
