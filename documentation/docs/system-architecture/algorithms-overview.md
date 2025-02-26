@@ -4,6 +4,7 @@ sidebar_position: 5
 # Algorithms Overview
 ## Algorithms Employed
 - GenAI Vision Model: Generates MCQs from video content.
+     - Manually select frame timestamps to capture video frame screenshots. Use AWS Rekognition to identify objects in a video from a single frame. Dynamically use machinese learning to create questions and answer          choices based on prompts about the screenshot. Display MCQs to user about video content. 
 - Engagement Scoring: Tracks user interactions to dynamically adjust video recommendations and save metrics to the profile
 - Knowledge Retention Algorithm: Uses spaced repetition principles to suggest re-watching or reinforcing material.
 
