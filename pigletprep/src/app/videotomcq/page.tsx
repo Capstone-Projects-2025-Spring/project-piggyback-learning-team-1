@@ -43,8 +43,8 @@ const DetectLabels = () => {
       const img = new Image();
       img.src = base64Image;
       img.onload = () => {
-        let canvas = document.createElement("canvas");
-        let ctx = canvas.getContext("2d");
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
         if (ctx) {
           let width = img.width;
           let height = img.height;

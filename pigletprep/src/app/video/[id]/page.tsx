@@ -1,71 +1,43 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
-declare global {
-  interface Window {
-    YT: typeof YT;
-    onYouTubeIframeAPIReady: () => void;
-  }
-}
-
 export default function VideoPage() {
-  const { id } = useParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const videoRef = useRef<HTMLDivElement>(null);
-  const [player, setPlayer] = useState<YT.Player | null>(null);
+  const videoUrl = searchParams.get("url"); // Get the S3 video URL from the query params
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [showQuiz, setShowQuiz] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const quizTriggered = useRef(false);
 
   useEffect(() => {
-    const initPlayer = () => {
-      if (videoRef.current && window.YT && !player) {
-        const newPlayer = new window.YT.Player(videoRef.current, {
-          height: "500",
-          width: "900",
-          videoId: id as string,
-          events: {
-            onReady: (event: YT.PlayerEvent) => event.target.playVideo(),
-            onStateChange: (event: YT.OnStateChangeEvent) => {
-              if (event.data === window.YT.PlayerState.PLAYING) {
-                if (intervalRef.current) clearInterval(intervalRef.current);
+    if (!videoUrl) return;
+    const video = videoRef.current;
+    if (!video) return;
 
-                intervalRef.current = setInterval(() => {
-                  if (!quizTriggered.current && event.target.getCurrentTime() >= 10) {
-                    quizTriggered.current = true;
-                    event.target.pauseVideo();
-                    clearInterval(intervalRef.current!);
-                    setShowQuiz(true);
-                  }
-                }, 1000);
-              }
-            },
-          },
-        });
-        setPlayer(newPlayer);
+    video.src = videoUrl;
+    video.load();
+    video.play();
+
+    const handleTimeUpdate = () => {
+      if (!video) return;
+      if (!quizTriggered.current && video.currentTime >= 10) {
+        quizTriggered.current = true;
+        video.pause();
+        setShowQuiz(true);
       }
     };
 
-    if (window.YT && window.YT.Player) {
-      initPlayer();
-    } else {
-      window.onYouTubeIframeAPIReady = initPlayer;
-      if (!document.querySelector("script[src='https://www.youtube.com/iframe_api']")) {
-        const script = document.createElement("script");
-        script.src = "https://www.youtube.com/iframe_api";
-        script.async = true;
-        document.body.appendChild(script);
-      }
-    }
-  }, [id, player]);
+    video.addEventListener("timeupdate", handleTimeUpdate);
+    return () => {
+      video.removeEventListener("timeupdate", handleTimeUpdate);
+    };
+  }, [videoUrl]);
 
   const handleContinueWatching = () => {
     setShowQuiz(false);
-    if (player) {
-      player.playVideo();
-    }
+    videoRef.current?.play();
   };
 
   return (
@@ -80,10 +52,17 @@ export default function VideoPage() {
 
       {/* Video Player */}
       <div className="flex-1 flex justify-center items-center">
-        <div ref={videoRef} className="mt-16"></div>
+        <video
+          ref={videoRef} // I removed the controls attribute so the user cannot skip ahead or continue watching without answering the quiz
+          width="900"
+          height="500"
+          className="mt-16"
+        >
+          Your browser does not support the video tag.
+        </video>
       </div>
 
-      {/*Quiz Sidebar */}
+      {/* Quiz Sidebar */}
       {showQuiz && (
         <motion.div
           className="fixed top-0 right-0 h-full w-96 backdrop-blur-xl bg-[rgba(20,20,20,0.7)] border border-gray-700 shadow-xl rounded-l-3xl p-8 flex flex-col justify-center items-center"
