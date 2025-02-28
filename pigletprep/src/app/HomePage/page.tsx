@@ -18,7 +18,7 @@ const videos = [
 
 export default function HomePage() {
   const router = useRouter();
-  const [showPinLock, setShowPinLock] = useState(false); // State to control the PIN lock modal
+  const [showPinLock, setShowPinLock] = useState(false); // State to control the PIN lock
 
   // Function to navigate to the video page
   const handleThumbnailClick = async (s3Key: string) => {
