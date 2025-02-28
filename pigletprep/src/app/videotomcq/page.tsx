@@ -1,4 +1,4 @@
-//Image to MCQ
+// Image to MCQ
 
 "use client";
 
@@ -35,7 +35,7 @@ const DetectLabels = () => {
     const dataUrl = canvas.toDataURL("image/png");
     setImageData(dataUrl);
 
-    processImage(dataUrl);
+    sendImageToGPT(dataUrl);
   };
 
   const resizeImage = (base64Image: string, maxWidth: number = 1024, maxHeight: number = 1024) => {
@@ -75,38 +75,22 @@ const DetectLabels = () => {
     });
   };
 
-  const processImage = async (base64Image: string) => {
+  const sendImageToGPT = async (base64Image: string) => {
     try {
-      const resizedImage = await resizeImage(base64Image);
+      const base64String = base64Image.split(",")[1];
   
-      const base64String = resizedImage.split(",")[1];
-  
-      const response = await fetch("/api/detectLabels", {
+      const response = await fetch("/api/analyzeImage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageBuffer: base64String }),
       });
   
       const data = await response.json();
-      console.log("AWS Rekognition Response:", data);
   
       if (response.ok) {
-        setLabels(data.Labels);
-        // generate MCQ using rekognition labels
-        const mcqResponse = await fetch("/api/detectLabels", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageBuffer: base64String }),  // send the image to generate make the MCQ
-        });
-        
-        const mcqData = await mcqResponse.json();
-        if (mcqResponse.ok) {
-          setMcq(mcqData.mcq);
-        } else {
-          setError(mcqData.error || "Error generating MCQ");
-        }
+        setMcq(data.mcq);
       } else {
-        setError(data.error || "Error detecting labels");
+        setError(data.error || "Error generating MCQ");
       }
     } catch (err) {
       setError((err as Error).message || "Error processing image");
@@ -114,6 +98,7 @@ const DetectLabels = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div style={{ textAlign: "center" }}>
@@ -172,3 +157,4 @@ const DetectLabels = () => {
 };
 
 export default DetectLabels;
+
