@@ -6,12 +6,14 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import PinLockPage from "../components/PinLockPage"; 
 
-const videoIds = [
-  "vCkhJeom7zU",
-  "4Unv7rw5HNk",
-  "7MazdjHtbw0",
-  "IIXxhSIlU4M",
-  "QM2-MX1Lz-A",
+// Replaced the old YouTube video IDs with the new ones and their corresponding S3 keys
+
+const videos = [ 
+  { youtubeId: "dqT-UlYlg1s", s3Key: "giant_pandas" }, 
+  { youtubeId: "9ZyGSgeMnm4", s3Key: "australia" },
+  { youtubeId: "sePqPIXMsAc", s3Key: "our_sun" },
+  { youtubeId: "msAnR82kydo", s3Key: "husky" },
+  { youtubeId: "dOMAT8fOr0Q", s3Key: "tigers" },
 ];
 
 export default function HomePage() {
@@ -19,8 +21,18 @@ export default function HomePage() {
   const [showPinLock, setShowPinLock] = useState(false); // State to control the PIN lock modal
 
   // Function to navigate to the video page
-  const handleThumbnailClick = (id: string) => {
-    router.push(`/video/${id}`);
+  const handleThumbnailClick = async (s3Key: string) => {
+    try {
+      const res = await fetch(`/api/presigned-url?id=${encodeURIComponent(s3Key)}`);
+      const data = await res.json();
+      if (data.url) {
+        router.push(`/video/${encodeURIComponent(s3Key)}?url=${encodeURIComponent(data.url)}`);
+      } else {
+        console.error("Error fetching presigned URL:", data.error);
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
   };
 
   return (
@@ -48,16 +60,16 @@ export default function HomePage() {
 
       {/* Thumbnails Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {videoIds.map((id) => (
+        {videos.map((video) => (
           <motion.div
-            key={id}
+            key={video.youtubeId}
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
-            onClick={() => handleThumbnailClick(id)}
+            onClick={() => handleThumbnailClick(video.s3Key)}
             className="cursor-pointer"
           >
             <Image
-              src={`https://img.youtube.com/vi/${id}/hqdefault.jpg`}
+              src={`https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`}
               alt="Video thumbnail"
               width={256}
               height={144}
