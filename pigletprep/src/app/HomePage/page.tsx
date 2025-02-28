@@ -10,10 +10,10 @@ import PinLockPage from "../components/PinLockPage";
 
 const videos = [ 
   { youtubeId: "dqT-UlYlg1s", s3Key: "giant_pandas" }, 
-  { youtubeId: "9ZyGSgeMnm4", s3Key: "9ZyGSgeMnm4" },
-  { youtubeId: "sePqPIXMsAc", s3Key: "sePqPIXMsAc" },
-  { youtubeId: "msAnR82kydo", s3Key: "msAnR82kydo" },
-  { youtubeId: "dOMAT8fOr0Q", s3Key: "dOMAT8fOr0Q" },
+  { youtubeId: "9ZyGSgeMnm4", s3Key: "australia" },
+  { youtubeId: "sePqPIXMsAc", s3Key: "our_sun" },
+  { youtubeId: "msAnR82kydo", s3Key: "husky" },
+  { youtubeId: "dOMAT8fOr0Q", s3Key: "tigers" },
 ];
 
 export default function HomePage() {
