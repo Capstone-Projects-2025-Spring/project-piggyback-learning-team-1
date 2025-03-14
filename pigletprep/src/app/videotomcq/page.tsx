@@ -1,4 +1,3 @@
-// Image to MCQ
 
 "use client";
 
@@ -38,43 +37,6 @@ const DetectLabels = () => {
     sendImageToGPT(dataUrl);
   };
 
-  const resizeImage = (base64Image: string, maxWidth: number = 1024, maxHeight: number = 1024) => {
-    return new Promise<string>((resolve, reject) => {
-      const img = new Image();
-      img.src = base64Image;
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          let width = img.width;
-          let height = img.height;
-  
-          // resize the image to fit rekognition
-          if (width > height) {
-            if (width > maxWidth) {
-              height = Math.round((height * maxWidth) / width);
-              width = maxWidth;
-            }
-          } else {
-            if (height > maxHeight) {
-              width = Math.round((width * maxHeight) / height);
-              height = maxHeight;
-            }
-          }
-  
-          canvas.width = width;
-          canvas.height = height;
-          ctx.drawImage(img, 0, 0, width, height);
-  
-          resolve(canvas.toDataURL("image/png"));
-        } else {
-          reject("Error resizing image");
-        }
-      };
-      img.onerror = reject;
-    });
-  };
-
   const sendImageToGPT = async (base64Image: string) => {
     try {
       const base64String = base64Image.split(",")[1];
@@ -89,6 +51,7 @@ const DetectLabels = () => {
   
       if (response.ok) {
         setMcq(data.mcq);
+        setLabels(data.labels || []);
       } else {
         setError(data.error || "Error generating MCQ");
       }
