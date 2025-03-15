@@ -16,9 +16,22 @@ export default function VideoPage() {
     const video = videoRef.current;
     if (!video) return;
 
-    video.src = videoUrl;
+    // Decode the URL properly
+    const decodedUrl = decodeURIComponent(videoUrl);
+    console.log('Attempting to load video from:', decodedUrl);
+
+    // Don't set src directly, use source elements instead
     video.load();
-    video.play();
+
+    const playVideo = async () => {
+      try {
+        await video.play();
+      } catch (error) {
+        console.error('Playback failed:', error);
+      }
+    };
+
+    playVideo();
 
     const handleTimeUpdate = () => {
       if (!video) return;
@@ -52,13 +65,32 @@ export default function VideoPage() {
 
       {/* Video Player */}
       <div className="flex-1 flex justify-center items-center">
-        <video
-          ref={videoRef} // I removed the controls attribute so the user cannot skip ahead or continue watching without answering the quiz
+        <video 
+          ref={videoRef}
           width="900"
           height="500"
           className="mt-16"
+          controls
+          playsInline
+          onError={(e) => {
+            console.error("Video error event:", e);
+            console.error("Video error code:", videoRef.current?.error?.code);
+            console.error("Video error message:", videoRef.current?.error?.message);
+            alert(`Video error: ${videoRef.current?.error?.message || 'Unknown error'}`);        
+          }}
         >
-          Your browser does not support the video tag.
+          <source 
+            src={videoUrl ? decodeURIComponent(videoUrl) : ''} 
+            type="video/mp4"
+          />
+          <source 
+            src={videoUrl ? decodeURIComponent(videoUrl) : ''} 
+            type="video/webm"
+          />
+          <p>
+            Your browser does not support the video tag. 
+            Error: {videoRef.current?.error?.message}
+          </p>
         </video>
       </div>
 
