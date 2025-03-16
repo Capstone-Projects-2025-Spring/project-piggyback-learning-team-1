@@ -17,8 +17,8 @@ export async function GET(request: Request) {
   });
 
   const params = {
-    Bucket: 'piglet-video-uploads',
-    Key: id,
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: `${id}`,
     Expires: 60, // URL expires in 60 seconds
   };
 

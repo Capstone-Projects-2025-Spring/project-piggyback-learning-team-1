@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import { useRef, useState } from "react";
@@ -75,7 +73,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc }) => {
       </video>
 
       <button onClick={captureScreenshot} disabled={loading} style={{ display: "block", margin: "10px auto" }}>
-        {loading ? "Processing..." : "Capture Screenshot"}
+        {loading ? "Processing..." : "Get Multiple Choice Question"}
       </button>
 
       <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
@@ -122,5 +120,3 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc }) => {
 };
 
 export default DetectLabels;
-
-
