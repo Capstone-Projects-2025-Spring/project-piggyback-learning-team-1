@@ -72,7 +72,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc }) => {
         <source src={videoSrc} type="video/mp4" />
       </video>
 
-      <button onClick={captureScreenshot} disabled={loading} style={{ display: "block", margin: "10px auto" }}>
+      <button onClick={captureScreenshot} disabled={loading} style={{ display: "block", margin: "10px auto", color: "black" }}>
         {loading ? "Processing..." : "Get Multiple Choice Question"}
       </button>
 
@@ -111,9 +111,10 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc }) => {
 
       {mcq && (
         <div>
-          <h2>Generated Multiple-Choice Question:</h2>
-          <p>{mcq}</p>
+          <h2 style={{ color: "black" }}>Generated Multiple-Choice Question:</h2>
+          <p style={{ color: "black" }}>{mcq}</p>
         </div>
+
       )}
     </div>
   );

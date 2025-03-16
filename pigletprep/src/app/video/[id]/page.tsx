@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import DetectLabels from "@/app/videotomcq/page";
 
 export default function VideoPage() {
   const searchParams = useSearchParams();
@@ -74,7 +75,7 @@ export default function VideoPage() {
         ⬅ Back
       </button>
 
-      {/* Video Player */}
+      {/* Video Player
       <div className="flex-1 flex justify-center items-center">
         <video 
           ref={videoRef}
@@ -94,6 +95,10 @@ export default function VideoPage() {
           />
           Your browser does not support the video tag.
         </video>
+      </div> */}
+
+      <div className="flex justify-center items-center w-full h-full absolute top-0 left-0">
+        {videoUrl && <DetectLabels videoSrc={videoUrl} />}
       </div>
 
       {/* Quiz Sidebar */}
@@ -130,6 +135,8 @@ export default function VideoPage() {
           </button>
         </motion.div>
       )}
+
+      {/* Pass video URL to DetectLabels */}
     </div>
   );
 }
