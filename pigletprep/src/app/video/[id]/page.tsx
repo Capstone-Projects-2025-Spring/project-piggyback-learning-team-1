@@ -16,25 +16,30 @@ export default function VideoPage() {
     const video = videoRef.current;
     if (!video) return;
 
-    // Decode the URL properly
+    let mounted = true; // Add mounted flag
+
     const decodedUrl = decodeURIComponent(videoUrl);
     console.log('Attempting to load video from:', decodedUrl);
 
-    // Don't set src directly, use source elements instead
-    video.load();
-
-    const playVideo = async () => {
-      try {
-        await video.play();
-      } catch (error) {
-        console.error('Playback failed:', error);
+    // Add canplay event listener
+    const handleCanPlay = async () => {
+      if (mounted) {
+        try {
+          await video.play();
+        } catch (error) {
+          console.error('Playback failed:', error);
+        }
       }
     };
 
-    playVideo();
+    video.addEventListener('canplay', handleCanPlay);
+
+    // Set source after adding listener
+    video.src = decodedUrl;
+    video.load();
 
     const handleTimeUpdate = () => {
-      if (!video) return;
+      if (!video || !mounted) return;
       if (!quizTriggered.current && video.currentTime >= 10) {
         quizTriggered.current = true;
         video.pause();
@@ -43,8 +48,14 @@ export default function VideoPage() {
     };
 
     video.addEventListener("timeupdate", handleTimeUpdate);
+
+    // Cleanup function
     return () => {
+      mounted = false;
+      video.removeEventListener('canplay', handleCanPlay);
       video.removeEventListener("timeupdate", handleTimeUpdate);
+      video.pause();
+      video.src = ''; // Clear the source
     };
   }, [videoUrl]);
 
@@ -67,30 +78,21 @@ export default function VideoPage() {
       <div className="flex-1 flex justify-center items-center">
         <video 
           ref={videoRef}
-          width="900"
-          height="500"
+          width="1200"
+          height="675"
           className="mt-16"
-          controls
           playsInline
           onError={(e) => {
             console.error("Video error event:", e);
             console.error("Video error code:", videoRef.current?.error?.code);
             console.error("Video error message:", videoRef.current?.error?.message);
-            alert(`Video error: ${videoRef.current?.error?.message || 'Unknown error'}`);        
           }}
         >
           <source 
-            src={videoUrl ? decodeURIComponent(videoUrl) : ''} 
+            src={videoUrl || ''} 
             type="video/mp4"
           />
-          <source 
-            src={videoUrl ? decodeURIComponent(videoUrl) : ''} 
-            type="video/webm"
-          />
-          <p>
-            Your browser does not support the video tag. 
-            Error: {videoRef.current?.error?.message}
-          </p>
+          Your browser does not support the video tag.
         </video>
       </div>
 
