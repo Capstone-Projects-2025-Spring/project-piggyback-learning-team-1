@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useRef, useState } from "react";
@@ -8,14 +9,18 @@ interface Label {
   Confidence: number;
 }
 
-const DetectLabels = () => {
+interface DetectLabelsProps {
+  videoSrc: string; // Pass video source as a prop
+}
+
+const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
   const [labels, setLabels] = useState<Label[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [mcq, setMcq] = useState<string | null>(null); // State for the generated MCQ
+  const [mcq, setMcq] = useState<string | null>(null);
 
   const captureScreenshot = () => {
     const video = videoRef.current;
@@ -40,15 +45,15 @@ const DetectLabels = () => {
   const sendImageToGPT = async (base64Image: string) => {
     try {
       const base64String = base64Image.split(",")[1];
-  
+
       const response = await fetch("/api/analyzeImage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageBuffer: base64String }),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         setMcq(data.mcq);
         setLabels(data.labels || []);
@@ -61,13 +66,12 @@ const DetectLabels = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div style={{ textAlign: "center" }}>
-      {/* video */}
+      {/* Dynamic video source */}
       <video ref={videoRef} width="640" height="360" controls crossOrigin="anonymous">
-        <source src="/testvideo.mp4" type="video/mp4" />
+        <source src={videoSrc} type="video/mp4" />
       </video>
 
       <button onClick={captureScreenshot} disabled={loading} style={{ display: "block", margin: "10px auto" }}>
@@ -76,7 +80,6 @@ const DetectLabels = () => {
 
       <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
 
-      {/* screenshot Preview */}
       {imageData && (
         <div
           style={{
@@ -114,10 +117,10 @@ const DetectLabels = () => {
           <p>{mcq}</p>
         </div>
       )}
-
     </div>
   );
 };
 
 export default DetectLabels;
+
 
