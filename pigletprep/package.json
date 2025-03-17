@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "engines": {
+    "node": "18.18.0"
+  },
   "dependencies": {
     "@aws-sdk/client-rekognition": "^3.750.0",
     "@playwright/test": "^1.50.1",
