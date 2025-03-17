@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import DetectLabels from "@/app/videotomcq/page";
+import DetectLabels from "@/app/videotomcq/DetectLabels";
 
 export default function VideoPage() {
   const searchParams = useSearchParams();
