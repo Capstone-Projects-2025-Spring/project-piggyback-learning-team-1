@@ -4,7 +4,7 @@ import Image from "next/image";
 import { ImProfile } from "react-icons/im";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import PinLockPage from "../components/PinLockPage"; 
+import PinLockPage from "../../components/PinLockPage"; 
 
 // Replaced the old YouTube video IDs with the new ones and their corresponding S3 keys
 

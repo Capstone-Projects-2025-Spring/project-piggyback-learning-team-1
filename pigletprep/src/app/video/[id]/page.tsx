@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import DetectLabels from "@/app/videotomcq/DetectLabels";
+import { IoChevronForwardCircle } from "react-icons/io5";
+
 
 export default function VideoPage() {
   const searchParams = useSearchParams();
@@ -74,6 +76,16 @@ export default function VideoPage() {
       >
         ⬅ Back
       </button>
+
+      {/* Recap button - go to recap page, all static. Will use real data later on */}
+      <button
+        onClick={() => router.push("/Recap")}
+        className="fixed top-4 right-4 text-blue-500 text-4xl z-50 hover:text-blue-700 transition"
+      >
+        <IoChevronForwardCircle />
+      </button>
+
+
 
       {/* Video Player
       <div className="flex-1 flex justify-center items-center">
