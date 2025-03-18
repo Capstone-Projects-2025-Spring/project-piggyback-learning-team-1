@@ -37,7 +37,7 @@ export default function QuizResults() {
   }, []); // run only once after the initial render
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[#f7f5e6] px-4">
+    <div className="flex justify-center items-center min-h-screen bg-[#f7f5e6] border-4 px-4">
       <Confetti
           ref={confettiRef}
           className="absolute left-0 top-0 z-0 size-full pointer-events-none"
@@ -48,7 +48,7 @@ export default function QuizResults() {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-[700px] bg-white rounded-3xl shadow-2xl p-8 text-center"
+        className="w-[700px] bg-white rounded-3xl shadow-2xl p-4 text-center"
       >
         {/* Pink dev header*/}
         <div className="bg-pink-100 rounded-2xl p-6">
@@ -85,7 +85,7 @@ export default function QuizResults() {
           {/* Correct Answers */}
           <motion.div
             whileHover={{ scale: 1.1 }}
-            className="p-5 border-4 border-green-500 rounded-xl text-center"
+            className="p-2 border-4 border-green-500 rounded-xl text-center"
           >
             <CheckCircle className="w-8 h-8 mx-auto text-green-600" />
             <p className="text-4xl m-3 font-extrabold text-green-600">{correctAnswers}</p>
@@ -95,7 +95,7 @@ export default function QuizResults() {
           {/* Wrong Answers */}
           <motion.div
             whileHover={{ scale: 1.1 }}
-            className="p-5 border-4 border-pink-500 rounded-xl text-center"
+            className="p-2 border-4 border-pink-500 rounded-xl text-center"
           >
             <XCircle className="w-8 h-8 mx-auto text-pink-600" />
             <p className="text-4xl m-3 font-extrabold text-pink-600">{totalQuestions - correctAnswers}</p>
@@ -105,7 +105,7 @@ export default function QuizResults() {
           {/* Total Time Spent - from the momemnt the user uses the site  */}
           <motion.div
             whileHover={{ scale: 1.1 }}
-            className="p-5 border-4 border-blue-500 rounded-xl text-center"
+            className="p-2 border-4 border-blue-500 rounded-xl text-center"
           >
             <Clock className="w-8 h-8 mx-auto text-blue-600" />
             <p className="text-4xl m-3 font-extrabold text-blue-600">8:23</p>
@@ -115,7 +115,7 @@ export default function QuizResults() {
           {/* Skipped Questions */}
           <motion.div
             whileHover={{ scale: 1.1 }}
-            className="p-5 border-4 border-gray-500 rounded-xl text-center"
+            className="p-2 border-4 border-gray-500 rounded-xl text-center"
           >
             <SkipForward className="w-8 h-8 mx-auto text-gray-600" />
             <p className="text-4xl m-3 font-extrabold text-gray-600">2</p>
