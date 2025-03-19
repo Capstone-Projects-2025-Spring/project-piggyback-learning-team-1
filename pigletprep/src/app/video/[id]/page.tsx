@@ -2,6 +2,9 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import DetectLabels from "@/app/videotomcq/DetectLabels";
+import { IoChevronForwardCircle } from "react-icons/io5";
+
 
 export default function VideoPage() {
   const searchParams = useSearchParams();
@@ -74,7 +77,17 @@ export default function VideoPage() {
         ⬅ Back
       </button>
 
-      {/* Video Player */}
+      {/* Recap button - go to recap page, all static. Will use real data later on */}
+      <button
+        onClick={() => router.push("/Recap")}
+        className="fixed top-4 right-4 text-blue-500 text-4xl z-50 hover:text-blue-700 transition"
+      >
+        <IoChevronForwardCircle />
+      </button>
+
+
+
+      {/* Video Player
       <div className="flex-1 flex justify-center items-center">
         <video 
           ref={videoRef}
@@ -94,6 +107,10 @@ export default function VideoPage() {
           />
           Your browser does not support the video tag.
         </video>
+      </div> */}
+
+      <div className="flex justify-center items-center w-full h-full absolute top-0 left-0">
+        {videoUrl && <DetectLabels videoSrc={videoUrl} />}
       </div>
 
       {/* Quiz Sidebar */}
@@ -130,6 +147,8 @@ export default function VideoPage() {
           </button>
         </motion.div>
       )}
+
+      {/* Pass video URL to DetectLabels */}
     </div>
   );
 }
