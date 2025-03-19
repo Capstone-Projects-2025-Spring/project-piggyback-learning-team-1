@@ -3,7 +3,7 @@ import React from 'react';
 import { motion, useMotionValue, useTransform, useSpring, animate } from 'framer-motion';
 import { Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { FaHome } from 'react-icons/fa';
+import { IoHome } from "react-icons/io5";
 
 interface AnimatedScoreProps {
   value: number;
@@ -105,7 +105,7 @@ const MetricsDashboard = () => {
         <button onClick={handleGoBack} 
           className="absolute top-4 left-4 text-3xl cursor-pointer z-100 text-black"
         >
-          <FaHome />
+          <IoHome />
         </button>
       </div> 
       <div className="max-w-6xl mx-auto">
