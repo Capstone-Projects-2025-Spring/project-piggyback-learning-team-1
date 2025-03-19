@@ -21,9 +21,6 @@ sidebar_position: 4
          <ul>   
             <li>Users will see a summary of their correct and incorrect responses</li>
         </ul>
-    <li>Users will be able to configure question difficulty (beginner, intermediate, advanced)</li>
-    <li>Users will be able to configure the frequency of questions (not often, often, very often)</li>
-    <li>Users will be able to select a preferred language for questions and explanations</li>
 </ul>
 
 ## Nonfunctional Requirements
