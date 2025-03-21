@@ -13,7 +13,7 @@ sidebar_position: 5
 
 <div align="center">
 
-![SD2](/img/SD2.png)
+![SD1U](/img/SD1U.png)
 
 </div>
 
@@ -28,7 +28,7 @@ sidebar_position: 5
 
 <div align="center">
 
-![SD5](/img/SD5.png)
+![SD2U](/img/SD2U.png)
 
 </div>
 
@@ -40,7 +40,7 @@ sidebar_position: 5
 
 <div align="center">
 
-![SD6](/img/SD6.png)
+![SD3AU](/img/SD3AU.png)
 
 </div>
 
@@ -51,7 +51,7 @@ sidebar_position: 5
 
 <div align="center">
 
-![SD6B](/img/SD6B.png)
+![SD3BU](/img/SD3BU.png)
 
 </div>
 
@@ -63,7 +63,7 @@ sidebar_position: 5
 
 <div align="center">
 
-![SD6C](/img/SD6C.png)
+![SD3CU](/img/SD3CU.png)
 
 </div>
 
@@ -75,7 +75,7 @@ sidebar_position: 5
 
 <div align="center">
 
-![SD6D](/img/SD6D.png)
+![SD3DU](/img/SD3DU.png)
 
 </div>
 
@@ -86,7 +86,7 @@ sidebar_position: 5
 
 <div align="center">
 
-![SD7](/img/SD7.png)
+![SD4U](/img/SD4U.png)
 
 </div>
 
@@ -98,7 +98,7 @@ sidebar_position: 5
 
 <div align="center">
 
-![SD8](/img/SD8.png)
+![SD5U](/img/SD5U.png)
 
 </div>
 
@@ -112,6 +112,6 @@ sidebar_position: 5
 
 <div align="center">
 
-![SD9](/img/SD9.png)
+![SD6U](/img/SD6U.png)
 
 </div>
