@@ -15,6 +15,7 @@ interface QuizData {
     B: string;
     C: string;
     D: string;
+    Hint: string;
   };
   correctAnswer: string;
 }
