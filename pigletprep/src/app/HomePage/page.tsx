@@ -50,9 +50,9 @@ export default function HomePage() {
 
       {/* Page Title */}
       <motion.h1
-        className="text-4xl font-bold border-b-4 border-[#FFC0CB] pb-1 m-12"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+        className="text-4xl font-bold border-b-4 border-[#FFC0CB] pb-1"
+        initial={{ opacity: 0, y: 0 }}
+        animate={{ opacity: 1, y: -50 }}
         transition={{ duration: 0.6 }}
       >
         Select a Video
@@ -63,24 +63,24 @@ export default function HomePage() {
         {videos.map((video) => (
           <motion.div
             key={video.youtubeId}
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.3 }}
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.2 }}
             onClick={() => handleThumbnailClick(video.s3Key)}
             className="cursor-pointer"
           >
             <Image
               src={`https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`}
               alt="Video thumbnail"
-              width={256}
-              height={144}
-              className="object-cover rounded-lg shadow-md"
+              width={300}
+              height={350}
+              className="object-cover rounded-lg shadow-xl"
             />
           </motion.div>
         ))}
       </div>
 
       {/* Footer */}
-      <footer className="w-full p-4 bg-gray-800 text-white flex justify-center items-center mt-20">
+      <footer className="w-full fixed bottom-0 p-4 bg-gray-800 text-white flex justify-center items-center mt-20">
         <p>&copy; Piglet Prep 2025. All rights reserved.</p>
       </footer>
 
