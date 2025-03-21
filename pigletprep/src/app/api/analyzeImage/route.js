@@ -35,17 +35,33 @@ export async function POST(req) {
       const choiceC = matches[4].trim();
       const choiceD = matches[5].trim();
       const correctAnswer = matches[6].trim();
+
+      return new Response(
+        JSON.stringify({
+          question,
+          choices: {
+            A: choiceA,
+            B: choiceB,
+            C: choiceC,
+            D: choiceD
+          },
+          correctAnswer
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     } else {
-      console.error("Failed to parse MCQ");
+      return new Response(
+        JSON.stringify({ error: "Failed to parse MCQ response" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
 
-    return new Response(
-      JSON.stringify({ mcq }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
   } catch (error) {
     return new Response(
       JSON.stringify({ error: "Error analyzing image", details: error.message }),
