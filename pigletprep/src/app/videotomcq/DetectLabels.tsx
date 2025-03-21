@@ -1,24 +1,38 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { motion } from "framer-motion";
 
 interface Label {
   Name: string;
   Confidence: number;
 }
 
-interface DetectLabelsProps {
-  videoSrc: string;
+interface QuizData {
+  question: string;
+  choices: {
+    A: string;
+    B: string;
+    C: string;
+    D: string;
+  };
+  correctAnswer: string;
 }
 
-const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc }) => {
+interface DetectLabelsProps {
+  videoSrc: string;
+  onQuizDataReceived?: (data: QuizData) => void;
+}
+
+const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceived }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
   const [labels, setLabels] = useState<Label[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [mcq, setMcq] = useState<string | null>(null);
+  const [quizData, setQuizData] = useState<QuizData | null>(null);
+  const [showQuiz, setShowQuiz] = useState(false);
 
   const captureScreenshot = () => {
     const video = videoRef.current;
@@ -52,7 +66,10 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc }) => {
       const data = await response.json();
 
       if (response.ok) {
-        setMcq(data.mcq);
+        setQuizData(data);
+        setShowQuiz(true);
+        // Only call if the callback exists
+        onQuizDataReceived?.(data);
         setLabels(data.labels || []);
       } else {
         setError(data.error || "Error generating MCQ");
@@ -64,17 +81,61 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc }) => {
     }
   };
 
+  const handleContinueWatching = () => {
+    setShowQuiz(false);
+    videoRef.current?.play();
+  };
+
   return (
     <div style={{ textAlign: "center" }}>
       <video ref={videoRef} width="640" height="360" controls crossOrigin="anonymous">
         <source src={videoSrc} type="video/mp4" />
       </video>
 
-      <button onClick={captureScreenshot} disabled={loading} style={{ display: "block", margin: "10px auto", color: "black" }}>
+      <button 
+        onClick={captureScreenshot} 
+        disabled={loading} 
+        style={{ display: "block", margin: "10px auto", color: "black" }}
+      >
         {loading ? "Processing..." : "Get Multiple Choice Question"}
       </button>
 
       <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
+
+      {/* Quiz Sidebar */}
+      {showQuiz && quizData && (
+        <motion.div
+          className="fixed top-0 right-0 h-full w-96 backdrop-blur-xl bg-[rgba(20,20,20,0.7)] border border-gray-700 shadow-xl rounded-l-3xl p-8 flex flex-col justify-center items-center"
+          initial={{ x: "100%" }}
+          animate={{ x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <h2 className="text-3xl font-extrabold text-[#f8f9fa] drop-shadow-lg mb-4">
+            Quiz Time! 🎯
+          </h2>
+          <p className="text-lg text-gray-300 text-center mb-6">
+            {quizData.question}
+          </p>
+
+          <ul className="w-full space-y-4">
+            {Object.entries(quizData.choices).map(([letter, choice]) => (
+              <li
+                key={letter}
+                className="p-4 bg-[rgba(50,50,60,0.7)] backdrop-blur-lg rounded-xl text-white text-lg font-semibold cursor-pointer hover:bg-[rgba(80,80,90,0.8)] transition flex items-center justify-center shadow-md border border-gray-500"
+              >
+                {letter}) {choice}
+              </li>
+            ))}
+          </ul>
+
+          <button
+            className="mt-8 bg-green-500 text-white text-lg font-bold px-6 py-3 rounded-xl hover:bg-green-600 transition shadow-lg"
+            onClick={handleContinueWatching}
+          >
+            Continue Watching
+          </button>
+        </motion.div>
+      )}
 
       {imageData && (
         <div
@@ -104,13 +165,6 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc }) => {
               </li>
             ))}
           </ul>
-        </div>
-      )}
-
-      {mcq && (
-        <div>
-          <h2 style={{ color: "black" }}>Generated Multiple-Choice Question:</h2>
-          <p style={{ color: "black" }}>{mcq}</p>
         </div>
       )}
     </div>
