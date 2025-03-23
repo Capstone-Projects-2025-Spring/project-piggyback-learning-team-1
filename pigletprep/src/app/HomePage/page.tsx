@@ -80,7 +80,7 @@ export default function HomePage() {
       </div>
 
       {/* Footer */}
-      <footer className="w-full fixed bottom-0 p-4 bg-gray-800 text-white flex justify-center items-center mt-20">
+      <footer className="w-full fixed bottom-0 p-4 bg-gray-800 text-white flex justify-center items-center">
         <p>&copy; Piglet Prep 2025. All rights reserved.</p>
       </footer>
 
