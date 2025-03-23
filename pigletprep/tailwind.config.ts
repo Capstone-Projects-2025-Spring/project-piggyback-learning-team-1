@@ -15,8 +15,6 @@ export default {
   			beige: '#f5f5dc',
 			darkerbeige: '#9F8C76',
   			black: '#000000',
-			lightblack: '#333333',
-  			gray: '#808080',
   			white: '#ffffff',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
