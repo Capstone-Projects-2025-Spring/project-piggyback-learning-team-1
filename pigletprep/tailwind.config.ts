@@ -15,6 +15,8 @@ export default {
   			beige: '#f5f5dc',
 			darkerbeige: '#9F8C76',
   			black: '#000000',
+			lightblack: '#333333',
+  			gray: '#808080',
   			white: '#ffffff',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
@@ -64,7 +66,7 @@ export default {
   		},
 		// for title page animation
 		animation: {
-			'line-shadow': 'line-shadow 70s linear infinite',
+			'line-shadow': 'line-shadow 100s linear infinite',
 		},
 		keyframes: {
 		'line-shadow': {

@@ -10,7 +10,7 @@ export default function Home() {
   const [animationComplete, setAnimationComplete] = useState(false);
 
   const theme = useTheme();
-  const shadowColor = theme.resolvedTheme === "dark" ? "white" : "black";
+  const shadowColor = theme.resolvedTheme === "black" ? "white" : "black";
 
   useEffect(() => {
     if (animationComplete) {
