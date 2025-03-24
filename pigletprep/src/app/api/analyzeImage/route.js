@@ -18,7 +18,7 @@ export async function POST(req) {
         {
           role: "user",
           content: [
-            { type: "text", text: "Analyze this image and generate a multiple-choice question based on its contents. Respond with only this: **Insert Question Here**, A) **Choice A** B) **Choice B** C) **Choice C** D) **Choice D** Correct Answer: **Correct Answer Here** Hint: **Hint Here**" },
+            { type: "text", text: "Analyze this image and generate a multiple-choice question based on its contents. Respond with only this: Insert Question Here, A) Choice A B) Choice B C) Choice C D) Choice D Correct Answer: Correct Answer Here Hint: Hint Here" },
             { type: "image_url", image_url: { url: `data:image/png;base64,${imageBuffer}` } }
           ]
         }
