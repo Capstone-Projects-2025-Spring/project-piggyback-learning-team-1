@@ -13,6 +13,7 @@ export default {
   			darkgreen: '#006400',
   			lightpink: '#ffb6c1',
   			beige: '#f5f5dc',
+			darkerbeige: '#9F8C76',
   			black: '#000000',
   			white: '#ffffff',
   			background: 'hsl(var(--background))',
@@ -60,7 +61,18 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+		// for title page animation
+		animation: {
+			'line-shadow': 'line-shadow 100s linear infinite',
+		},
+		keyframes: {
+		'line-shadow': {
+			'to': {
+				'background-position': '400% 400%',
+				},
+			},
+		},
   	}
   },
   plugins: [require("tailwindcss-animate")],
