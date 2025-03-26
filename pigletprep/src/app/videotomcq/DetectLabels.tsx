@@ -54,6 +54,37 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     sendImageToGPT(dataUrl);
   };
 
+  const friendlyIntro = [
+    "Here we go! Question time!",
+    "Alright, challenge time!",
+    "Ooo, this one's fun! Here it is:",
+    "Quiz break! Can you solve this?",
+    "Okay, listen up! Let's test your knowledge:",
+  ];
+  
+  const getRandomIntro = () => friendlyIntro[Math.floor(Math.random() * friendlyIntro.length)];
+
+  const speakQuestion = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const happyText = `${getRandomIntro()} ${text}`;
+      const utterance = new SpeechSynthesisUtterance(happyText);
+      utterance.rate = 1.1; //speed
+      utterance.pitch = 1.4; //pitch
+      utterance.volume = 1; //volume
+      
+      const voices = window.speechSynthesis.getVoices();
+      const friendlyVoice = voices.find((voice) => voice.name.includes("Google UK English Female")) 
+                        || voices.find((voice) => voice.lang.includes("en") && voice.name.includes("WaveNet")) 
+                        || voices[0];
+  
+      if (friendlyVoice) utterance.voice = friendlyVoice;
+  
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.error("Text-to-Speech not supported in this browser.");
+    }
+  };  
+
   const sendImageToGPT = async (base64Image: string) => {
     try {
       const base64String = base64Image.split(",")[1];
@@ -69,6 +100,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       if (response.ok) {
         setQuizData(data);
         setShowQuiz(true);
+        speakQuestion(data.question);
         // Only call if the callback exists
         onQuizDataReceived?.(data);
         setLabels(data.labels || []);
@@ -83,6 +115,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   };
 
   const handleContinueWatching = () => {
+    window.speechSynthesis.cancel();
     setShowQuiz(false);
     videoRef.current?.play();
   };
@@ -102,7 +135,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       </button>
 
       <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
-
+    
       {/* Quiz Sidebar */}
       {showQuiz && quizData && (
         <motion.div
