@@ -15,9 +15,9 @@ interface QuizData {
     B: string;
     C: string;
     D: string;
-    Hint: string;
   };
-  correctAnswer: string;
+  Hint: string;
+  correctLetter: string;
 }
 
 interface DetectLabelsProps {
@@ -104,6 +104,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
         // Only call if the callback exists
         onQuizDataReceived?.(data);
         setLabels(data.labels || []);
+        videoRef.current?.pause(); // added a pause to video once MCQ is generated 
       } else {
         setError(data.error || "Error generating MCQ");
       }
@@ -118,6 +119,16 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     window.speechSynthesis.cancel();
     setShowQuiz(false);
     videoRef.current?.play();
+  };
+
+  const handleAnswer = (selectedLetter: string) => { // Determines if the answer (specifically letter) user selected is correct
+    if (quizData?.correctLetter === selectedLetter) {
+      alert("Correct! 🎉"); // made alerts as feedback, might change it later for cleanliness
+      setShowQuiz(false);
+      handleContinueWatching();
+    } else {
+      alert(`Incorrect! Try again. Hint: ${quizData?.Hint}`);
+    }
   };
 
   return (
@@ -151,28 +162,27 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
             {quizData.question}
           </p>
 
-          <ul className="w-full space-y-4">
-            {Object.entries(quizData.choices).map(([letter, choice]) => (
-              <li
-                key={letter}
-                className="p-4 bg-[rgba(50,50,60,0.7)] backdrop-blur-lg rounded-xl text-white text-lg font-semibold cursor-pointer hover:bg-[rgba(80,80,90,0.8)] transition flex items-center justify-center shadow-md border border-gray-500"
-              >
-                {letter}) {choice}
-              </li>
-            ))}
-          </ul>
-
-          <button
-            className="mt-8 bg-green-500 text-white text-lg font-bold px-6 py-3 rounded-xl hover:bg-green-600 transition shadow-lg"
-            onClick={handleContinueWatching}
-          >
-            Continue Watching
-          </button>
+          <div className="w-full space-y-4">
+            {Object.entries(quizData.choices).map(([letter, choice]) => ( // turned the choices into buttons instead of list item
+                <button
+                  key={letter}
+                  className="w-full p-4 bg-[rgba(50,50,60,0.7)] backdrop-blur-lg rounded-xl text-white text-lg font-semibold cursor-pointer hover:bg-[rgba(80,80,90,0.8)] transition flex items-center justify-center shadow-md border border-gray-500"
+                  onClick={() => handleAnswer(letter)}
+                >
+                  {letter}) {choice}
+                </button>
+              ))}
+          {/* removed "Continue Watching" button, I integrated that function to answer choices' buttons (in the handleAnswer functiion)  */}
+          </div>
         </motion.div>
       )}
 
       {imageData && (
-        <div
+        <motion.div
+          initial={{ opacity: 1 }} // added fade animation to the screenshot when get MCQ button is clicked
+          animate={{ opacity: 0 }}
+          transition={{ duration: 3, delay: 1 }}
+          onAnimationComplete={() => setImageData(null)}
           style={{
             position: "fixed",
             bottom: "20px",
@@ -184,7 +194,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
           }}
         >
           <img src={imageData} alt="Screenshot" style={{ width: "150px", height: "auto", borderRadius: "5px" }} />
-        </div>
+        </motion.div>
       )}
 
       {error && <p style={{ color: "red" }}>{error}</p>}
