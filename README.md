@@ -1,5 +1,3 @@
-[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=17853624)
-
 <div align="center">
 
 # Piglet Prep
@@ -30,3 +28,58 @@ cd pigletprep
 npm install
 npm run build
 npm start
+```
+## Collaborators
+
+[//]: # ( readme: collaborators -start )
+<table>
+<tr>
+    <td align="center">
+        <a href="https://github.com/Hxrob">
+            <img src="https://avatars.githubusercontent.com/u/145741134?v=4" width="100;" alt="Hxrob"/>
+            <br />
+            <sub><b>Hirab Abdourazak</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/noel-chacko">
+            <img src="https://avatars.githubusercontent.com/u/69741906?v=4" width="100;" alt="noel-chacko"/>
+            <br />
+            <sub><b>Noel Chacko</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/Henry2809">
+            <img src="https://avatars.githubusercontent.com/u/104811832?v=4" width="100;" alt="Henry2809"/>
+            <br />
+            <sub><b>Henry Nguyen</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/adrewtran117">
+            <img src="https://avatars.githubusercontent.com/u/89867547?v=4" width="100;" alt="adrewtran117"/>
+            <br />
+            <sub><b>Andrew Tran</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/sophiechen18">
+            <img src="https://avatars.githubusercontent.com/u/143643355?v=4" width="100;" alt="sophiechen18"/>
+            <br />
+            <sub><b>Sophie Chen</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/ewongzz">
+            <img src="https://avatars.githubusercontent.com/u/117427711?v=4" width="100;" alt="ewongzz"/>
+            <br />
+            <sub><b>Ernest Wong</b></sub>
+        </a>
+    </td>
+</tr>
+
+</table>
+
+[//]: # ( readme: collaborators -end )
+
+
