@@ -34,6 +34,9 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const [loading, setLoading] = useState<boolean>(false);
   const [quizData, setQuizData] = useState<QuizData | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
+  const [wrongAttempts, setWrongAttempts] = useState(0);
+  const [showSkip, setShowSkip] = useState(false);
+  
 
   const captureScreenshot = () => {
     const video = videoRef.current;
@@ -118,16 +121,22 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const handleContinueWatching = () => {
     window.speechSynthesis.cancel();
     setShowQuiz(false);
+    setShowSkip(false);
+    setWrongAttempts(0);
     videoRef.current?.play();
   };
 
-  const handleAnswer = (selectedLetter: string) => { // Determines if the answer (specifically letter) user selected is correct
+  const handleAnswer = (selectedLetter: string) => {
     if (quizData?.correctLetter === selectedLetter) {
-      alert("Correct! 🎉"); // made alerts as feedback, might change it later for cleanliness
-      setShowQuiz(false);
+      alert("Correct! 🎉");
       handleContinueWatching();
     } else {
       alert(`Incorrect! Try again. Hint: ${quizData?.Hint}`);
+      setWrongAttempts((prev) => prev + 1);
+
+      if (wrongAttempts === 0) {
+        setTimeout(() => setShowSkip(true), 1000);
+      }
     }
   };
 
@@ -174,6 +183,14 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
               ))}
           {/* removed "Continue Watching" button, I integrated that function to answer choices' buttons (in the handleAnswer functiion)  */}
           </div>
+          {showSkip && (
+            <button 
+              className="w-full p-4 bg-[rgba(50,50,60,0.7)] backdrop-blur-lg rounded-xl text-white text-lg font-semibold cursor-pointer hover:bg-[rgba(80,80,90,0.8)] transition flex items-center justify-center shadow-md border border-gray-500 mt-4"
+              onClick={handleContinueWatching}
+            >
+              Skip Question
+            </button>
+          )}
         </motion.div>
       )}
 
