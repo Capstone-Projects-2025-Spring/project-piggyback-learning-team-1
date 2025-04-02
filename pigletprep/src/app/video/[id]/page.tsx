@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import DetectLabels from "@/app/videotomcq/DetectLabels";
 import { IoChevronForwardCircle } from "react-icons/io5";
+import { IoHome } from "react-icons/io5";
 
 
 export default function VideoPage() {
@@ -69,13 +70,14 @@ export default function VideoPage() {
 
   return (
     <div className="flex min-h-screen bg-[#f5f5dc] relative">
-      {/* Back button */}
-      <button
+      {/* Back Button, back to home page */}
+      <motion.button
+        whileHover={{ scale: 1.2 }}
         onClick={() => router.back()}
-        className="fixed top-4 left-4 bg-gray-800 text-white px-4 py-2 rounded z-50 hover:bg-gray-700 transition"
+        className="absolute top-4 left-4 text-4xl cursor-pointer"
       >
-        ⬅ Back
-      </button>
+        <IoHome/>
+      </motion.button>
 
       {/* Recap button - go to recap page, all static. Will use real data later on */}
       <button
