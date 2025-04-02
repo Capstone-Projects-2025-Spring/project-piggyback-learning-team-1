@@ -5,15 +5,17 @@ import { ImProfile } from "react-icons/im";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import PinLockPage from "../../components/PinLockPage"; 
+import { FaPlay } from "react-icons/fa";
+import { ShimmerButton } from "@/components/magicui/shimmer-button";
+import { RetroGrid } from "@/components/magicui/retro-grid";
 
-// Replaced the old YouTube video IDs with the new ones and their corresponding S3 keys
-
+// Using s3Key as titles
 const videos = [ 
-  { youtubeId: "dqT-UlYlg1s", s3Key: "giant_pandas" }, 
-  { youtubeId: "9ZyGSgeMnm4", s3Key: "australia" },
-  { youtubeId: "sePqPIXMsAc", s3Key: "our_sun" },
-  { youtubeId: "msAnR82kydo", s3Key: "husky" },
-  { youtubeId: "dOMAT8fOr0Q", s3Key: "tigers" },
+  { youtubeId: "dqT-UlYlg1s", s3Key: "giant_pandas", title: "Giant Pandas"}, 
+  { youtubeId: "9ZyGSgeMnm4", s3Key: "australia", title: "Australia" },
+  { youtubeId: "sePqPIXMsAc", s3Key: "our_sun", title: "Our Sun" },
+  { youtubeId: "msAnR82kydo", s3Key: "husky", title: "Husky" },
+  { youtubeId: "dOMAT8fOr0Q", s3Key: "tigers", title: "Tigers" }
 ];
 
 export default function HomePage() {
@@ -37,52 +39,114 @@ export default function HomePage() {
 
   return (
     <motion.div
-      className="flex flex-col items-center justify-center min-h-screen bg-[#f5f5dc] relative"
+      className="flex flex-col min-h-screen bg-beige relative overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      {/* Profile Icon to Open PIN Lock */}
-      <ImProfile
-        className="absolute top-4 right-4 text-3xl cursor-pointer"
-        onClick={() => setShowPinLock(true)}
-      />
-
-      {/* Page Title */}
-      <motion.h1
-        className="text-4xl font-bold border-b-4 border-[#FFC0CB] pb-1"
-        initial={{ opacity: 0, y: 0 }}
-        animate={{ opacity: 1, y: -50 }}
-        transition={{ duration: 0.6 }}
+      {/* Hero section - Featured video taking up the full top portion */}
+      <motion.div 
+        className="relative w-full h-[500px] bg-black"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
       >
-        Select a Video
-      </motion.h1>
-
-      {/* Thumbnails Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {videos.map((video) => (
-          <motion.div
-            key={video.youtubeId}
-            whileHover={{ scale: 1.1 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => handleThumbnailClick(video.s3Key)}
-            className="cursor-pointer"
-          >
-            <Image
-              src={`https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`}
-              alt="Video thumbnail"
-              width={300}
-              height={350}
-              className="object-cover rounded-lg shadow-xl"
+        <div className="absolute inset-0">
+          <div className="w-full h-full relative overflow-hidden">
+            <Image 
+              src={`https://img.youtube.com/vi/${videos[0].youtubeId}/maxresdefault.jpg`}
+              alt="Featured Vid"
+              layout="fill"
+              objectFit="contain"
+              priority
+              className="opacity-80" // only for this video for better visibility
             />
-          </motion.div>
-        ))}
-      </div>
+            
+            <div className="absolute bottom-10 left-10 text-white">
+              
+              {/* Title of the biggg thumbnail */}
+              <motion.h1 
+                className="text-4xl font-bold mb-2"
+                initial={{ x: -30, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+              >
+                {videos[0].title} 
+              </motion.h1>
 
-      {/* Footer */}
-      <footer className="w-full fixed bottom-0 p-4 bg-gray-800 text-white flex justify-center items-center z-50">
-        <p>&copy; Piglet Prep 2025. All rights reserved.</p>
-      </footer>
+              {/* Play button */}
+              <ShimmerButton 
+                  className="shadow-2xl hover:bg-gray-400 transition mt-4 gap-1 drop-shadow-lg mix-blend-difference bg-black/40" // swith color to match background
+                  onClick={() => handleThumbnailClick(videos[0].s3Key)}
+                  >
+                  <FaPlay className="text-black" size={27} />
+                  <span className="ml-2 text-black font-bold text-lg">Play</span>
+              </ShimmerButton>
+
+
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+
+      {/* Row of videos - horizontal scrolling */}
+      <motion.div 
+        className="relative w-full ml-10" 
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+      >
+        <h2 className="text-xl font-bold mt-10 pb-4">Popular Videos</h2>
+        <div className="flex pb-4 gap-5">
+          {videos.map((video) => (
+            <motion.div
+              key={video.youtubeId}
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => handleThumbnailClick(video.s3Key)}
+              className="cursor-pointer"
+            >
+                <Image
+                  src={`https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`}
+                  alt={video.title}
+                  width={250}
+                  height={250}
+                  className="object-cover rounded-lg shadow-2xl drop-shadow-md border-4"
+                />
+
+                {/* Comments belows are extra, can be add later on*/}
+                {/* {video.s3Key === "giant_pandas" && (
+                  <div className="absolute top-2 left-2 bg-blue-500 text-white rounded-md px-2 py-0.5 text-xs">
+                    FULL EPISODE
+                  </div>
+                )} */}
+                {/* {video.s3Key === "our_sun" && (
+                  <div className="absolute top-2 right-2 bg-white text-black rounded-full px-2 py-0.5 text-xs font-bold">
+                    #1
+                  </div>
+                )}
+                {video.s3Key === "our_sun" && (
+                  <div className="absolute bottom-2 right-2 bg-white text-black rounded-full px-2 py-0.5 text-xs font-bold">
+                    #10
+                  </div>
+                )} */}
+
+              {/* Title of the videos*/}
+              {/* <p className="mt-1 text-sm font-semibold">{video.title}</p>  */}
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Profile Icon to Open PIN Lock */}
+      <motion.button
+        whileHover={{ scale: 1.2 }}
+        className="fixed top-4 right-4 text-4xl cursor-pointer text-white drop-shadow-lg mix-blend-difference bg-black/40 rounded-full z-50"
+        onClick={() => setShowPinLock(true)}
+      >
+        <ImProfile/>
+      </motion.button>
 
       {/* PIN Lock Modal */}
       {showPinLock && (
@@ -91,6 +155,15 @@ export default function HomePage() {
           onSuccess={() => setShowPinLock(false)}
         />
       )}
+
+      <div className="relative mt-60 flex h-[100px] w-full flex-col items-center justify-center overflow-hidden bg-beige"> 
+        <RetroGrid />
+      </div>
+
+      {/* Footer */}
+      <footer className="w-full p-4 bg-gray-800 text-white flex justify-center items-center z-50">
+        <p>&copy; Piglet Prep 2025. All rights reserved.</p>
+      </footer>
     </motion.div>
   );
 }
