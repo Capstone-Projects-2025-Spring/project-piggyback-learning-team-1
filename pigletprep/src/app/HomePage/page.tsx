@@ -142,6 +142,14 @@ export default function HomePage() {
       {/* Profile Icon to Open PIN Lock */}
       <motion.button
         whileHover={{ scale: 1.2 }}
+        className="fixed top-4 right-4 text-4xl cursor-pointer text-white drop-shadow-lg mix-blend-difference bg-black/40 rounded-full z-50"
+        onClick={() => setShowPinLock(true)}
+      >
+        <ImProfile/>
+      </motion.button>
+      {/* Profile Icon to Open PIN Lock */}
+      <motion.button
+        whileHover={{ scale: 1.2 }}
          className="fixed top-4 right-4 text-4xl cursor-pointer text-white drop-shadow-lg mix-blend-difference bg-black/40 rounded-full z-50"
         onClick={() => setShowPinLock(true)}
       >
