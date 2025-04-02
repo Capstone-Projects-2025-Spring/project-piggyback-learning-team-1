@@ -44,7 +44,7 @@ export default function PinLockPage({ onClose, onSuccess }: PinLockPageProps) {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20, scale: 0.8 }}
         transition={{ duration: 0.5 }}
-        className="fixed inset-0 flex items-center justify-center p-6 bg-beige rounded-xl shadow-lg text-center"
+        className="fixed inset-0 flex items-center justify-center p-6 bg-beige shadow-lg text-center"
       >
         <div>
           <h1 className="text-2xl font-semibold mb-4 text-black">Enter PIN to access metrics</h1>

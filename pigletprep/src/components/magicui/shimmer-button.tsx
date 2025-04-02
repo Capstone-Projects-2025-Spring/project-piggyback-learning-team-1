@@ -21,7 +21,7 @@ export const ShimmerButton = React.forwardRef<
       shimmerColor = "black",
       shimmerSize = "0.3em",
       shimmerDuration = "5s",
-      borderRadius = "10px",
+      borderRadius = "8px",
       background = "white",
       className,
       children,
@@ -42,7 +42,7 @@ export const ShimmerButton = React.forwardRef<
           } as CSSProperties
         }
         className={cn(
-          "group relative z-0 flex cursor-pointer items-center justify-center overflow-hidden whitespace-nowrap border border-white/10 px-6 py-3 text-white [background:var(--bg)] [border-radius:var(--radius)] dark:text-black",
+          "group relative z-0 flex cursor-pointer items-center justify-center overflow-hidden whitespace-nowrap border border-white/10 px-7 py-2 text-white [background:var(--bg)] [border-radius:var(--radius)] dark:text-black",
           "transform-gpu transition-transform duration-300 ease-in-out active:translate-y-px",
           className,
         )}

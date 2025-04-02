@@ -76,10 +76,10 @@ export default function HomePage() {
 
               {/* Play button */}
               <ShimmerButton 
-                  className="shadow-2xl hover:bg-gray-400 transition mt-4 drop-shadow-lg mix-blend-difference bg-black/40" // swith color to match background
+                  className="shadow-2xl hover:bg-gray-400 transition mt-4 gap-1 drop-shadow-lg mix-blend-difference bg-black/40" // swith color to match background
                   onClick={() => handleThumbnailClick(videos[0].s3Key)}
                   >
-                  <FaPlay className="text-black" size={20} />
+                  <FaPlay className="text-black" size={27} />
                   <span className="ml-2 text-black font-bold text-lg">Play</span>
               </ShimmerButton>
 
@@ -98,11 +98,11 @@ export default function HomePage() {
         transition={{ duration: 0.5, delay: 0.6 }}
       >
         <h2 className="text-xl font-bold mt-10 pb-4">Popular Videos</h2>
-        <div className="flex pb-4 gap-4">
+        <div className="flex pb-4 gap-5">
           {videos.map((video) => (
             <motion.div
               key={video.youtubeId}
-              whileHover={{ scale: 1.2 }}
+              whileHover={{ scale: 1.1 }}
               transition={{ duration: 0.2 }}
               onClick={() => handleThumbnailClick(video.s3Key)}
               className="cursor-pointer"
@@ -112,7 +112,7 @@ export default function HomePage() {
                   alt={video.title}
                   width={250}
                   height={250}
-                  className="object-cover rounded-lg"
+                  className="object-cover rounded-lg shadow-2xl drop-shadow-md border-4"
                 />
 
                 {/* Comments belows are extra, can be add later on*/}

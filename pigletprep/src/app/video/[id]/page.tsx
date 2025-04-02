@@ -70,11 +70,12 @@ export default function VideoPage() {
 
   return (
     <div className="flex min-h-screen bg-[#f5f5dc] relative">
+      
       {/* Back Button, back to home page */}
       <motion.button
         whileHover={{ scale: 1.2 }}
         onClick={() => router.back()}
-        className="absolute top-4 left-4 text-4xl cursor-pointer"
+        className="absolute top-4 left-4 text-4xl cursor-pointer z-50"
       >
         <IoHome/>
       </motion.button>
