@@ -1,61 +1,11 @@
-// import { RekognitionClient, DetectLabelsCommand } from '@aws-sdk/client-rekognition';
-
-// const client = new RekognitionClient({
-//   region: process.env.AWS_REGION,
-//   credentials: {
-//     accessKeyId:"AKIAYSE4OENEFFLZ4HP7",
-//     secretAccessKey: "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",
-//   },
-// });
-
-// export async function POST(req) {
-//   try {
-//     // Parse the incoming request
-//     const { imageBuffer } = await req.json();
-//     if (!imageBuffer) {
-//       throw new Error("No image buffer provided");
-//     }
-
-//     const params = {
-//       Image: {
-//         Bytes: Buffer.from(imageBuffer, 'base64'), // Convert image buffer to base64
-//       },
-//     };
-
-//     const command = new DetectLabelsCommand(params);
-//     const result = await client.send(command); // Call Rekognition API
-
-//     // Return successful response
-//     return new Response(JSON.stringify(result), {
-//       status: 200,
-//       headers: { 'Content-Type': 'application/json' },
-//     });
-//   } catch (error) {
-//     // Log the error to the console for debugging
-//     console.error('Error during Rekognition API call:', error);
-
-//     // Return error response with details
-//     return new Response(
-//       JSON.stringify({
-//         error: 'Error detecting labels',
-//         details: error.message,
-//       }),
-//       {
-//         status: 500,
-//         headers: { 'Content-Type': 'application/json' },
-//       }
-//     );
-//   }
-// }
-
 import { NextRequest, NextResponse } from "next/server";
 import { RekognitionClient, DetectLabelsCommand } from "@aws-sdk/client-rekognition";
 
 const rekognition = new RekognitionClient({
   region: "us-east-1",
   credentials: {
-    accessKeyId:"AKIAYSE4OENEFFLZ4HP7",
-    secretAccessKey: "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",
+    accessKeyId:"",
+    secretAccessKey: "",
   },
 });
 
