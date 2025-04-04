@@ -36,6 +36,8 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const [showQuiz, setShowQuiz] = useState(false);
   const [wrongAttempts, setWrongAttempts] = useState(0);
   const [showSkip, setShowSkip] = useState(false);
+  const [feedback, setFeedback] = useState<{ message: string; isCorrect: boolean } | null>(null);
+  const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
   
 
   const captureScreenshot = () => {
@@ -123,15 +125,21 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     setShowQuiz(false);
     setShowSkip(false);
     setWrongAttempts(0);
+    setFeedback(null);
+    setWrongAnswer(null);
     videoRef.current?.play();
   };
 
   const handleAnswer = (selectedLetter: string) => {
     if (quizData?.correctLetter === selectedLetter) {
-      alert("Correct! 🎉");
-      handleContinueWatching();
+      setFeedback({ message: "Correct! 🎉", isCorrect: true });
+      setTimeout(() => {
+        handleContinueWatching();
+      }, 1500);
     } else {
-      alert(`Incorrect! Try again. Hint: ${quizData?.Hint}`);
+      setFeedback({ message: `Incorrect! Try again. Hint: ${quizData?.Hint}`, isCorrect: false });
+      setWrongAnswer(selectedLetter);
+      setTimeout(() => setWrongAnswer(null), 1000);
       setWrongAttempts((prev) => prev + 1);
 
       if (wrongAttempts === 0) {
@@ -171,18 +179,44 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
             {quizData.question}
           </p>
 
+          <style jsx global>{`
+            @keyframes wrongShake {
+              0% { transform: translateX(0); box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+              25% { transform: translateX(-5px); }
+              50% { transform: translateX(5px); box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+              75% { transform: translateX(-5px); }
+              100% { transform: translateX(0); box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+            }
+          `}</style>
+
           <div className="w-full space-y-4">
-            {Object.entries(quizData.choices).map(([letter, choice]) => ( // turned the choices into buttons instead of list item
+            {Object.entries(quizData.choices).map(([letter, choice]) => ( 
                 <button
                   key={letter}
-                  className="w-full p-4 bg-[rgba(50,50,60,0.7)] backdrop-blur-lg rounded-xl text-white text-lg font-semibold cursor-pointer hover:bg-[rgba(80,80,90,0.8)] transition flex items-center justify-center shadow-md border border-gray-500"
+                  className={`w-full p-4 backdrop-blur-lg rounded-xl text-lg font-semibold cursor-pointer transition flex items-center justify-center shadow-md border text-white ${
+                    feedback && quizData.correctLetter === letter && feedback.isCorrect
+                      ? 'bg-green-600 hover:bg-green-700 border-green-400'
+                      : 'bg-[rgba(50,50,60,0.7)] hover:bg-[rgba(80,80,90,0.8)] border-gray-500'
+                  } ${
+                    wrongAnswer === letter ? 'animate-[wrongShake_0.5s_ease-in-out] bg-red-600/50 border-red-400' : ''
+                  }`}
                   onClick={() => handleAnswer(letter)}
                 >
                   {letter}) {choice}
                 </button>
-              ))}
-          {/* removed "Continue Watching" button, I integrated that function to answer choices' buttons (in the handleAnswer functiion)  */}
+            ))}
           </div>
+
+          {feedback && (
+            <div className={`mt-4 p-4 rounded-xl text-center ${
+              feedback.isCorrect 
+                ? 'bg-green-600/50 border border-green-400' 
+                : 'bg-red-600/50 border border-red-400'
+            }`}>
+              <p className="text-white font-semibold">{feedback.message}</p>
+            </div>
+          )}
+
           {showSkip && (
             <button 
               className="w-full p-4 bg-[rgba(50,50,60,0.7)] backdrop-blur-lg rounded-xl text-white text-lg font-semibold cursor-pointer hover:bg-[rgba(80,80,90,0.8)] transition flex items-center justify-center shadow-md border border-gray-500 mt-4"
