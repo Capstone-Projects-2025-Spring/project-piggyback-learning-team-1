@@ -148,7 +148,6 @@ export default function VideoPage() {
         </motion.div>
       )}
 
-      {/* Pass video URL to DetectLabels */}
     </div>
   );
 }

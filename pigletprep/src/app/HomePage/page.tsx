@@ -77,6 +77,7 @@ export default function HomePage() {
             />
           </motion.div>
         ))}
+        
       </div>
 
       {/* Footer */}
@@ -94,3 +95,98 @@ export default function HomePage() {
     </motion.div>
   );
 }
+
+
+
+
+
+
+
+
+
+// "use client"
+// import { useState } from "react";
+
+// interface BoundingBox {
+//   Top: number;
+//   Left: number;
+//   Width: number;
+//   Height: number;
+// }
+
+// interface DetectedObject {
+//   Name: string;
+//   Instances?: { BoundingBox?: BoundingBox }[];
+// }
+
+// export default function ImageUploader() {
+//   const [image, setImage] = useState<string | null>(null);
+//   const [objects, setObjects] = useState<DetectedObject[]>([]);
+
+//   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const file = e.target.files?.[0];
+//     if (!file) return;
+  
+//     const reader = new FileReader();
+//     reader.onloadend = async () => {
+//       if (typeof reader.result === "string") {
+//         const base64 = reader.result.split(",")[1];
+  
+//         const response = await fetch("/api/rekognition", {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({ imageBase64: base64 }),
+//         });
+  
+//         const data = await response.json();
+//         console.log("API Response:", data); // Debugging
+  
+//         if (!Array.isArray(data)) {
+//           console.error("Unexpected API response:", data);
+//           return;
+//         }
+  
+//         setImage(reader.result);
+//         setObjects(data); // Ensure data is an array
+//       }
+//     };
+//     reader.readAsDataURL(file);
+//   };
+  
+  
+
+//   return (
+//     <div className="relative w-full max-w-lg">
+//       <input type="file" onChange={handleFileChange} accept="image/*" />
+//       {image && (
+//         <div className="relative mt-4">
+//           <img src={image} alt="Uploaded" className="w-full" />
+//           {objects.map((obj, index) => {
+//             const instance = obj.Instances?.[0]; // Get first instance
+//             if (!instance || !instance.BoundingBox) return null; // Skip if no bounding box
+
+//             return (
+//               <div
+//                 key={index}
+//                 className="absolute border-2 border-red-500"
+//                 style={{
+//                   top: `${instance.BoundingBox.Top * 100}%`,
+//                   left: `${instance.BoundingBox.Left * 100}%`,
+//                   width: `${instance.BoundingBox.Width * 100}%`,
+//                   height: `${instance.BoundingBox.Height * 100}%`,
+//                 }}
+//               >
+//                 <button
+//                   className="bg-red-500 text-white text-sm px-2 py-1"
+//                   onClick={() => alert(`You clicked on ${obj.Name}`)}
+//                 >
+//                   {obj.Name}
+//                 </button>
+//               </div>
+//             );
+//           })}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }

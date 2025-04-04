@@ -2,10 +2,17 @@
 
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
+import ImageDisplay from "../ObjectDetect/page";
 
 interface Label {
   Name: string;
   Confidence: number;
+  BoundingBox?: {
+    Top: number;
+    Left: number;
+    Width: number;
+    Height: number;
+  };
 }
 
 interface QuizData {
@@ -28,12 +35,16 @@ interface DetectLabelsProps {
 const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceived }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
   const [imageData, setImageData] = useState<string | null>(null);
   const [labels, setLabels] = useState<Label[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [quizData, setQuizData] = useState<QuizData | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
+  const [videoDims, setVideoDims] = useState({ width: 640, height: 360 });
+  const [showDetection, setShowDetection] = useState(true);
+  const [showImageDetection, setShowImageDetection] = useState(true);
 
   const captureScreenshot = () => {
     const video = videoRef.current;
@@ -46,6 +57,9 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
+
+    setVideoDims({ width: video.videoWidth, height: video.videoHeight });
+
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     const dataUrl = canvas.toDataURL("image/png");
@@ -69,9 +83,9 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       if (response.ok) {
         setQuizData(data);
         setShowQuiz(true);
-        // Only call if the callback exists
         onQuizDataReceived?.(data);
         setLabels(data.labels || []);
+        setShowDetection(true); // 👈 reset detection frame visibility when new labels come in
       } else {
         setError(data.error || "Error generating MCQ");
       }
@@ -82,6 +96,10 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     }
   };
 
+  const handleLabelClick = () => {
+    setShowDetection(false);
+  };
+
   const handleContinueWatching = () => {
     setShowQuiz(false);
     videoRef.current?.play();
@@ -89,21 +107,98 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
 
   return (
     <div style={{ textAlign: "center" }}>
-      <video ref={videoRef} width="640" height="360" controls crossOrigin="anonymous">
-        <source src={videoSrc} type="video/mp4" />
-      </video>
+      {showDetection && (
+        <div style={{ position: "relative", display: "inline-block" }}>
+      <div style={{ position: "relative", width: "640px", height: "360px" }}>
+            <video
+              ref={videoRef}
+              width="640"
+              height="360"
+              controls
+              crossOrigin="anonymous"
+              style={{ display: "block" }}
+              onLoadedMetadata={() => {
+                const video = videoRef.current;
+                if (video) {
+                  setVideoDims({
+                    width: video.videoWidth,
+                    height: video.videoHeight,
+                  });
+                }
+              }}
+            >
+              <source src={videoSrc} type="video/mp4" />
+            </video>
 
-      <button 
-        onClick={captureScreenshot} 
-        disabled={loading} 
-        style={{ display: "block", margin: "10px auto", color: "black" }}
+            {imageData && showImageDetection && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "640px",
+                  height: "360px",
+                  zIndex: 10,
+                }}
+              >
+                <ImageDisplay
+                  imageData={imageData}
+                  onLabelClick={() => setShowImageDetection(false)}
+                />
+              </div>
+            )}
+          </div>
+
+          {labels?.map((label, idx) => {
+            const { width, height } = videoDims;
+            const box = label.BoundingBox;
+
+            const top = box ? box.Top * height : 40 + idx * 40;
+            const left = box ? box.Left * width : 20;
+            const boxWidth = box ? box.Width * width : undefined;
+            const boxHeight = box ? box.Height * height : undefined;
+
+            return (
+              <div
+                key={idx}
+                onClick={handleLabelClick}
+                style={{
+                  position: "absolute",
+                  top: `${top}px`,
+                  left: `${left}px`,
+                  width: boxWidth ? `${boxWidth}px` : "auto",
+                  height: boxHeight ? `${boxHeight}px` : "auto",
+                  background: "rgba(255, 255, 255, 0.85)",
+                  padding: "4px 8px",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  border: "1px solid #ccc",
+                  fontWeight: "bold",
+                  boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+                  zIndex: 10,
+                }}
+              >
+                {label.Name} ({label.Confidence.toFixed(1)}%)
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <button
+        onClick={captureScreenshot}
+        disabled={loading}
+        style={{
+          display: "block",
+          margin: "10px auto",
+          color: "black",
+        }}
       >
         {loading ? "Processing..." : "Get Multiple Choice Question"}
       </button>
 
-      <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
+      <canvas ref={canvasRef} style={{ display: "none" }} />
 
-      {/* Quiz Sidebar */}
       {showQuiz && quizData && (
         <motion.div
           className="fixed top-0 right-0 h-full w-96 backdrop-blur-xl bg-[rgba(20,20,20,0.7)] border border-gray-700 shadow-xl rounded-l-3xl p-8 flex flex-col justify-center items-center"
@@ -138,36 +233,8 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
         </motion.div>
       )}
 
-      {imageData && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            background: "white",
-            padding: "10px",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
-          }}
-        >
-          <img src={imageData} alt="Screenshot" style={{ width: "150px", height: "auto", borderRadius: "5px" }} />
-        </div>
-      )}
 
       {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {labels && (
-        <div>
-          <h2>Detected Labels:</h2>
-          <ul>
-            {labels.map((label, index) => (
-              <li key={index}>
-                {label.Name} - Confidence: {label.Confidence.toFixed(2)}%
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 };

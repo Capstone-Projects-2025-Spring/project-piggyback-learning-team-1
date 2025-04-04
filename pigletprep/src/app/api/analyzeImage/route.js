@@ -25,6 +25,7 @@ export async function POST(req) {
       ],
     });
 
+    console.log("GPT Response:", completion.choices[0].message.content);
     const mcq = completion.choices[0].message.content;
     const pattern = /^(.*?)\s*A\)\s*(.*?)\s*B\)\s*(.*?)\s*C\)\s*(.*?)\s*D\)\s*(.*?)\s*Correct Answer:\s*(.*)\s*Hint:\s*(.*)$/;
     const matches = mcq.match(pattern);
