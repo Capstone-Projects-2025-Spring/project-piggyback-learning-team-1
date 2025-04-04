@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import ImageDisplay from "../ObjectDetect/page";
+import ImageDisplay from "@/components/ImageDisplay";
 
 interface Label {
   Name: string;
