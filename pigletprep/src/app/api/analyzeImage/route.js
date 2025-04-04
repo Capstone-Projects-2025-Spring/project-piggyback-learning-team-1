@@ -27,7 +27,7 @@ export async function POST(req) {
 
     console.log("GPT Response:", completion.choices[0].message.content);
     const mcq = completion.choices[0].message.content;
-    const pattern = /^(.*?)\s*A\)\s*(.*?)\s*B\)\s*(.*?)\s*C\)\s*(.*?)\s*D\)\s*(.*?)\s*Correct Answer:\s*(.*)\s*Hint:\s*(.*)$/;
+    const pattern = /^(.*?)\s*A\)\s*(.*?)\s*B\)\s*(.*?)\s*C\)\s*(.*?)\s*D\)\s*(.*?)\s*Correct Answer:\s*([A-D])\)[^)]+Hint:\s*(.*)$/; // changed regex to match new format, since I only need the correct letter choice to check answer
     const matches = mcq.match(pattern);
     if (matches) {
       const question = matches[1].trim();
@@ -35,7 +35,7 @@ export async function POST(req) {
       const choiceB = matches[3].trim();
       const choiceC = matches[4].trim();
       const choiceD = matches[5].trim();
-      const correctAnswer = matches[6].trim();
+      const correctLetter = matches[6].trim();
       const Hint = matches[7].trim();
 
       return new Response(
@@ -46,9 +46,9 @@ export async function POST(req) {
             B: choiceB,
             C: choiceC,
             D: choiceD,
-            Hint: Hint
           },
-          correctAnswer
+          Hint, // moved the Hint to its own object
+          correctLetter
         }),
         {
           status: 200,

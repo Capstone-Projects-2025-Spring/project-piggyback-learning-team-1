@@ -22,9 +22,9 @@ interface QuizData {
     B: string;
     C: string;
     D: string;
-    Hint: string;
   };
-  correctAnswer: string;
+  Hint: string;
+  correctLetter: string;
 }
 
 interface DetectLabelsProps {
@@ -45,6 +45,9 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const [videoDims, setVideoDims] = useState({ width: 640, height: 360 });
   const [showDetection, setShowDetection] = useState(true);
   const [showImageDetection, setShowImageDetection] = useState(true);
+  const [wrongAttempts, setWrongAttempts] = useState(0);
+  const [showSkip, setShowSkip] = useState(false);
+  
 
   const captureScreenshot = () => {
     const video = videoRef.current;
@@ -68,6 +71,37 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     sendImageToGPT(dataUrl);
   };
 
+  const friendlyIntro = [
+    "Here we go! Question time!",
+    "Alright, challenge time!",
+    "Ooo, this one's fun! Here it is:",
+    "Quiz break! Can you solve this?",
+    "Okay, listen up! Let's test your knowledge:",
+  ];
+  
+  const getRandomIntro = () => friendlyIntro[Math.floor(Math.random() * friendlyIntro.length)];
+
+  const speakQuestion = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const happyText = `${getRandomIntro()} ${text}`;
+      const utterance = new SpeechSynthesisUtterance(happyText);
+      utterance.rate = 1.1; //speed
+      utterance.pitch = 1.4; //pitch
+      utterance.volume = 1; //volume
+      
+      const voices = window.speechSynthesis.getVoices();
+      const friendlyVoice = voices.find((voice) => voice.name.includes("Google UK English Female")) 
+                        || voices.find((voice) => voice.lang.includes("en") && voice.name.includes("WaveNet")) 
+                        || voices[0];
+  
+      if (friendlyVoice) utterance.voice = friendlyVoice;
+  
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.error("Text-to-Speech not supported in this browser.");
+    }
+  };  
+
   const sendImageToGPT = async (base64Image: string) => {
     try {
       const base64String = base64Image.split(",")[1];
@@ -83,9 +117,12 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       if (response.ok) {
         setQuizData(data);
         setShowQuiz(true);
+        speakQuestion(data.question);
+        // Only call if the callback exists
         onQuizDataReceived?.(data);
+        setShowDetection(true);
         setLabels(data.labels || []);
-        setShowDetection(true); // 👈 reset detection frame visibility when new labels come in
+        videoRef.current?.pause(); // added a pause to video once MCQ is generated 
       } else {
         setError(data.error || "Error generating MCQ");
       }
@@ -101,8 +138,25 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   };
 
   const handleContinueWatching = () => {
+    window.speechSynthesis.cancel();
     setShowQuiz(false);
+    setShowSkip(false);
+    setWrongAttempts(0);
     videoRef.current?.play();
+  };
+
+  const handleAnswer = (selectedLetter: string) => {
+    if (quizData?.correctLetter === selectedLetter) {
+      alert("Correct! 🎉");
+      handleContinueWatching();
+    } else {
+      alert(`Incorrect! Try again. Hint: ${quizData?.Hint}`);
+      setWrongAttempts((prev) => prev + 1);
+
+      if (wrongAttempts === 0) {
+        setTimeout(() => setShowSkip(true), 1000);
+      }
+    }
   };
 
   return (
@@ -197,8 +251,9 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
         {loading ? "Processing..." : "Get Multiple Choice Question"}
       </button>
 
-      <canvas ref={canvasRef} style={{ display: "none" }} />
-
+      <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
+    
+      {/* Quiz Sidebar */}
       {showQuiz && quizData && (
         <motion.div
           className="fixed top-0 right-0 h-full w-96 backdrop-blur-xl bg-[rgba(20,20,20,0.7)] border border-gray-700 shadow-xl rounded-l-3xl p-8 flex flex-col justify-center items-center"
@@ -213,26 +268,48 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
             {quizData.question}
           </p>
 
-          <ul className="w-full space-y-4">
-            {Object.entries(quizData.choices).map(([letter, choice]) => (
-              <li
-                key={letter}
-                className="p-4 bg-[rgba(50,50,60,0.7)] backdrop-blur-lg rounded-xl text-white text-lg font-semibold cursor-pointer hover:bg-[rgba(80,80,90,0.8)] transition flex items-center justify-center shadow-md border border-gray-500"
-              >
-                {letter}) {choice}
-              </li>
-            ))}
-          </ul>
-
-          <button
-            className="mt-8 bg-green-500 text-white text-lg font-bold px-6 py-3 rounded-xl hover:bg-green-600 transition shadow-lg"
-            onClick={handleContinueWatching}
-          >
-            Continue Watching
-          </button>
+          <div className="w-full space-y-4">
+            {Object.entries(quizData.choices).map(([letter, choice]) => ( // turned the choices into buttons instead of list item
+                <button
+                  key={letter}
+                  className="w-full p-4 bg-[rgba(50,50,60,0.7)] backdrop-blur-lg rounded-xl text-white text-lg font-semibold cursor-pointer hover:bg-[rgba(80,80,90,0.8)] transition flex items-center justify-center shadow-md border border-gray-500"
+                  onClick={() => handleAnswer(letter)}
+                >
+                  {letter}) {choice}
+                </button>
+              ))}
+          {/* removed "Continue Watching" button, I integrated that function to answer choices' buttons (in the handleAnswer functiion)  */}
+          </div>
+          {showSkip && (
+            <button 
+              className="w-full p-4 bg-[rgba(50,50,60,0.7)] backdrop-blur-lg rounded-xl text-white text-lg font-semibold cursor-pointer hover:bg-[rgba(80,80,90,0.8)] transition flex items-center justify-center shadow-md border border-gray-500 mt-4"
+              onClick={handleContinueWatching}
+            >
+              Skip Question
+            </button>
+          )}
         </motion.div>
       )}
 
+      {imageData && (
+        <motion.div
+          initial={{ opacity: 1 }} // added fade animation to the screenshot when get MCQ button is clicked
+          animate={{ opacity: 0 }}
+          transition={{ duration: 10, delay: 1 }}
+          onAnimationComplete={() => setImageData(null)}
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            right: "20px",
+            background: "white",
+            padding: "10px",
+            borderRadius: "8px",
+            boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
+          }}
+        >
+          <img src={imageData} alt="Screenshot" style={{ width: "150px", height: "auto", borderRadius: "5px" }} />
+        </motion.div>
+      )}
 
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
