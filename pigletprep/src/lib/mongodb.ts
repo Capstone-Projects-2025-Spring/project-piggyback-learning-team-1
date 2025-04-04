@@ -1,17 +1,24 @@
 import mongoose from 'mongoose';
 
+// Define the type for our cached connection
+interface MongooseCache {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+}
+
+// Properly declare the global variable
 declare global {
-  var mongoose: { conn: any; promise: any };
+  var mongooseCache: MongooseCache | undefined;
 }
 
 if (!process.env.MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable');
 }
 
-let cached = global.mongoose;
+const cached = global.mongooseCache || { conn: null, promise: null };
 
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+if (!global.mongooseCache) {
+  global.mongooseCache = cached;
 }
 
 async function dbConnect() {
