@@ -34,8 +34,10 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const [loading, setLoading] = useState<boolean>(false);
   const [quizData, setQuizData] = useState<QuizData | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
-  const [wrongAttempts, setWrongAttempts] = useState(0);
+  const [attempts, setAttempts] = useState(0);
   const [showSkip, setShowSkip] = useState(false);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [hintsUsed, setHintsUsed] = useState(0);
   
 
   const captureScreenshot = () => {
@@ -103,6 +105,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       if (response.ok) {
         setQuizData(data);
         setShowQuiz(true);
+        setStartTime(Date.now());
         speakQuestion(data.question);
         // Only call if the callback exists
         onQuizDataReceived?.(data);
@@ -122,19 +125,62 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     window.speechSynthesis.cancel();
     setShowQuiz(false);
     setShowSkip(false);
-    setWrongAttempts(0);
+    setAttempts(0);
     videoRef.current?.play();
   };
 
-  const handleAnswer = (selectedLetter: string) => {
-    if (quizData?.correctLetter === selectedLetter) {
-      alert("Correct! 🎉");
-      handleContinueWatching();
-    } else {
-      alert(`Incorrect! Try again. Hint: ${quizData?.Hint}`);
-      setWrongAttempts((prev) => prev + 1);
+  const clickedSkip = async () => {
+    await saveQuizAttempt("Skipped", false);
+    handleContinueWatching();
+  };
 
-      if (wrongAttempts === 0) {
+  const saveQuizAttempt = async ( selectedAnswer: string, isCorrect: boolean) => {
+    const timeToAnswer = startTime ? (Date.now() - startTime) / 1000 : 0;
+    
+    try {
+      const response = await fetch('/api/database', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          videoId: videoSrc,
+          question: quizData?.question,
+          selectedAnswer,
+          correctAnswer: quizData?.correctLetter,
+          isCorrect,
+          timeToAnswer,
+          attempts: attempts + 1, // Add current attempt count
+          metrics: {
+            hints: {
+              used: hintsUsed > 0,
+              count: hintsUsed
+            },
+            attemptsBeforeSuccess: isCorrect ? attempts + 1 : null, // Track attempts if correct
+            timePerAttempt: timeToAnswer / (attempts + 1) // Average time per attempt
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to save quiz attempt');
+      }
+    } catch (error) {
+      console.error('Error saving quiz attempt:', error);
+    }
+  };
+
+  const handleAnswer = async (selectedLetter: string) => {
+    const isCorrect = quizData?.correctLetter === selectedLetter;
+    if (isCorrect) {
+      alert("Correct! 🎉");
+      await saveQuizAttempt(selectedLetter, true);
+      handleContinueWatching();
+      
+    } else {
+      setHintsUsed(1);
+      alert(`Incorrect! Try again. Hint: ${quizData?.Hint}`);
+      setAttempts((prev) => prev + 1);
+
+      if (attempts === 1) {
         setTimeout(() => setShowSkip(true), 1000);
       }
     }
@@ -186,7 +232,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
           {showSkip && (
             <button 
               className="w-full p-4 bg-[rgba(50,50,60,0.7)] backdrop-blur-lg rounded-xl text-white text-lg font-semibold cursor-pointer hover:bg-[rgba(80,80,90,0.8)] transition flex items-center justify-center shadow-md border border-gray-500 mt-4"
-              onClick={handleContinueWatching}
+              onClick={clickedSkip}
             >
               Skip Question
             </button>
