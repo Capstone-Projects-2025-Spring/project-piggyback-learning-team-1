@@ -36,7 +36,6 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const [showQuiz, setShowQuiz] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const [showSkip, setShowSkip] = useState(false);
-
   const [feedback, setFeedback] = useState<{ message: string; isCorrect: boolean } | null>(null);
   const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
 
@@ -130,27 +129,36 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     window.speechSynthesis.cancel();
     setShowQuiz(false);
     setShowSkip(false);
-
-    setWrongAttempts(0);
+    setAttempts(0);
     setFeedback(null);
     setWrongAnswer(null);
     videoRef.current?.play();
   };
 
-  const handleAnswer = (selectedLetter: string) => {
-    if (quizData?.correctLetter === selectedLetter) {
+  const handleAnswer = async (selectedLetter: string) => {
+    const isCorrect = quizData?.correctLetter === selectedLetter;
+
+    if (isCorrect) {
       setFeedback({ message: "Correct! 🎉", isCorrect: true });
+      await saveQuizAttempt(selectedLetter, true);
       setTimeout(() => {
         handleContinueWatching();
       }, 1500);
     } else {
-      setFeedback({ message: `Incorrect! Try again. Hint: ${quizData?.Hint}`, isCorrect: false });
+      setFeedback({ 
+        message: `Incorrect! Try again. Hint: ${quizData?.Hint}`, 
+        isCorrect: false 
+      });
       setWrongAnswer(selectedLetter);
+      setAttempts(prev => prev + 1);
+      setHintsUsed(1);
       setTimeout(() => setWrongAnswer(null), 1000);
-      setWrongAttempts((prev) => prev + 1);
-
-    setAttempts(0);
-    videoRef.current?.play();
+  
+      // Show skip button after 2 attempts
+      if (attempts >= 1) {
+        setTimeout(() => setShowSkip(true), 1000);
+      }
+    }
   };
 
   const clickedSkip = async () => {
@@ -172,14 +180,14 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
           correctAnswer: quizData?.correctLetter,
           isCorrect,
           timeToAnswer,
-          attempts: attempts + 1, // Add current attempt count
+          attempts: attempts + (isCorrect ? 1 : 0),
           metrics: {
             hints: {
               used: hintsUsed > 0,
               count: hintsUsed
             },
-            attemptsBeforeSuccess: isCorrect ? attempts + 1 : null, // Track attempts if correct
-            timePerAttempt: timeToAnswer / (attempts + 1) // Average time per attempt
+            attemptsBeforeSuccess: isCorrect ? attempts: null, // Track attempts if correct
+            timePerAttempt: timeToAnswer / (attempts + (isCorrect ? 1 : 0)) // Average time per attempt
           }
         }),
       });
@@ -189,25 +197,6 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       }
     } catch (error) {
       console.error('Error saving quiz attempt:', error);
-    }
-  };
-
-  const handleAnswer = async (selectedLetter: string) => {
-    const isCorrect = quizData?.correctLetter === selectedLetter;
-    if (isCorrect) {
-      alert("Correct! 🎉");
-      await saveQuizAttempt(selectedLetter, true);
-      handleContinueWatching();
-      
-    } else {
-      setHintsUsed(1);
-      alert(`Incorrect! Try again. Hint: ${quizData?.Hint}`);
-      setAttempts((prev) => prev + 1);
-
-
-      if (attempts === 1) {
-        setTimeout(() => setShowSkip(true), 1000);
-      }
     }
   };
 
