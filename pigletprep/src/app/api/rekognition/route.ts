@@ -4,8 +4,8 @@ import { RekognitionClient, DetectLabelsCommand } from "@aws-sdk/client-rekognit
 const rekognition = new RekognitionClient({
   region: "us-east-1",
   credentials: {
-    accessKeyId:"AKIAYSE4OENEFFLZ4HP7",
-    secretAccessKey: "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",
+    accessKeyId:"",
+    secretAccessKey: "",
   },
 });
 
