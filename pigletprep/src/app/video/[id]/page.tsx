@@ -90,27 +90,7 @@ export default function VideoPage() {
 
 
 
-      {/* Video Player
-      <div className="flex-1 flex justify-center items-center">
-        <video 
-          ref={videoRef}
-          width="1200"
-          height="675"
-          className="mt-16"
-          playsInline
-          onError={(e) => {
-            console.error("Video error event:", e);
-            console.error("Video error code:", videoRef.current?.error?.code);
-            console.error("Video error message:", videoRef.current?.error?.message);
-          }}
-        >
-          <source 
-            src={videoUrl || ''} 
-            type="video/mp4"
-          />
-          Your browser does not support the video tag.
-        </video>
-      </div> */}
+      
 
       <div className="flex justify-center items-center w-full h-full absolute top-0 left-0">
         {videoUrl && <DetectLabels videoSrc={videoUrl} />}

@@ -3,7 +3,8 @@ import HomePage from './page';
 import { useRouter } from 'next/navigation';
 import type { HTMLProps } from 'react';
 
-// Define types for mocks
+// ----------------- Mocks -----------------
+
 interface ImageProps extends HTMLProps<HTMLImageElement> {
   src: string;
   alt: string;
@@ -17,12 +18,10 @@ interface MotionComponentProps {
   [key: string]: unknown;
 }
 
-// Mock next/navigation
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
-// Mock next/image with proper types
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ alt, ...props }: ImageProps) => (
@@ -30,20 +29,21 @@ jest.mock('next/image', () => ({
   ),
 }));
 
-// Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: new Proxy({}, {
     get: (_: unknown, prop: string) => {
       return function MockComponent({ children, ...props }: MotionComponentProps) {
         const sanitizedProps = { ...props };
         delete sanitizedProps.whileHover;
-        return prop === 'div' ? 
-          <div {...sanitizedProps}>{children}</div> : 
-          <h1 {...sanitizedProps}>{children}</h1>;
+        return prop === 'div'
+          ? <div {...sanitizedProps}>{children}</div>
+          : <h1 {...sanitizedProps}>{children}</h1>;
       };
     }
   })
 }));
+
+// ----------------- Tests -----------------
 
 describe('HomePage', () => {
   const mockRouter = {
@@ -61,17 +61,17 @@ describe('HomePage', () => {
 
   it('renders homepage correctly', () => {
     render(<HomePage />);
-    expect(screen.getByText('Select a Video')).toBeInTheDocument();
+    expect(screen.getByText('Popular Videos')).toBeInTheDocument();
   });
 
   it('shows all video thumbnails', () => {
     render(<HomePage />);
     const thumbnails = screen.getAllByRole('img');
-    expect(thumbnails).toHaveLength(5);
+    expect(thumbnails).toHaveLength(6); // includes featured video + 5 thumbnails
   });
 
   it('handles thumbnail click correctly', async () => {
-    const mockPresignedUrl = 'test-url';
+    const mockPresignedUrl = 'https://mocked-presigned-url.com';
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       json: () => Promise.resolve({ url: mockPresignedUrl }),
     });
@@ -79,7 +79,7 @@ describe('HomePage', () => {
     render(<HomePage />);
     const thumbnails = screen.getAllByRole('img');
     
-    await fireEvent.click(thumbnails[0]);
+    fireEvent.click(thumbnails[1]); // Click first thumbnail (skip featured image)
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
@@ -93,15 +93,12 @@ describe('HomePage', () => {
 
   it('handles fetch error gracefully', async () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-    
-    (global.fetch as jest.Mock).mockRejectedValueOnce(
-      new Error('Network error')
-    );
+    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
 
     render(<HomePage />);
     const thumbnails = screen.getAllByRole('img');
-    
-    await fireEvent.click(thumbnails[0]);
+
+    fireEvent.click(thumbnails[1]);
 
     await waitFor(() => {
       expect(consoleErrorSpy).toHaveBeenCalled();

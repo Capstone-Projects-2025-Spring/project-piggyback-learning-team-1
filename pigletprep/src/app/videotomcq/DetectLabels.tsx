@@ -45,8 +45,14 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const [videoDims, setVideoDims] = useState({ width: 640, height: 360 });
   const [showDetection, setShowDetection] = useState(true);
   const [showImageDetection, setShowImageDetection] = useState(true);
-  const [wrongAttempts, setWrongAttempts] = useState(0);
+  const [attempts, setAttempts] = useState(0);
   const [showSkip, setShowSkip] = useState(false);
+  const [feedback, setFeedback] = useState<{ message: string; isCorrect: boolean } | null>(null);
+  const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
+
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [hintsUsed, setHintsUsed] = useState(0);
+
   
 
   const captureScreenshot = () => {
@@ -117,6 +123,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       if (response.ok) {
         setQuizData(data);
         setShowQuiz(true);
+        setStartTime(Date.now());
         speakQuestion(data.question);
         // Only call if the callback exists
         onQuizDataReceived?.(data);
@@ -141,21 +148,74 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     window.speechSynthesis.cancel();
     setShowQuiz(false);
     setShowSkip(false);
-    setWrongAttempts(0);
+    setAttempts(0);
+    setFeedback(null);
+    setWrongAnswer(null);
     videoRef.current?.play();
   };
 
-  const handleAnswer = (selectedLetter: string) => {
-    if (quizData?.correctLetter === selectedLetter) {
-      alert("Correct! 🎉");
-      handleContinueWatching();
-    } else {
-      alert(`Incorrect! Try again. Hint: ${quizData?.Hint}`);
-      setWrongAttempts((prev) => prev + 1);
+  const handleAnswer = async (selectedLetter: string) => {
+    const isCorrect = quizData?.correctLetter === selectedLetter;
 
-      if (wrongAttempts === 0) {
+    if (isCorrect) {
+      setFeedback({ message: "Correct! 🎉", isCorrect: true });
+      await saveQuizAttempt(selectedLetter, true);
+      setTimeout(() => {
+        handleContinueWatching();
+      }, 1500);
+    } else {
+      setFeedback({ 
+        message: `Incorrect! Try again. Hint: ${quizData?.Hint}`, 
+        isCorrect: false 
+      });
+      setWrongAnswer(selectedLetter);
+      setAttempts(prev => prev + 1);
+      setHintsUsed(1);
+      setTimeout(() => setWrongAnswer(null), 1000);
+  
+      // Show skip button after 2 attempts
+      if (attempts >= 1) {
         setTimeout(() => setShowSkip(true), 1000);
       }
+    }
+  };
+
+  const clickedSkip = async () => {
+    await saveQuizAttempt("Skipped", false);
+    handleContinueWatching();
+  };
+
+  const saveQuizAttempt = async ( selectedAnswer: string, isCorrect: boolean) => {
+    const timeToAnswer = startTime ? (Date.now() - startTime) / 1000 : 0;
+    
+    try {
+      const response = await fetch('/api/database', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          videoId: videoSrc,
+          question: quizData?.question,
+          selectedAnswer,
+          correctAnswer: quizData?.correctLetter,
+          isCorrect,
+          timeToAnswer,
+          attempts: attempts + (isCorrect ? 1 : 0),
+          metrics: {
+            hints: {
+              used: hintsUsed > 0,
+              count: hintsUsed
+            },
+            attemptsBeforeSuccess: isCorrect ? attempts: null, // Track attempts if correct
+            timePerAttempt: timeToAnswer / (attempts + (isCorrect ? 1 : 0)) // Average time per attempt
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to save quiz attempt');
+      }
+    } catch (error) {
+      console.error('Error saving quiz attempt:', error);
     }
   };
 
@@ -268,22 +328,48 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
             {quizData.question}
           </p>
 
+          <style jsx global>{`
+            @keyframes wrongShake {
+              0% { transform: translateX(0); box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+              25% { transform: translateX(-5px); }
+              50% { transform: translateX(5px); box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+              75% { transform: translateX(-5px); }
+              100% { transform: translateX(0); box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+            }
+          `}</style>
+
           <div className="w-full space-y-4">
-            {Object.entries(quizData.choices).map(([letter, choice]) => ( // turned the choices into buttons instead of list item
+            {Object.entries(quizData.choices).map(([letter, choice]) => ( 
                 <button
                   key={letter}
-                  className="w-full p-4 bg-[rgba(50,50,60,0.7)] backdrop-blur-lg rounded-xl text-white text-lg font-semibold cursor-pointer hover:bg-[rgba(80,80,90,0.8)] transition flex items-center justify-center shadow-md border border-gray-500"
+                  className={`w-full p-4 backdrop-blur-lg rounded-xl text-lg font-semibold cursor-pointer transition flex items-center justify-center shadow-md border text-white ${
+                    feedback && quizData.correctLetter === letter && feedback.isCorrect
+                      ? 'bg-green-600 hover:bg-green-700 border-green-400'
+                      : 'bg-[rgba(50,50,60,0.7)] hover:bg-[rgba(80,80,90,0.8)] border-gray-500'
+                  } ${
+                    wrongAnswer === letter ? 'animate-[wrongShake_0.5s_ease-in-out] bg-red-600/50 border-red-400' : ''
+                  }`}
                   onClick={() => handleAnswer(letter)}
                 >
                   {letter}) {choice}
                 </button>
-              ))}
-          {/* removed "Continue Watching" button, I integrated that function to answer choices' buttons (in the handleAnswer functiion)  */}
+            ))}
           </div>
+
+          {feedback && (
+            <div className={`mt-4 p-4 rounded-xl text-center ${
+              feedback.isCorrect 
+                ? 'bg-green-600/50 border border-green-400' 
+                : 'bg-red-600/50 border border-red-400'
+            }`}>
+              <p className="text-white font-semibold">{feedback.message}</p>
+            </div>
+          )}
+
           {showSkip && (
             <button 
               className="w-full p-4 bg-[rgba(50,50,60,0.7)] backdrop-blur-lg rounded-xl text-white text-lg font-semibold cursor-pointer hover:bg-[rgba(80,80,90,0.8)] transition flex items-center justify-center shadow-md border border-gray-500 mt-4"
-              onClick={handleContinueWatching}
+              onClick={clickedSkip}
             >
               Skip Question
             </button>
