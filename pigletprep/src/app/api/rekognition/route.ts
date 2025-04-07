@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { RekognitionClient, DetectLabelsCommand } from "@aws-sdk/client-rekognition";
 
+if (!process.env.secretAccessKey || !process.env.accessKeyId) {
+  throw new Error('AWS credentials are not configured');
+}
+
 const rekognition = new RekognitionClient({
   region: "us-east-1",
   credentials: {
-    accessKeyId:"",
-    secretAccessKey: "",
+    accessKeyId: process.env.accessKeyId,
+    secretAccessKey: process.env.secretAccessKey,
   },
 });
 
