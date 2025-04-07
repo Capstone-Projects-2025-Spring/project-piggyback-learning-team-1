@@ -13,7 +13,8 @@
     "node": "18.18.0"
   },
   "dependencies": {
-    "@aws-sdk/client-rekognition": "^3.750.0",
+    "@aws-sdk/client-rekognition": "^3.775.0",
+    "@google-cloud/vision": "^5.1.0",
     "@playwright/test": "^1.50.1",
     "@radix-ui/react-slot": "^1.1.2",
     "@types/canvas-confetti": "^1.9.0",
