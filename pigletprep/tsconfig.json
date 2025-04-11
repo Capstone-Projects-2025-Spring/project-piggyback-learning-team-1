@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/api/grabObject/rekognition.js", "src/app/api/rekognition/route.ts", "src/app/api/gpt-object-detection/route.js"],
   "exclude": ["node_modules"]
 }

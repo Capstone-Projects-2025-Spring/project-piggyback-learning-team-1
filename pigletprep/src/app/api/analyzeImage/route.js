@@ -25,6 +25,7 @@ export async function POST(req) {
       ],
     });
 
+    console.log("GPT Response:", completion.choices[0].message.content);
     const mcq = completion.choices[0].message.content;
     const pattern = /^(.*?)\s*A\)\s*(.*?)\s*B\)\s*(.*?)\s*C\)\s*(.*?)\s*D\)\s*(.*?)\s*Correct Answer:\s*([A-D])\)[^)]+Hint:\s*(.*)$/; // changed regex to match new format, since I only need the correct letter choice to check answer
     const matches = mcq.match(pattern);
