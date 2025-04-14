@@ -9,10 +9,14 @@ jest.mock('next/navigation', () => ({
   useSearchParams: jest.fn(),
 }));
 
-// Mock DetectLabels so that it renders a predictable element
-jest.mock('@/app/videotomcq/DetectLabels', () => () => (
-  <div data-testid="detect-labels">DetectLabels Component</div>
-));
+// ✅ Fix: Give mocked component a display name to remove lint error
+jest.mock('@/app/videotomcq/DetectLabels', () => {
+  const DetectLabelsMock = () => (
+    <div data-testid="detect-labels">DetectLabels Component</div>
+  );
+  DetectLabelsMock.displayName = 'DetectLabelsMock';
+  return DetectLabelsMock;
+});
 
 beforeAll(() => {
   Object.defineProperty(HTMLMediaElement.prototype, 'load', {
@@ -45,12 +49,10 @@ describe('VideoPage', () => {
 
   it('renders the DetectLabels component and the back button when URL is provided', () => {
     render(<VideoPage />);
-    // Instead of querying by text (since the back button is an icon only),
-    // we query for the first button rendered.
+    
     const buttons = screen.getAllByRole('button');
     expect(buttons[0]).toBeInTheDocument();
 
-    // Verify that DetectLabels is rendered (since videoUrl exists)
     expect(screen.getByTestId('detect-labels')).toBeInTheDocument();
   });
 });
