@@ -81,6 +81,8 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
 
     if (!video || !canvas) return;
 
+    video.pause();
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
