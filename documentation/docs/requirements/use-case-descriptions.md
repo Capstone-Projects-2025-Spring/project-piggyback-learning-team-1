@@ -21,7 +21,7 @@ sidebar_position: 5
 *As a user, I want to answer the question to continue the video*
 1. Video pauses automatically
 2. Question based on the current screen pops up
-3. Set of multiple choice questions pop up under question
+3. Set of multiple choice questions pop up next to question
 4. Time pops up in corner counting down time
 5. Video does not play until question is answered or timer runs out
 6. User selects an answer by clicking on it
@@ -36,7 +36,7 @@ sidebar_position: 5
 1. User receives notification of incorrect answer
 2. Video rewinds back to last checkpoint
 2. User receives hint about correct answer
-3. User answers question again, either repeating incorrect process or moving to correct process
+3. User answers question again, either repeating incorrect process, skipping question, or moving to correct process
 
 <div align="center">
 
@@ -57,7 +57,7 @@ sidebar_position: 5
 
 ### 3C. User Skips Question
 *As a user, I want to skip this question*
-1. User can opt to skip a question by pressing the "Skip Question" option
+1. User can opt to skip a question by pressing the "Skip Question" option after answering once
 2. Explanation of the question is given
 3. Option button to continue the video pops up
 
@@ -71,7 +71,7 @@ sidebar_position: 5
 *As a user, I did not answer this question in time*
 1. Video rewinds back to last checkpoint
 2. User receives hint about correct answer
-3. User answers question again, either repeating incorrect process or moving to correct process
+3. User answers question again, either repeating incorrect process, skipping question, or moving to correct process
 
 <div align="center">
 
@@ -105,7 +105,7 @@ sidebar_position: 5
 # Metrics View
 ## 6. User uses predetermined pin to switch to Metrics Mode
 *As a user, I want to view the progess metrics for the program*
-1. User presses the "Switch" icon to switch to Teacher Mode
+1. User presses the "Switch" icon to switch to Metrics Mode
 2. Applicaion prompts user to input predetermined pin
 3. Once pin is approved, mode switches from "Student" to "Metrics" mode
 4. Program metrics populate on screen
