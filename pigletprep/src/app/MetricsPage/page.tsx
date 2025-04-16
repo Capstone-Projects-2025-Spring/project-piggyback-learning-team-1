@@ -88,26 +88,25 @@ const AnimatedScore: React.FC<AnimatedScoreProps> = ({ value, label, color = "gr
 };
 
 const MetricsDashboard = () => {
-  const popularVideos = [ // statioc data for popular videos for now
+  const popularVideos = [ // static data for popular videos for now
     { title: 'Dog Videos', date: 'May 3rd' },
     { title: 'Spider-Man', date: 'May 3rd' },
     { title: 'Who is Darth Vader?', date: 'May 3rd' },
   ];
   const router = useRouter();
-  const handleGoBack = () => {
-    router.back();
-  }
 
   return (
     <div className="min-h-screen bg-[#f5f5dc] p-8"> 
-        {/* Back Button, back to home page */}
-      <div>
-        <button onClick={handleGoBack} 
-          className="absolute top-4 left-4 text-3xl cursor-pointer z-100 text-black"
-        >
-          <IoHome />
-        </button>
-      </div> 
+
+      {/* Back Button, back to home page */}
+      <motion.button
+        whileHover={{ scale: 1.2 }}
+        onClick={() => router.back()}
+        className="absolute top-4 left-4 text-4xl cursor-pointer"
+      >
+        <IoHome/>
+      </motion.button>
+
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content (3/4 width) */}
