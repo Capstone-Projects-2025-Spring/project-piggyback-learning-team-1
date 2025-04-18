@@ -2,6 +2,7 @@
   "label": "API Specification",
   "position": 7,
   "link": {
-    "type": "The API specifications for our app."
+    "type": "generated-index",
+    "description": "The API specifications for our app."
   }
 }
