@@ -4,6 +4,7 @@ import { motion, useMotionValue, useTransform, useSpring, animate } from 'framer
 import { Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { IoHome } from "react-icons/io5";
+import ExportButton from '@/components/ExportButton';
 
 interface AnimatedScoreProps {
   value: number;
@@ -108,6 +109,17 @@ const MetricsDashboard = () => {
       </motion.button>
 
       <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5 }}
+          >
+            <h1 className="text-4xl font-semibold mt-5 text-black">Hello There! 👋</h1>
+          </motion.div>
+          <ExportButton />
+        </div>
+        
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content (3/4 width) */}
           <div className="lg:col-span-3 space-y-10">
@@ -116,7 +128,6 @@ const MetricsDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.5 }}
             >
-              <h1 className="text-4xl font-semibold mb-8 mt-5 text-black">Hello There! 👋</h1>
             </motion.div>
 
             <motion.div
