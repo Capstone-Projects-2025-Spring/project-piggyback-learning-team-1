@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import ImageDisplay from "@/components/ImageDisplay";
+import { useRouter } from "next/navigation";
 
 interface Label {
   Name: string;
@@ -52,8 +53,30 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
 
   const [startTime, setStartTime] = useState<number | null>(null);
   const [hintsUsed, setHintsUsed] = useState(0);
+  const [lastQuestionTime, setLastQuestionTime] = useState<number>(0);
 
-  
+  const router = useRouter();
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handleTimeUpdate = () => {
+      if (!video) return;
+      
+      const currentTime = Math.floor(video.currentTime);
+      if (currentTime - lastQuestionTime >= 30 && !showQuiz) {
+        setLastQuestionTime(currentTime);
+        captureScreenshot();
+      }
+    };
+
+    video.addEventListener('timeupdate', handleTimeUpdate);
+
+    return () => {
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+    };
+  }, [lastQuestionTime, showQuiz]);
 
   const captureScreenshot = () => {
     const video = videoRef.current;
@@ -219,6 +242,17 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     }
   };
 
+
+  // handle when video ends
+  const handleVideoEnd = async () => {
+    if (!videoSrc) {
+      console.error("Video source is missing");
+      return;
+    }
+    // Navigate to the recap page with videoId
+    router.push(`/Recap?videoId=${videoSrc}`);
+  };
+
   return (
     <div style={{ textAlign: "center" }}>
       {showDetection && (
@@ -240,6 +274,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
                   });
                 }
               }}
+              onEnded={handleVideoEnd} // handle when video ends
             >
               <source src={videoSrc} type="video/mp4" />
             </video>
@@ -303,7 +338,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
         onClick={captureScreenshot}
         disabled={loading}
         style={{
-          display: "block",
+          display: "none",
           margin: "10px auto",
           color: "black",
         }}

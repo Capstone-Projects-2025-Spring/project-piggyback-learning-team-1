@@ -19,8 +19,12 @@ const QuizAttemptSchema = new mongoose.Schema({
   timestamp: {
     type: Date,
     default: Date.now
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
-});
+})
 
 export default mongoose.models.QuizAttempt || 
   mongoose.model('QuizAttempt', QuizAttemptSchema);
