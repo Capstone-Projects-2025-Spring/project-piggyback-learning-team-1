@@ -57,6 +57,29 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
 
   const router = useRouter();
 
+  const getTranscriptNameFromUrl = (url: string): string => {
+    try {
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+      const segments = pathname.split('/');
+      return segments[segments.length - 1];
+    } catch (error) {
+      // Log the error so we're using the variable
+      console.debug("Error parsing URL:", error);
+      
+      // For relative URLs or if parsing fails
+      const match = url.match(/\/video\/([^/?]+)/);
+      if (match && match[1]) {
+        return match[1];
+      }
+      
+      // If all else fails, try to get just the filename without extension
+      const parts = url.split('/');
+      const lastPart = parts[parts.length - 1].split('?')[0];
+      return lastPart.replace(/\.[^/.]+$/, ""); // Remove file extension if present
+    }
+  };
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -134,11 +157,23 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const sendImageToGPT = async (base64Image: string) => {
     try {
       const base64String = base64Image.split(",")[1];
+      
+      // Get the transcript name from the video URL
+      const transcriptName = getTranscriptNameFromUrl(videoSrc);
+      
+      // Get current video time
+      const currentTime = videoRef.current ? Math.floor(videoRef.current.currentTime) : 0;
 
       const response = await fetch("/api/analyzeImage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBuffer: base64String }),
+        body: JSON.stringify({ 
+          imageBuffer: base64String,
+          videoInfo: {
+            transcriptName,
+            currentTime
+          }
+        }),
       });
 
       const data = await response.json();
@@ -242,6 +277,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     }
   };
 
+  // Function to get video name from URL for transcript
 
   // handle when video ends
   const handleVideoEnd = async () => {
