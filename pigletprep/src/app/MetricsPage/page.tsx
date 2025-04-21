@@ -1,7 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import { motion, useMotionValue, useTransform, useSpring, animate } from 'framer-motion';
-import { Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { IoHome } from "react-icons/io5";
 import ExportButton from '@/components/ExportButton';
@@ -157,7 +156,7 @@ const MetricsDashboard = () => {
               },
               tooltip: {
                 callbacks: {
-                  label: function(context: any) {
+                  label: function(context: import('chart.js').TooltipItem<'bar'>) {
                     return `${context.dataset.label}: ${context.formattedValue} attempts`;
                   }
                 }
