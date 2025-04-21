@@ -45,6 +45,8 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const [lastQuestionTime, setLastQuestionTime] = useState<number>(0);
 
   const router = useRouter();
+  const MCQtimes = [20]; // times in seconds when MCQ will be generated
+  const ObjectTimes = [81];
 
   const getTranscriptNameFromUrl = (url: string): string => {
     try {
@@ -77,9 +79,20 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       if (!video) return;
       
       const currentTime = Math.floor(video.currentTime);
-      if (currentTime - lastQuestionTime >= 30 && !showQuiz) {
+      
+      // Check if current time is in MCQtimes array and we're not already showing a quiz
+      if (MCQtimes.includes(currentTime) && !showQuiz && currentTime !== lastQuestionTime) {
         setLastQuestionTime(currentTime);
         captureScreenshot();
+        console.log(`Quiz triggered at predefined time: ${currentTime}s`);
+      }
+      
+      // For object detection, you might want to handle separately
+      if (ObjectTimes.includes(currentTime) && !showQuiz && currentTime !== lastQuestionTime) {
+        setLastQuestionTime(currentTime);
+        captureScreenshot();
+        setShowImageDetection(true); // Enable image detection for object detection questions
+        console.log(`Object detection triggered at: ${currentTime}s`);
       }
     };
 
@@ -88,7 +101,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate);
     };
-  }, [lastQuestionTime, showQuiz]);
+  }, [MCQtimes, ObjectTimes, lastQuestionTime, showQuiz]);
 
   const captureScreenshot = () => {
     const video = videoRef.current;
@@ -173,6 +186,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
         // Only call if the callback exists
         onQuizDataReceived?.(data);
         setShowDetection(true);
+        setShowImageDetection(false);
         videoRef.current?.pause(); // added a pause to video once MCQ is generated 
       } else {
         setError(data.error || "Error generating MCQ");
