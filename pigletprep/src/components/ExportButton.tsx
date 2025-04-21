@@ -34,7 +34,7 @@ const ExportButton = () => {
       whileTap={{ scale: 0.95 }}
       onClick={handleExport}
       disabled={isExporting}
-      className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors duration-200 flex items-center gap-2"
+      className="bg-green-600 hover:bg-green-800 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors duration-200 flex items-center gap-2"
     >
       {isExporting ? (
         <>
