@@ -1,20 +1,11 @@
 "use client";
 
+//start this
+
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import ImageDisplay from "@/components/ImageDisplay";
 import { useRouter } from "next/navigation";
-
-interface Label {
-  Name: string;
-  Confidence: number;
-  BoundingBox?: {
-    Top: number;
-    Left: number;
-    Width: number;
-    Height: number;
-  };
-}
 
 interface QuizData {
   question: string;
@@ -38,12 +29,10 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [imageData, setImageData] = useState<string | null>(null);
-  const [labels, setLabels] = useState<Label[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [quizData, setQuizData] = useState<QuizData | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
-  const [videoDims, setVideoDims] = useState({ width: 640, height: 360 });
   const [showDetection, setShowDetection] = useState(true);
   const [showImageDetection, setShowImageDetection] = useState(true);
   const [attempts, setAttempts] = useState(0);
@@ -89,8 +78,6 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-
-    setVideoDims({ width: video.videoWidth, height: video.videoHeight });
 
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -151,7 +138,6 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
         // Only call if the callback exists
         onQuizDataReceived?.(data);
         setShowDetection(true);
-        setLabels(data.labels || []);
         videoRef.current?.pause(); // added a pause to video once MCQ is generated 
       } else {
         setError(data.error || "Error generating MCQ");
@@ -161,10 +147,6 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLabelClick = () => {
-    setShowDetection(false);
   };
 
   const handleContinueWatching = () => {
@@ -265,15 +247,6 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
               controls
               crossOrigin="anonymous"
               style={{ display: "block" }}
-              onLoadedMetadata={() => {
-                const video = videoRef.current;
-                if (video) {
-                  setVideoDims({
-                    width: video.videoWidth,
-                    height: video.videoHeight,
-                  });
-                }
-              }}
               onEnded={handleVideoEnd} // handle when video ends
             >
               <source src={videoSrc} type="video/mp4" />
@@ -298,39 +271,6 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
             )}
           </div>
 
-          {labels?.map((label, idx) => {
-            const { width, height } = videoDims;
-            const box = label.BoundingBox;
-
-            const top = box ? box.Top * height : 40 + idx * 40;
-            const left = box ? box.Left * width : 20;
-            const boxWidth = box ? box.Width * width : undefined;
-            const boxHeight = box ? box.Height * height : undefined;
-
-            return (
-              <div
-                key={idx}
-                onClick={handleLabelClick}
-                style={{
-                  position: "absolute",
-                  top: `${top}px`,
-                  left: `${left}px`,
-                  width: boxWidth ? `${boxWidth}px` : "auto",
-                  height: boxHeight ? `${boxHeight}px` : "auto",
-                  background: "rgba(255, 255, 255, 0.85)",
-                  padding: "4px 8px",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  border: "1px solid #ccc",
-                  fontWeight: "bold",
-                  boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-                  zIndex: 10,
-                }}
-              >
-                {label.Name} ({label.Confidence.toFixed(1)}%)
-              </div>
-            );
-          })}
         </div>
       )}
 
