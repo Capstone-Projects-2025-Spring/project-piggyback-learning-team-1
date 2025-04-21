@@ -26,9 +26,16 @@ sidebar_position: 4
 
 ## Nonfunctional Requirements
 <ul>
-    <li>Data analytics on each user session will be accessible</li>
+    <li>Data analytics on each user session will be accessible to users</li>
     <li>Questions and videos must be able to load efficiently to ensure a seamless user experience</li>
         <ul>
             <li>The system should be able to load within 5ms</li>
         </ul>
 </ul>
+
+## Operating Costs
+<div align="center">
+
+![APICosts](/img/APICosts.png)
+
+</div>
