@@ -31,8 +31,8 @@ export async function POST(req) {
           
           // Find entries around the current timestamp (±15 seconds)
           const currentTime = videoInfo.currentTime;
-          const windowStart = Math.max(0, currentTime - 15);
-          const windowEnd = currentTime;
+          const windowStart = Math.max(0, currentTime - 20);
+          const windowEnd = currentTime + 4;
 
           console.log(`Searching for transcript entries between ${windowStart}s and ${windowEnd}s`);
           
