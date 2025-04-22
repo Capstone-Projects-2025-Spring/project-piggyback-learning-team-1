@@ -29,17 +29,18 @@ sidebar_position: 4
   <li>Users shall have the option to skip the question</li>
 
   <li>
-    Users will receive a recap at the end of the video that includes explanations for correct and incorrect answers
+    Users will receive a session recap at the end of the video 
     <ul>   
-      <li>Users will see a summary of their correct and incorrect responses</li>
+      <li>Users will see a summary including total correct and incorrect answers, hints used, and total time spent answering questions</li>
     </ul>
   </li>
+  <li>Users can view aggregate user metrics across all sessions using a PIN</li>
+  <li>Users can export aggregate metrics for research purposes</li>
 </ul>
 
 ## Nonfunctional Requirements
 <ul>
-  <li>Data analytics on each user session will be accessible to users</li>
-
+  <li>Data analytics on aggregated user sessions data will be accessible to users</li>
   <li>
     Questions and videos must be able to load efficiently to ensure a seamless user experience
     <ul>
@@ -50,8 +51,3 @@ sidebar_position: 4
 
 ## Operating Costs
 
-<div align="center">
-
-![APICosts](/img/APICosts.png)
-
-</div>
