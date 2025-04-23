@@ -6,7 +6,7 @@ sidebar_position: 2
 
 <div align="center">
 
-![systemblock](/img/systemblock.png)
+![systemblock](/img/sb1.png)
 
 </div>
 
