@@ -271,7 +271,11 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   };
 
   const clickedSkip = async () => {
-    await saveQuizAttempt("Skipped", false);
+    setFeedback({ message: "Nice try. The correct answer was...", isCorrect: true });
+      await saveQuizAttempt("Skipped", false);
+      setTimeout(() => {
+        handleContinueWatching();
+      }, 3000);
     handleContinueWatching();
   };
 
