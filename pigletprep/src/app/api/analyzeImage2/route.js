@@ -18,7 +18,8 @@ export async function POST(req) {
         {
           role: "user",
           content: [
-            { type: "text", text: "Print/Output out the exact following phrase, nothing else: Click on the tiger!" },
+            { type: "text", text: "Look at the image from the learning video. Identify the most important object in the scene — the one the lesson is most likely about. Then print the following sentence, replacing {object name} with the name of that object: 'Click on the {object name}'"
+            },
             { type: "image_url", image_url: { url: `data:image/png;base64,${imageBuffer}` } }
           ]
         }
