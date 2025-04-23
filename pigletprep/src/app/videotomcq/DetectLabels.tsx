@@ -272,6 +272,20 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       setWrongAnswer(selectedLetter);
       setAttempts(prev => prev + 1);
       setHintsUsed(1);
+
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 10);
+          setShowQuiz(false);
+          videoRef.current.play();
+        }
+      }, 1500);
+
+      setTimeout(() => {
+        setShowQuiz(true);
+        videoRef.current?.pause();
+      }, 12000);
+    
       setTimeout(() => setWrongAnswer(null), 1000);
 
       if (attempts >= 1) {
