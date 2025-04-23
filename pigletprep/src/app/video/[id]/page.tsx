@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
+import { PigLine } from "@/components/PigLine";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import DetectLabels from "@/app/videotomcq/DetectLabels";
@@ -130,7 +131,7 @@ export default function VideoPage() {
           </button>
         </motion.div>
       )}
-
+      <PigLine />
     </div>
   );
 }
