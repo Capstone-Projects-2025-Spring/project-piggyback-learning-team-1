@@ -39,7 +39,9 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const [feedback, setFeedback] = useState<{ message: string; isCorrect: boolean } | null>(null);
   const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
   const [objectDetectionPrompt, setObjectDetectionPrompt] = useState<string | null>(null);
+  const [questionComplete, setQuestionComplete] = useState(false);
   const [showContinueButton, setShowContinueButton] = useState(false);
+  const [showContinueQuizButton, setShowContinueQuizButton] = useState(false);
 
   const [startTime, setStartTime] = useState<number | null>(null);
   const [hintsUsed, setHintsUsed] = useState(0);
@@ -242,18 +244,21 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     setAttempts(0);
     setFeedback(null);
     setWrongAnswer(null);
+    setShowContinueQuizButton(false);
+    setQuestionComplete(false);
     videoRef.current?.play();
   };
 
   const handleAnswer = async (selectedLetter: string) => {
+    if (questionComplete) return;
     const isCorrect = quizData?.correctLetter === selectedLetter;
 
     if (isCorrect) {
+      setShowSkip(false);
       setFeedback({ message: "Correct! 🎉", isCorrect: true });
+      setQuestionComplete(true);
       await saveQuizAttempt(selectedLetter, true);
-      setTimeout(() => {
-        handleContinueWatching();
-      }, 1500);
+      setShowContinueQuizButton(true);
     } else {
       setFeedback({ 
         message: `Incorrect! Try again. Hint: ${quizData?.Hint}`, 
@@ -262,17 +267,35 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       setWrongAnswer(selectedLetter);
       setAttempts(prev => prev + 1);
       setHintsUsed(1);
+
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 10);
+          setShowQuiz(false);
+          videoRef.current.play();
+        }
+      }, 1500);
+
+      setTimeout(() => {
+        setShowQuiz(true);
+        videoRef.current?.pause();
+      }, 12000);
+    
       setTimeout(() => setWrongAnswer(null), 1000);
 
-      if (attempts >= 1) {
+      if (attempts >= 1  && !questionComplete) {
         setTimeout(() => setShowSkip(true), 1000);
       }
     }
   };
 
   const clickedSkip = async () => {
+    if (questionComplete) return; 
+    setShowSkip(false);
+    setFeedback({ message: "Nice try. The correct answer was...", isCorrect: true });
+    setQuestionComplete(true);
     await saveQuizAttempt("Skipped", false);
-    handleContinueWatching();
+    setShowContinueQuizButton(true);
   };
 
   const saveQuizAttempt = async ( selectedAnswer: string, isCorrect: boolean) => {
@@ -448,6 +471,15 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
               onClick={clickedSkip}
             >
               Skip Question
+            </button>
+          )}
+
+          {showContinueQuizButton && (
+            <button
+              className="w-full p-4 mt-6 bg-yellow-400 hover:bg-yellow-500 rounded-xl text-black text-lg font-semibold shadow-md border border-yellow-600 transition-colors"
+              onClick={handleContinueWatching}
+            >
+              Continue Watching
             </button>
           )}
         </motion.div>
