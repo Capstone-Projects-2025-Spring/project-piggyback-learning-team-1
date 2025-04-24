@@ -257,7 +257,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const handleAnswer = async (selectedLetter: string) => {
     if (questionComplete) return;
     const isCorrect = quizData?.correctLetter === selectedLetter;
-
+  
     if (isCorrect) {
       setShowSkip(false);
       setFeedback({ message: "Correct! 🎉", isCorrect: true });
@@ -265,14 +265,18 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       await saveQuizAttempt(selectedLetter, true);
       setShowContinueQuizButton(true);
     } else {
-      setFeedback({ 
-        message: `Incorrect! Try again. Hint: ${quizData?.Hint}`, 
-        isCorrect: false 
-      });
       setWrongAnswer(selectedLetter);
       setAttempts(prev => prev + 1);
       setHintsUsed(1);
-
+  
+      // Delay feedback message by 1 second
+      setTimeout(() => {
+        setFeedback({ 
+          message: `Incorrect! Hint: ${quizData?.Hint}`, 
+          isCorrect: false 
+        });
+      }, 2000);
+  
       setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 10);
@@ -280,16 +284,16 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
           videoRef.current.play();
         }
       }, 1500);
-
+  
       setTimeout(() => {
         setShowQuiz(true);
         videoRef.current?.pause();
       }, 12000);
-    
+  
       setTimeout(() => setWrongAnswer(null), 1000);
-
-      if (attempts >= 1  && !questionComplete) {
-        setTimeout(() => setShowSkip(true), 1000);
+  
+      if (attempts >= 1 && !questionComplete) {
+        setTimeout(() => setShowSkip(true), 2000);
       }
     }
   };
