@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
+import { PigLine } from "@/components/PigLine";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import DetectLabels from "@/app/videotomcq/DetectLabels";
-import { IoChevronForwardCircle } from "react-icons/io5";
+// import { IoChevronForwardCircle } from "react-icons/io5";
 import { IoHome } from "react-icons/io5";
 
 
@@ -80,13 +81,13 @@ export default function VideoPage() {
         <IoHome/>
       </motion.button>
 
-      {/* Recap button - go to recap page, all static. Will use real data later on */}
+      {/* Recap button - go to recap page, all static. Will use real data later on
       <button
         onClick={() => router.push("/Recap")}
         className="fixed top-4 right-4 text-blue-500 text-4xl z-50 hover:text-blue-700 transition"
       >
         <IoChevronForwardCircle />
-      </button>
+      </button> */}
 
 
 
@@ -130,7 +131,7 @@ export default function VideoPage() {
           </button>
         </motion.div>
       )}
-
+      <PigLine />
     </div>
   );
 }

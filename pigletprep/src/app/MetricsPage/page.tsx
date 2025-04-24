@@ -1,9 +1,11 @@
 "use client"
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, useMotionValue, useTransform, useSpring, animate } from 'framer-motion';
-import { Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { IoHome } from "react-icons/io5";
+import ExportButton from '@/components/ExportButton';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 
 interface AnimatedScoreProps {
   value: number;
@@ -87,13 +89,90 @@ const AnimatedScore: React.FC<AnimatedScoreProps> = ({ value, label, color = "gr
   );
 };
 
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
 const MetricsDashboard = () => {
-  const popularVideos = [ // static data for popular videos for now
-    { title: 'Dog Videos', date: 'May 3rd' },
-    { title: 'Spider-Man', date: 'May 3rd' },
-    { title: 'Who is Darth Vader?', date: 'May 3rd' },
-  ];
+  // const popularVideos = [ // static data for popular videos for now
+  //   { title: 'Dog Videos', date: 'May 3rd' },
+  //   { title: 'Spider-Man', date: 'May 3rd' },
+  //   { title: 'Who is Darth Vader?', date: 'May 3rd' },
+  // ];
+  
+  interface ChartData {
+    labels: string[];
+    datasets: {
+      label: string;
+      data: number[];
+      backgroundColor: string;
+      borderColor: string;
+      borderWidth: number;
+    }[];
+  }
+  
+  const [chartData, setChartData] = useState<ChartData | null>(null); // State for chart data
+  const [chartOptions, setChartOptions] = useState({}); // State for chart options
   const router = useRouter();
+
+
+  // Fetch data for the chart
+  useEffect(() => {
+    const fetchVideoAttempts = async () => {
+      try {
+        const response = await fetch('/api/metrics'); // Call the API endpoint
+        const data = await response.json();
+  
+        if (data.success) {
+          setChartData({
+            // labels: data.data.map((video: { videoId: string }) => {
+            //   const url = video.videoId;
+            //   const parts = url.split('/');
+            //   const filenameWithParams = parts[parts.length - 1]; // "giant_pandas?AWSAccessKeyId=..."
+            //   const title = filenameWithParams.split('?')[0];     // "giant_pandas"
+            //   return title;
+            // }),
+            
+            // this removes the underscore
+            labels: data.data.map((video: { videoId: string }) =>
+              video.videoId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+            ),
+            datasets: [
+              {
+                label: 'Total Attempts',
+                data: data.data.map((video: { totalAttempts: number }) => video.totalAttempts),
+                backgroundColor: 'darkgreen',
+                borderColor: 'rgb(34, 197, 94)',
+                borderWidth: 1,
+              },
+            ],
+          });
+  
+          setChartOptions({
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              title: {
+                display: true,
+                // text: 'Most Watched Videos',
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context: import('chart.js').TooltipItem<'bar'>) {
+                    return `${context.dataset.label}: ${context.formattedValue} attempts`;
+                  }
+                }
+              }
+            },
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching video attempts:', error);
+      }
+    };
+  
+    fetchVideoAttempts();
+  }, []);
+  
+
 
   return (
     <div className="min-h-screen bg-[#f5f5dc] p-8"> 
@@ -108,6 +187,17 @@ const MetricsDashboard = () => {
       </motion.button>
 
       <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5 }}
+          >
+            <h1 className="text-4xl font-semibold mt-5 text-black">Hello There! 👋</h1>
+          </motion.div>
+          <ExportButton />
+        </div>
+        
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content (3/4 width) */}
           <div className="lg:col-span-3 space-y-10">
@@ -116,7 +206,6 @@ const MetricsDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.5 }}
             >
-              <h1 className="text-4xl font-semibold mb-8 mt-5 text-black">Hello There! 👋</h1>
             </motion.div>
 
             <motion.div
@@ -131,7 +220,7 @@ const MetricsDashboard = () => {
               </div>
             </motion.div>
 
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, delay: 1.3 }}
@@ -155,8 +244,26 @@ const MetricsDashboard = () => {
                   </motion.div>
                 ))}
               </div>
+            </motion.div> */}
+
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 1.7 }}
+              className="bg-white rounded-2xl shadow-md border p-6"
+            >
+              <h3 className="text-lg font-semibold mb-4 text-black">Total Attempts Per Video</h3>
+              {chartData ? (
+                <Bar data={chartData} options={chartOptions} />
+              ) : (
+                <p>Loading chart...</p>
+              )}
             </motion.div>
+
           </div>
+
+
 
           {/* Statistics Card (1/4 width) */}
           <motion.div
@@ -173,6 +280,9 @@ const MetricsDashboard = () => {
               <AnimatedScore value={100} label="Completion Rate" color="green" delay={0.6} initialValue={0} />
             </div>
           </motion.div>
+
+              
+         
         </div>
       </div>
     </div>

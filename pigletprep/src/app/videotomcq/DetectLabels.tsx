@@ -3,17 +3,8 @@
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import ImageDisplay from "@/components/ImageDisplay";
-
-interface Label {
-  Name: string;
-  Confidence: number;
-  BoundingBox?: {
-    Top: number;
-    Left: number;
-    Width: number;
-    Height: number;
-  };
-}
+import { useRouter } from "next/navigation";
+import { getVideoConfig } from "@/config/videoConfig";
 
 interface QuizData {
   question: string;
@@ -37,22 +28,49 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [imageData, setImageData] = useState<string | null>(null);
-  const [labels, setLabels] = useState<Label[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [quizData, setQuizData] = useState<QuizData | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
-  const [videoDims, setVideoDims] = useState({ width: 640, height: 360 });
   const [showDetection, setShowDetection] = useState(true);
-  const [showImageDetection, setShowImageDetection] = useState(true);
+  const [showImageDetection, setShowImageDetection] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const [showSkip, setShowSkip] = useState(false);
   const [feedback, setFeedback] = useState<{ message: string; isCorrect: boolean } | null>(null);
   const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
+  const [objectDetectionPrompt, setObjectDetectionPrompt] = useState<string | null>(null);
+  const [questionComplete, setQuestionComplete] = useState(false);
+  const [showContinueButton, setShowContinueButton] = useState(false);
+  const [showContinueQuizButton, setShowContinueQuizButton] = useState(false);
 
   const [startTime, setStartTime] = useState<number | null>(null);
   const [hintsUsed, setHintsUsed] = useState(0);
   const [lastQuestionTime, setLastQuestionTime] = useState<number>(0);
+
+  const router = useRouter();
+
+  // Replace the hardcoded arrays with values from config
+  const videoConfig = getVideoConfig(videoSrc);
+  const MCQtimes = videoConfig.MCQtimes;
+  const ObjectTimes = videoConfig.ObjectTimes;
+
+  const getTranscriptNameFromUrl = (url: string): string => {
+    try {
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+      const segments = pathname.split('/');
+      return segments[segments.length - 1];
+    } catch (error) {
+      console.debug("Error parsing URL:", error);
+      const match = url.match(/\/video\/([^/?]+)/);
+      if (match && match[1]) {
+        return match[1];
+      }
+      const parts = url.split('/');
+      const lastPart = parts[parts.length - 1].split('?')[0];
+      return lastPart.replace(/\.[^/.]+$/, "");
+    }
+  };
 
   useEffect(() => {
     const video = videoRef.current;
@@ -60,11 +78,19 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
 
     const handleTimeUpdate = () => {
       if (!video) return;
-      
+
       const currentTime = Math.floor(video.currentTime);
-      if (currentTime - lastQuestionTime >= 30 && !showQuiz) {
+
+      if (MCQtimes.includes(currentTime) && !showQuiz && currentTime !== lastQuestionTime) {
         setLastQuestionTime(currentTime);
-        captureScreenshot();
+        captureScreenshotForQuiz();
+        console.log(`Quiz triggered at predefined time: ${currentTime}s`);
+      }
+
+      if (ObjectTimes.includes(currentTime) && !showImageDetection && currentTime !== lastQuestionTime) {
+        setLastQuestionTime(currentTime);
+        captureScreenshotForObjectDetection();
+        console.log(`Object detection triggered at: ${currentTime}s`);
       }
     };
 
@@ -73,9 +99,20 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate);
     };
-  }, [lastQuestionTime, showQuiz]);
+  }, [MCQtimes, ObjectTimes, lastQuestionTime, showQuiz, showImageDetection]);
 
-  const captureScreenshot = () => {
+  useEffect(() => {
+    if (showImageDetection) {
+      const timer = setTimeout(() => {
+        setShowContinueButton(true);
+      }, 8000);
+      return () => clearTimeout(timer);
+    } else {
+      setShowContinueButton(false);
+    }
+  }, [showImageDetection]);
+
+  const captureScreenshotForQuiz = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
 
@@ -89,14 +126,47 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    setVideoDims({ width: video.videoWidth, height: video.videoHeight });
-
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     const dataUrl = canvas.toDataURL("image/png");
     setImageData(dataUrl);
 
     sendImageToGPT(dataUrl);
+  };
+
+  const captureScreenshotForObjectDetection = () => {
+    setLoading(true);
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+
+    if (!video || !canvas) {
+      setLoading(false);
+      return;
+    }
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      setLoading(false);
+      return;
+    }
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const dataUrl = canvas.toDataURL("image/png");
+
+    const currentTime = Math.floor(video.currentTime);
+    const targetObject = videoConfig.objectTargets?.[currentTime] || "tiger";
+
+    setImageData(dataUrl);
+    setObjectDetectionPrompt(`Click on the ${targetObject}`);
+    setShowImageDetection(true);
+    videoRef.current?.pause();
+
+    setLoading(false);
   };
 
   const friendlyIntro = [
@@ -106,38 +176,46 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     "Quiz break! Can you solve this?",
     "Okay, listen up! Let's test your knowledge:",
   ];
-  
+
   const getRandomIntro = () => friendlyIntro[Math.floor(Math.random() * friendlyIntro.length)];
 
   const speakQuestion = (text: string) => {
     if ('speechSynthesis' in window) {
       const happyText = `${getRandomIntro()} ${text}`;
       const utterance = new SpeechSynthesisUtterance(happyText);
-      utterance.rate = 1.1; //speed
-      utterance.pitch = 1.4; //pitch
-      utterance.volume = 1; //volume
-      
+      utterance.rate = 1.1;
+      utterance.pitch = 1.4;
+      utterance.volume = 1;
+
       const voices = window.speechSynthesis.getVoices();
       const friendlyVoice = voices.find((voice) => voice.name.includes("Google UK English Female")) 
                         || voices.find((voice) => voice.lang.includes("en") && voice.name.includes("WaveNet")) 
                         || voices[0];
-  
+
       if (friendlyVoice) utterance.voice = friendlyVoice;
-  
+
       window.speechSynthesis.speak(utterance);
     } else {
       console.error("Text-to-Speech not supported in this browser.");
     }
-  };  
+  };
 
   const sendImageToGPT = async (base64Image: string) => {
     try {
       const base64String = base64Image.split(",")[1];
+      const transcriptName = getTranscriptNameFromUrl(videoSrc);
+      const currentTime = videoRef.current ? Math.floor(videoRef.current.currentTime) : 0;
 
       const response = await fetch("/api/analyzeImage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBuffer: base64String }),
+        body: JSON.stringify({ 
+          imageBuffer: base64String,
+          videoInfo: {
+            transcriptName,
+            currentTime
+          }
+        }),
       });
 
       const data = await response.json();
@@ -147,11 +225,10 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
         setShowQuiz(true);
         setStartTime(Date.now());
         speakQuestion(data.question);
-        // Only call if the callback exists
         onQuizDataReceived?.(data);
         setShowDetection(true);
-        setLabels(data.labels || []);
-        videoRef.current?.pause(); // added a pause to video once MCQ is generated 
+        setShowImageDetection(false);
+        videoRef.current?.pause();
       } else {
         setError(data.error || "Error generating MCQ");
       }
@@ -162,10 +239,6 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     }
   };
 
-  const handleLabelClick = () => {
-    setShowDetection(false);
-  };
-
   const handleContinueWatching = () => {
     window.speechSynthesis.cancel();
     setShowQuiz(false);
@@ -173,18 +246,21 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     setAttempts(0);
     setFeedback(null);
     setWrongAnswer(null);
+    setShowContinueQuizButton(false);
+    setQuestionComplete(false);
     videoRef.current?.play();
   };
 
   const handleAnswer = async (selectedLetter: string) => {
+    if (questionComplete) return;
     const isCorrect = quizData?.correctLetter === selectedLetter;
 
     if (isCorrect) {
+      setShowSkip(false);
       setFeedback({ message: "Correct! 🎉", isCorrect: true });
+      setQuestionComplete(true);
       await saveQuizAttempt(selectedLetter, true);
-      setTimeout(() => {
-        handleContinueWatching();
-      }, 1500);
+      setShowContinueQuizButton(true);
     } else {
       setFeedback({ 
         message: `Incorrect! Try again. Hint: ${quizData?.Hint}`, 
@@ -193,23 +269,40 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       setWrongAnswer(selectedLetter);
       setAttempts(prev => prev + 1);
       setHintsUsed(1);
+
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 10);
+          setShowQuiz(false);
+          videoRef.current.play();
+        }
+      }, 1500);
+
+      setTimeout(() => {
+        setShowQuiz(true);
+        videoRef.current?.pause();
+      }, 12000);
+    
       setTimeout(() => setWrongAnswer(null), 1000);
-  
-      // Show skip button after 2 attempts
-      if (attempts >= 1) {
+
+      if (attempts >= 1  && !questionComplete) {
         setTimeout(() => setShowSkip(true), 1000);
       }
     }
   };
 
   const clickedSkip = async () => {
+    if (questionComplete) return; 
+    setShowSkip(false);
+    setFeedback({ message: "Nice try. The correct answer was...", isCorrect: true });
+    setQuestionComplete(true);
     await saveQuizAttempt("Skipped", false);
-    handleContinueWatching();
+    setShowContinueQuizButton(true);
   };
 
   const saveQuizAttempt = async ( selectedAnswer: string, isCorrect: boolean) => {
     const timeToAnswer = startTime ? (Date.now() - startTime) / 1000 : 0;
-    
+
     try {
       const response = await fetch('/api/database', {
         method: 'POST',
@@ -227,8 +320,8 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
               used: hintsUsed > 0,
               count: hintsUsed
             },
-            attemptsBeforeSuccess: isCorrect ? attempts: null, // Track attempts if correct
-            timePerAttempt: timeToAnswer / (attempts + (isCorrect ? 1 : 0)) // Average time per attempt
+            attemptsBeforeSuccess: isCorrect ? attempts: null,
+            timePerAttempt: timeToAnswer / (attempts + (isCorrect ? 1 : 0))
           }
         }),
       });
@@ -241,11 +334,19 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     }
   };
 
+  const handleVideoEnd = async () => {
+    if (!videoSrc) {
+      console.error("Video source is missing");
+      return;
+    }
+    router.push(`/Recap?videoId=${videoSrc}`);
+  };
+
   return (
     <div style={{ textAlign: "center" }}>
       {showDetection && (
         <div style={{ position: "relative", display: "inline-block" }}>
-      <div style={{ position: "relative", width: "640px", height: "360px" }}>
+          <div style={{ position: "relative", width: "640px", height: "360px" }}>
             <video
               ref={videoRef}
               width="640"
@@ -253,15 +354,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
               controls
               crossOrigin="anonymous"
               style={{ display: "block" }}
-              onLoadedMetadata={() => {
-                const video = videoRef.current;
-                if (video) {
-                  setVideoDims({
-                    width: video.videoWidth,
-                    height: video.videoHeight,
-                  });
-                }
-              }}
+              onEnded={handleVideoEnd}
             >
               <source src={videoSrc} type="video/mp4" />
             </video>
@@ -272,70 +365,56 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
                   position: "absolute",
                   top: 0,
                   left: 0,
-                  width: "640px",
-                  height: "360px",
-                  zIndex: 10,
+                  width: "100%",
+                  height: "100%",
+                  zIndex: 20,
                 }}
               >
+                {objectDetectionPrompt && (
+                  <div 
+                    className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-6 py-3 rounded-lg text-2xl font-bold z-30"
+                  >
+                    {objectDetectionPrompt}
+                  </div>
+                )}
+
                 <ImageDisplay
                   imageData={imageData}
-                  onLabelClick={() => setShowImageDetection(false)}
+                  targetObject={videoConfig.objectTargets?.[lastQuestionTime] || "tiger"}
+                  onLabelClick={() => {
+                    const targetObject = videoConfig.objectTargets?.[lastQuestionTime] || "tiger";
+                    setObjectDetectionPrompt(`Great job! You found the ${targetObject}!`);
+                    setTimeout(() => {
+                      setShowImageDetection(false);
+                      setObjectDetectionPrompt(null);
+                      setShowContinueButton(false);
+                      videoRef.current?.play();
+                    }, 1500);
+                  }}
                 />
+
+                {showContinueButton && (
+                  <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
+                    <button
+                      onClick={() => {
+                        setShowImageDetection(false);
+                        setObjectDetectionPrompt(null);
+                        videoRef.current?.play();
+                      }}
+                      className="px-6 py-3 bg-gray-600/70 hover:bg-gray-700/90 text-white rounded-lg shadow-lg font-medium transition-colors"
+                    >
+                      Skip Detection
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
-
-          {labels?.map((label, idx) => {
-            const { width, height } = videoDims;
-            const box = label.BoundingBox;
-
-            const top = box ? box.Top * height : 40 + idx * 40;
-            const left = box ? box.Left * width : 20;
-            const boxWidth = box ? box.Width * width : undefined;
-            const boxHeight = box ? box.Height * height : undefined;
-
-            return (
-              <div
-                key={idx}
-                onClick={handleLabelClick}
-                style={{
-                  position: "absolute",
-                  top: `${top}px`,
-                  left: `${left}px`,
-                  width: boxWidth ? `${boxWidth}px` : "auto",
-                  height: boxHeight ? `${boxHeight}px` : "auto",
-                  background: "rgba(255, 255, 255, 0.85)",
-                  padding: "4px 8px",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  border: "1px solid #ccc",
-                  fontWeight: "bold",
-                  boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-                  zIndex: 10,
-                }}
-              >
-                {label.Name} ({label.Confidence.toFixed(1)}%)
-              </div>
-            );
-          })}
         </div>
       )}
 
-      <button
-        onClick={captureScreenshot}
-        disabled={loading}
-        style={{
-          display: "none",
-          margin: "10px auto",
-          color: "black",
-        }}
-      >
-        {loading ? "Processing..." : "Get Multiple Choice Question"}
-      </button>
-
       <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
     
-      {/* Quiz Sidebar */}
       {showQuiz && quizData && (
         <motion.div
           className="fixed top-0 right-0 h-full w-96 backdrop-blur-xl bg-[rgba(20,20,20,0.7)] border border-gray-700 shadow-xl rounded-l-3xl p-8 flex flex-col justify-center items-center"
@@ -396,12 +475,21 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
               Skip Question
             </button>
           )}
+
+          {showContinueQuizButton && (
+            <button
+              className="w-full p-4 mt-6 bg-yellow-400 hover:bg-yellow-500 rounded-xl text-black text-lg font-semibold shadow-md border border-yellow-600 transition-colors"
+              onClick={handleContinueWatching}
+            >
+              Continue Watching
+            </button>
+          )}
         </motion.div>
       )}
 
       {imageData && (
         <motion.div
-          initial={{ opacity: 1 }} // added fade animation to the screenshot when get MCQ button is clicked
+          initial={{ opacity: 1 }}
           animate={{ opacity: 0 }}
           transition={{ duration: 10, delay: 1 }}
           onAnimationComplete={() => setImageData(null)}
@@ -417,6 +505,14 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
         >
           <img src={imageData} alt="Screenshot" style={{ width: "150px", height: "auto", borderRadius: "5px" }} />
         </motion.div>
+      )}
+
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
+            <p className="text-lg">Loading...</p>
+          </div>
+        </div>
       )}
 
       {error && <p style={{ color: "red" }}>{error}</p>}
