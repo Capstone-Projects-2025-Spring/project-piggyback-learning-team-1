@@ -19,30 +19,35 @@ const videoConfigurations: Record<string, VideoInteractions> = {
   // Video about pandas
   'giant_pandas': {
     MCQtimes: [15, 40, 90],
-    ObjectTimes: [],
+    ObjectTimes: [86],
     objectTargets: {
+        86: 'panda',
     }
   },
   
   
   'husky': {
     MCQtimes: [20, 60, 120],
-    ObjectTimes: [],
+    ObjectTimes: [27, 72],
     objectTargets: {
+        27: 'dog',
+        72: 'cat',
     }
   },
 
   'our_sun': {
     MCQtimes: [20, 60, 120],
-    ObjectTimes: [],
+    ObjectTimes: [35],
     objectTargets: {
+        35: 'airplane',
     }
   },
 
   'australia': {
     MCQtimes: [20, 60, 120],
-    ObjectTimes: [],
+    ObjectTimes: [44],
     objectTargets: {
+        44: 'person',
     }
   },
 

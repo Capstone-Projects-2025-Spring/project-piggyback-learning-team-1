@@ -118,6 +118,8 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
 
     if (!video || !canvas) return;
 
+    video.pause();
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -186,9 +188,12 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       utterance.volume = 1;
 
       const voices = window.speechSynthesis.getVoices();
-      const friendlyVoice = voices.find((voice) => voice.name.includes("Google UK English Female")) 
-                        || voices.find((voice) => voice.lang.includes("en") && voice.name.includes("WaveNet")) 
-                        || voices[0];
+      const friendlyVoice = voices.find((voice) => 
+        voice.lang.includes("en") && 
+        (voice.name.toLowerCase().includes("friendly") || 
+         voice.name.toLowerCase().includes("natural") ||
+         voice.name.toLowerCase().includes("female"))
+      ) || voices.find((voice) => voice.lang.includes("en")) || voices[0];
 
       if (friendlyVoice) utterance.voice = friendlyVoice;
 
