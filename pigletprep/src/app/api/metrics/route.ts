@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import QuizAttempt from '@/models/QuizAttempt';
+import mongoose from 'mongoose';
 
 export async function GET() {
   try {
@@ -68,6 +69,18 @@ export async function GET() {
       ? { videoId: mostFrequentVideo[0]._id, count: mostFrequentVideo[0].count }
       : null;
 
+
+    // how many times a person runs a video, that's consider a seesion 
+    const rawRecords = await mongoose.connection.collection('quizattempts').find({}).toArray();
+
+    // Map the records to extract videoId
+    const records = rawRecords.map((record) => ({
+      videoId: record.videoId as string,
+    }));
+
+    // Calculate unique links
+    const uniqueLinks = new Set(records.map((record) => record.videoId));  
+
     return NextResponse.json({
       success: true,
       data: videoAttempts.map((video) => ({
@@ -76,6 +89,7 @@ export async function GET() {
       })),
       totalAttempts, // Include the total attempts across all videos
       mostFrequent, // Include the most frequent video
+      totalUniqueLinks: uniqueLinks.size, // Total unique links
     });
   } catch (error) {
     console.error('Error fetching video attempts:', error);
