@@ -14,6 +14,7 @@ import { Chart as ChartJS, CategoryScale,
 import { Bar, Radar } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { NumberTicker } from '@/components/magicui/number-ticker';
 
 interface AnimatedScoreProps {
   value: number;
@@ -369,7 +370,11 @@ const MetricsDashboard = () => {
             >
               <div className="flex items-center justify-center gap-2">
                 <span className="text-2xl font-semibold text-black">Total Sessions ↗️</span>
-                <span className="bg-black text-white font-semibold text-xl px-5 py-2 rounded-md">{TotalSessions}</span>
+                <NumberTicker
+                // <span className="bg-black text-white font-semibold text-xl px-5 py-2 rounded-md">{TotalSessions}</span>
+                  value={TotalSessions}
+                  className="bg-black text-white font-semibold text-2xl px-5 py-2 rounded-md"
+                />
               </div>
             </motion.div>
 
