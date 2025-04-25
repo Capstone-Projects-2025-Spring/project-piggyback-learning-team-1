@@ -140,26 +140,26 @@ export default function ImageDisplay({
               
               return (
                 <div
-                  key={`${index}-${i}`}
-                  className={`absolute border-2 rounded-sm cursor-pointer hover:opacity-80 transition-opacity object-box ${
-                    isTarget ? `${targetObject.toLowerCase()} border-yellow-400` : 'border-red-500'
-                  }`}
-                  style={{
-                    top: `${instance.BoundingBox.Top * 100}%`,
-                    left: `${instance.BoundingBox.Left * 100}%`,
-                    width: `${instance.BoundingBox.Width * 100}%`,
-                    height: `${instance.BoundingBox.Height * 100}%`,
-                    boxShadow: isTarget ? '0 0 0 2px rgba(252, 211, 77, 0.5)' : 'none'
-                  }}
-                  onClick={() => handleObjectClick(obj.Name || "")}
+                key={`${index}-${i}`}
+                className={`absolute object-box ${isTarget ? targetObject.toLowerCase() : ''}`}
+                style={{
+                  top: `${instance.BoundingBox.Top * 100}%`,
+                  left: `${instance.BoundingBox.Left * 100}%`,
+                  width: `${instance.BoundingBox.Width * 100}%`,
+                  height: `${instance.BoundingBox.Height * 100}%`,
+                  backgroundColor: "transparent",
+                  border: "none",
+                  zIndex: 10,
+                }}
+                onClick={() => handleObjectClick(obj.Name || "")}
                 >
-                  <div 
+                  {/* <div 
                     className={`absolute top-0 left-0 transform -translate-y-full text-xs px-2 py-1 rounded-t ${
                       isTarget ? 'bg-yellow-500 text-black' : 'bg-red-500 text-white'
                     }`}
                   >
                     {obj.Name} {obj.Confidence ? `(${Math.round(obj.Confidence)}%)` : ''}
-                  </div>
+                  </div> */}
                 </div>
               );
             });
