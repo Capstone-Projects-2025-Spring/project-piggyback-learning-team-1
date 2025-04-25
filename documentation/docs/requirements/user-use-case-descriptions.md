@@ -1,8 +1,7 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 ---
-# Use Case Descriptions
-# User View
+# User Use Case Descriptions
 ## Use Case 1 - User Browses Videos
 *As a user, I want to browse available videos*
 1. From visiting the website homepage, user browses the selection of available videos on various topics
@@ -14,7 +13,8 @@ sidebar_position: 2
 1. User is redirected to a seperate page
 2. User clicks the "Play" icon in the lower left corner
 
-## Use Case 3.1 - User Answers a Multiple Choice Question
+## Use Case 3 - From here, users will be displayed one of two potential question types
+### Question Type A - User Answers a Multiple Choice Question
 *As a user, I want to answer the question to continue the video*
 1. Video pauses automatically
 2. Question based on the current screen pops up
@@ -24,7 +24,7 @@ sidebar_position: 2
 6. User selects an answer by clicking on it
 
 
-## Use Case 3.2 - User Answers an Onject Detection Question
+### Question Type B - User Answers an Object Detection Question
 *As a user, I want to answer the question to continue the video*
 1. Video pauses automatically
 2. Question prompts user to click on screen and identify an object
@@ -32,32 +32,36 @@ sidebar_position: 2
 4. Video does not play until question is answered or timer runs out
 5. User select the answer by clicking on the screen
 
-## Use Case 3A - User Answers Incorrectly
+## Use Case 4 - After answering the quiz question, there are four possible outcomes
+
+### Outcome 1 - User Answers Incorrectly
 1. User receives notification of incorrect answer
 2. Video rewinds back to last checkpoint
 3. User receives hint about correct answer
 4. User answers question again, either repeating incorrect process or moving to correct process
 
 
-## Use Case 3B - User Answers Correctly
+### Outcome 2 - User Answers Correctly
 1. User receives confirmation of correct answer
 2. Explanation of the question is given
 3. Option button to continue the video pops up
 
-## Use Case 3C - User Skips Question
-*As a user, I want to skip this question*
-1. User can opt to skip a question by pressing the "Skip Question" option
+### Outcome 3 - User Skips Question
+*As a user, I want to skip this question after answering incorrectly before*
+1. User can opt to skip a question by pressing the "Skip Question" option after answering the question at least once
 2. Explanation of the question is given
 3. Option button to continue the video pops up
 
 
-## Use Case 3D - Question Times Out
+### Outcome 4 - Question Times Out
 *As a user, I did not answer this question in time*
 1. Video rewinds back to last checkpoint
 2. User receives hint about correct answer
 3. User answers question again, either repeating incorrect process or moving to correct process
 
-## Use Case 4 - User Continues the Video
+## After answering the question, the linear process resumes
+
+## Use Case 5 - User Continues the Video
 *As a user, I want to continue the video*
 1. Video resumes after pressing the continue button
 2. Question process repeats every few minutes of video until end
@@ -67,17 +71,3 @@ sidebar_position: 2
 *As a user, I want to review my session metrics*
 1. Video ends and summury of session pops up including questons answered correctly, incorrectly, hints used, and total time
 2. Option to exit back to main menu is presented
-
-
-# Metrics View
-## Use Case 6 - User uses predetermined pin to switch to Metrics Mode
-*As a user, I want to view the progess metrics for the program*
-1. User presses the "Switch" icon to switch to Metrics Mode
-2. Applicaion prompts user to input predetermined pin
-3. Once pin is approved, mode switches from "Student" to "Metrics" mode
-4. Program metrics populate on screen
-
-
-## Use Case 7 - User exports metrics
-1. User clicks on "Export Metric" button
-2. User is directed to metrics database

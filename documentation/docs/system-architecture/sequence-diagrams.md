@@ -10,7 +10,7 @@ sidebar_position: 2
 3. User selects a video by clicking on the icon
 <div align="center">
 
-<!-- ![SD2](/img/SD2.png) -->
+![SD1](/img/SD1.png)
 
 </div>
 
@@ -18,6 +18,12 @@ sidebar_position: 2
 *As a user, I want to start watching my content*
 1. User is redirected to a seperate page
 2. User clicks the "Play" icon in the lower left corner
+
+<div align="center">
+
+![SD2](/img/SD2.png)
+
+</div>
 
 ## Use Case 3.1 - User Answers a Multiple Choice Question
 *As a user, I want to answer the question to continue the video*
@@ -34,7 +40,7 @@ sidebar_position: 2
 
 </div>
 
-## Use Case 3.2 - User Answers an Onject Detection Question
+## Use Case 3.2 - User Answers an Object Detection Question
 *As a user, I want to answer the question to continue the video*
 1. Video pauses automatically
 2. Question prompts user to click on screen and identify an object
