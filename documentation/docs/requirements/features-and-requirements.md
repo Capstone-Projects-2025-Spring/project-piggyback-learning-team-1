@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 3
 ---
 
 # Features and Requirements
@@ -20,7 +20,7 @@ sidebar_position: 4
   <li>Question will automatically be read out loud</li>
 
   <li>
-    The video will rewind if an incorrect answer is selected; the same incorrect answer cannot be selected twice
+    The video will rewind if an incorrect answer is selected
     <ul>
       <li>User should be able to rewind the video if they are unsure about the answer</li>
     </ul>

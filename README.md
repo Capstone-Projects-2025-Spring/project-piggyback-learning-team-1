@@ -19,7 +19,10 @@
 
 This website is a child-friendly video platform designed to offer interactive educational content. Videos are enhanced with embedded Multiple Choice Questions (MCQs) to engage children and assess their understanding as they watch. The system allows users to sign in, track their progress, and review performance analytics.
 
-## Installation and Setup
+## Piglet Prep on Web Browser
+You can access the deployed site here: https://github.com/Capstone-Projects-2025-Spring/project-piggyback-learning-team-1/releases/tag/1.1.0
+
+## Running Piglet Prep Locally 
 
 Run the following commands in your terminal:
 
