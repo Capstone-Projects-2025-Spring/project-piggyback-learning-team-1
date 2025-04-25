@@ -19,11 +19,13 @@
     "@radix-ui/react-slot": "^1.1.2",
     "@types/canvas-confetti": "^1.9.0",
     "aws-sdk": "^2.1692.0",
+    "axios": "^1.8.4",
     "canvas-confetti": "^1.9.3",
     "chart.js": "^4.4.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.6.3",
+    "html-entities": "^2.6.0",
     "lucide-react": "^0.475.0",
     "mongodb": "^6.15.0",
     "mongoose": "^8.13.1",
@@ -38,7 +40,8 @@
     "react-icons": "^5.5.0",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
-    "youtube-transcript": "^1.2.1"
+    "youtube-transcript": "^1.2.1",
+    "youtube-captions-scraper": "^2.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
