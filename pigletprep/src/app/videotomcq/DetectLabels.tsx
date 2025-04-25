@@ -47,6 +47,8 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const [hintsUsed, setHintsUsed] = useState(0);
   const [lastQuestionTime, setLastQuestionTime] = useState<number>(0);
 
+  const [typeQuestion, setTypeQuestion] = useState<string>("MCQ");
+
   const router = useRouter();
 
   // Replace the hardcoded arrays with values from config
@@ -83,12 +85,14 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
 
       if (MCQtimes.includes(currentTime) && !showQuiz && currentTime !== lastQuestionTime) {
         setLastQuestionTime(currentTime);
+        setTypeQuestion("MCQ");
         captureScreenshotForQuiz();
-        console.log(`Quiz triggered at predefined time: ${currentTime}s`);
+        console.log(`Quiz triggered at: ${currentTime}s`);
       }
 
       if (ObjectTimes.includes(currentTime) && !showImageDetection && currentTime !== lastQuestionTime) {
         setLastQuestionTime(currentTime);
+        setTypeQuestion("OD");
         captureScreenshotForObjectDetection();
         console.log(`Object detection triggered at: ${currentTime}s`);
       }
@@ -159,6 +163,9 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     const currentTime = Math.floor(video.currentTime);
     const targetObject = videoConfig.objectTargets?.[currentTime] || "tiger";
 
+    // Set the start time for measuring response time
+    setStartTime(Date.now());
+    
     setImageData(dataUrl);
     setObjectDetectionPrompt(`Click on the ${targetObject}`);
     setShowImageDetection(true);
@@ -306,18 +313,19 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     // }, 3000);
   };
 
-  const saveQuizAttempt = async ( selectedAnswer: string, isCorrect: boolean) => {
+  const saveQuizAttempt = async ( selectedAnswer: string, isCorrect: boolean, questionOverride?: string, correctAnswerOverride?: string) => {
     const timeToAnswer = startTime ? (Date.now() - startTime) / 1000 : 0;
-
+    const questionType = typeQuestion || (showImageDetection ? "OD" : "MCQ");
     try {
       const response = await fetch('/api/database', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           videoId: videoSrc,
-          question: quizData?.question,
+          typeOf: questionType,
+          question: questionOverride || quizData?.question,
           selectedAnswer,
-          correctAnswer: quizData?.correctLetter,
+          correctAnswer: correctAnswerOverride || quizData?.correctLetter,
           isCorrect,
           timeToAnswer,
           attempts: attempts + (isCorrect ? 1 : 0),
@@ -390,6 +398,10 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
                   onLabelClick={() => {
                     const targetObject = videoConfig.objectTargets?.[lastQuestionTime] || "tiger";
                     setObjectDetectionPrompt(`Great job! You found the ${targetObject}!`);
+                    
+                    // Pass the dynamic question "Click on the [target]" directly to saveQuizAttempt
+                    saveQuizAttempt("Skipped", true, `Click on the ${targetObject}`, "Clicked");
+                    
                     setTimeout(() => {
                       setShowImageDetection(false);
                       setObjectDetectionPrompt(null);
@@ -403,6 +415,10 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
                   <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
                     <button
                       onClick={() => {
+                        const targetObject = videoConfig.objectTargets?.[lastQuestionTime];
+                        // Also pass the question text when skipping
+                        saveQuizAttempt("Skipped", false, `Click on the ${targetObject}`, "Clicked");
+                        
                         setShowImageDetection(false);
                         setObjectDetectionPrompt(null);
                         videoRef.current?.play();

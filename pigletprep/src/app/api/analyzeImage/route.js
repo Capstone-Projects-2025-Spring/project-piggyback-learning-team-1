@@ -29,7 +29,7 @@ export async function POST(req) {
         if (fs.existsSync(transcriptPath)) {
           const transcriptData = JSON.parse(fs.readFileSync(transcriptPath, 'utf8'));
           
-          // Find entries around the current timestamp (±15 seconds)
+          // Find entries around the current timestamp (-15 seconds & + 4 seconds)
           const currentTime = videoInfo.currentTime;
           const windowStart = Math.max(0, currentTime - 20);
           const windowEnd = currentTime + 4;

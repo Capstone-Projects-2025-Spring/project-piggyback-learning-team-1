@@ -4,16 +4,15 @@ import QuizAttempt from '@/models/QuizAttempt';
 
 export async function GET() {
   try {
-    console.log('Starting export...');
     await dbConnect();
     
     // Fetch all quiz attempts
-    const attempts = await QuizAttempt.find({}).lean();
-    console.log(`Found ${attempts.length} attempts`);
-
-    // Define CSV headers
+    const quizAttempts = await QuizAttempt.find({}).sort({ createdAt: -1 });
+    
+    // Define CSV headers - make sure to include typeOf
     const headers = [
       'videoId',
+      'typeOf', // Include the typeOf column in the headers
       'question',
       'selectedAnswer',
       'correctAnswer',
@@ -26,8 +25,9 @@ export async function GET() {
     ];
 
     // Convert data to CSV format
-    const rows = attempts.map(attempt => [
+    const row = quizAttempts.map(attempt => [
       attempt.videoId || '',
+      attempt.typeOf || '', // Include typeOf in the row data
       attempt.question ? `"${attempt.question.replace(/"/g, '""')}"` : '',
       attempt.selectedAnswer || '',
       attempt.correctAnswer || '',
@@ -42,7 +42,7 @@ export async function GET() {
     // Combine headers and rows
     const csv = [
       headers.join(','),
-      ...rows.map(row => row.join(','))
+      ...row.map(row => row.join(','))
     ].join('\n');
 
     console.log('CSV generated successfully');

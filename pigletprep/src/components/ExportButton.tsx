@@ -7,7 +7,7 @@ const ExportButton = () => {
   const handleExport = async () => {
     try {
       setIsExporting(true);
-      const response = await fetch('/api/export');
+      const response = await fetch('/api/export?includeTypeOf=true');
       
       if (!response.ok) throw new Error('Export failed');
       

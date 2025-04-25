@@ -1,7 +1,8 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
-const QuizAttemptSchema = new mongoose.Schema({
+const QuizAttemptSchema = new Schema({
   videoId: String,
+  typeOf: String,
   question: String,
   selectedAnswer: String,
   correctAnswer: String,
@@ -14,17 +15,18 @@ const QuizAttemptSchema = new mongoose.Schema({
       count: Number
     },
     attemptsBeforeSuccess: Number,
-    timePerAttempt: Number
-  },
-  timestamp: {
-    type: Date,
-    default: Date.now
+    timePerAttempt: Number,
+    objectDetection: {
+      targetObject: String,
+      timeToFind: Number
+    }
   },
   createdAt: {
     type: Date,
     default: Date.now
   }
-})
+});
 
-export default mongoose.models.QuizAttempt || 
-  mongoose.model('QuizAttempt', QuizAttemptSchema);
+const QuizAttempt = mongoose.models.QuizAttempt || mongoose.model('QuizAttempt', QuizAttemptSchema);
+
+export default QuizAttempt;
