@@ -213,20 +213,6 @@ const MetricsDashboard = () => {
           console.log('No records found for selected date');
           return;
         }
-
-        // // Use a Set to track unique IDs
-        // const uniqueIds = new Set<string>();
-
-        // data.records.forEach((record: { _id: string }) => {
-        //   if (record._id) {
-        //     uniqueIds.add(record._id);
-        //   }
-        // });
-
-        // // Set the total unique user count
-        // setTotalSession(uniqueIds.size);
-        // Set the total unique links count
-        // setTotalSession(data.totalUniqueLinks); // Use the new field from the API
   
         // Group by formatted video name
         const grouped: Record<string, { timeToAnswer: number; attempts: number; inCorrect: number; count: number }> = {};
@@ -290,12 +276,12 @@ const MetricsDashboard = () => {
     }
   }, [selectedDate]);
   
-  // ✅ Date picker handler
+  // Date picker handler
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
   };
   
-  // functin to fetch total sessions
+  // function to fetch total sessions
   // this is the number of times a person runs a video, that's consider a session
   const fetchTotalSessions = async () => {
     try {
