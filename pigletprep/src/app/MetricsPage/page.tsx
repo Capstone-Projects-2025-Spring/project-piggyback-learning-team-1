@@ -4,8 +4,17 @@ import { motion, useMotionValue, useTransform, useSpring, animate } from 'framer
 import { useRouter } from 'next/navigation';
 import { IoHome } from "react-icons/io5";
 import ExportButton from '@/components/ExportButton';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, 
+  LinearScale, BarElement, Title, Tooltip, Legend, 
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+ } from 'chart.js';
+import { Bar, Radar } from 'react-chartjs-2';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { NumberTicker } from '@/components/magicui/number-ticker';
 
 interface AnimatedScoreProps {
   value: number;
@@ -90,14 +99,9 @@ const AnimatedScore: React.FC<AnimatedScoreProps> = ({ value, label, color = "gr
 };
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
 const MetricsDashboard = () => {
-  // const popularVideos = [ // static data for popular videos for now
-  //   { title: 'Dog Videos', date: 'May 3rd' },
-  //   { title: 'Spider-Man', date: 'May 3rd' },
-  //   { title: 'Who is Darth Vader?', date: 'May 3rd' },
-  // ];
-  
   interface ChartData {
     labels: string[];
     datasets: {
@@ -108,9 +112,25 @@ const MetricsDashboard = () => {
       borderWidth: number;
     }[];
   }
+
+  interface RadarDataset {
+    label: string;
+    data: number[];
+    backgroundColor: string;
+    borderColor: string;
+    borderWidth: number;
+  }
+  
+  interface RadarData {
+    labels: string[];
+    datasets: RadarDataset[];
+  }
   
   const [chartData, setChartData] = useState<ChartData | null>(null); // State for chart data
   const [chartOptions, setChartOptions] = useState({}); // State for chart options
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [radarData, setRadarData] = useState<RadarData | null>(null);
+  const [TotalSessions, setTotalSession] = useState<number>(0);
   const router = useRouter();
 
 
@@ -171,11 +191,129 @@ const MetricsDashboard = () => {
   
     fetchVideoAttempts();
   }, []);
+
+  {/* Fetch data for the radar chart, separate useEffect */}
+  useEffect(() => {
+    const fetchRadarData = async (date: Date) => {
+      try {
+        const formattedDate = date.toISOString().split('T')[0];
+        console.log(`Fetching radar data for date: ${formattedDate}`);
   
+        const response = await fetch(`/api/metrics2/by-date?date=${formattedDate}`);
+  
+        if (!response.ok) {
+          console.error(`API error: ${response.status} ${response.statusText}`);
+          return;
+        }
+  
+        const data = await response.json();
+        console.log('API response:', data);
+  
+        if (!data.records || data.records.length === 0) {
+          console.log('No records found for selected date');
+          return;
+        }
+  
+        // Group by formatted video name
+        const grouped: Record<string, { timeToAnswer: number; attempts: number; inCorrect: number; count: number }> = {};
+  
+        data.records.forEach((record: { videoId: string; timeToAnswer: number; attempts: number; inCorrect: number; }) => {
+          const videoUrl = record.videoId || '';
+          const videoName = videoUrl.split('/').pop()?.split('?')[0] || 'Unknown';
+  
+          const formattedName = videoName
+            .replace(/_/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase());
+  
+          if (!grouped[formattedName]) {
+            grouped[formattedName] = { timeToAnswer: 0, attempts: 0, inCorrect: 0, count: 0 };
+          }
+  
+          grouped[formattedName].timeToAnswer += record.timeToAnswer || 0;
+          grouped[formattedName].attempts += record.attempts || 0;
+          grouped[formattedName].inCorrect += record.inCorrect || 0;
+          grouped[formattedName].count += 1;
+        });
+  
+        const labels = Object.keys(grouped);
+        const timeToAnswer = labels.map(label => grouped[label].timeToAnswer / grouped[label].count); // average
+        const attempts = labels.map(label => grouped[label].attempts); // total
+        const inCorrect = labels.map(label => grouped[label].inCorrect); // total
+  
+        setRadarData({
+          labels,
+          datasets: [
+            {
+              label: 'Avg Time to Answer (s)',
+              data: timeToAnswer,
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              borderColor: 'rgba(255, 99, 132, 1)',
+              borderWidth: 1,
+            },
+            {
+              label: 'Total Attempts',
+              data: attempts,
+              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1,
+            },
+            {
+              label: 'Incorrect Answers',
+              data: inCorrect,
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error('Error fetching radar data:', error);
+      }
+    };
+  
+    if (selectedDate) {
+      fetchRadarData(selectedDate);
+    }
+  }, [selectedDate]);
+  
+  // Date picker handler
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+  };
+  
+  // function to fetch total sessions
+  // this is the number of times a person runs a video, that's consider a session
+  const fetchTotalSessions = async () => {
+    try {
+      console.log('Fetching total sessions for all time');
+  
+      const response = await fetch('/api/metrics'); // Replace with your API endpoint for total sessions
+  
+      if (!response.ok) {
+        console.error(`API error: ${response.status} ${response.statusText}`);
+        return;
+      }
+  
+      const data = await response.json();
+      console.log('API response:', data);
+  
+      if (data.success) {
+        setTotalSession(data.totalUniqueLinks); // Update state with total sessions
+      } else {
+        console.log('No total sessions found.');
+      }
+    } catch (error) {
+      console.error('Error fetching total sessions:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTotalSessions(); // Fetch total sessions on component mount
+  }, []);
 
 
   return (
-    <div className="min-h-screen bg-[#f5f5dc] p-8"> 
+    <div className="min-h-screen bg-beige p-8"> 
 
       {/* Back Button, back to home page */}
       <motion.button
@@ -195,98 +333,93 @@ const MetricsDashboard = () => {
           >
             <h1 className="text-4xl font-semibold mt-5 text-black">Hello There! 👋</h1>
           </motion.div>
-          <ExportButton />
+
+          {/* Export Button, wrapped in motion */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5 }}
+          >
+            <ExportButton />
+          </motion.div>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content (3/4 width) */}
           <div className="lg:col-span-3 space-y-10">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.5 }}
-            >
-            </motion.div>
-
+            {/* Total Users Card */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 1}}
+              transition={{ duration: 1, delay: 0.5 }}
               className="bg-white rounded-2xl shadow-md border p-6"
             >
               <div className="flex items-center justify-center gap-2">
-                <span className="text-2xl font-semibold text-black">Total Users ↗️</span>
-                <span className="bg-black text-white font-semibold text-xl px-5 py-2 rounded-md">3</span>
+                <span className="text-2xl font-semibold text-black">Total Sessions ↗️</span>
+                <NumberTicker
+                // <span className="bg-black text-white font-semibold text-xl px-5 py-2 rounded-md">{TotalSessions}</span>
+                  value={TotalSessions}
+                  className="bg-black text-white font-semibold text-2xl px-5 py-2 rounded-md"
+                />
               </div>
             </motion.div>
 
-            {/* <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 1.3 }}
-              className="bg-white rounded-2xl shadow-md border p-6"
-            >
-              <h3 className="text-lg font-semibold mb-4 text-black">Popular Videos</h3>
-              <div className="space-y-4">
-                {popularVideos.map((video, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
-                    className="flex items-center gap-3"
-                  >
-                    <Clock className="w-5 h-5 text-green-800" />
-                    <div>
-                      <p className="font-medium text-black">{video.title}</p>
-                      <p className="text-sm text-gray-500">{video.date}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div> */}
-
-
+            {/* Total Attempts Bar Chart, more attempts == more popular */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 1.7 }}
+              transition={{ duration: 1, delay: 1 }}
               className="bg-white rounded-2xl shadow-md border p-6"
             >
-              <h3 className="text-lg font-semibold mb-4 text-black">Total Attempts Per Video</h3>
+              <h3 className="text-lg font-semibold mb-4 text-black">All Time Total Attempts Per Video</h3>
               {chartData ? (
                 <Bar data={chartData} options={chartOptions} />
               ) : (
                 <p>Loading chart...</p>
               )}
             </motion.div>
-
           </div>
-
-
 
           {/* Statistics Card (1/4 width) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 1 }}
-            className="lg:col-span-1 bg-white rounded-3xl shadow-md border p-6"
+            className="lg:col-span-1 bg-white rounded-3xl shadow-md border p-6 h-full"
           >
             <h3 className="text-lg font-semibold mb-6 text-black">Statistics</h3>
-            <div className="flex flex-col items-center font-extrabold text-black">
-                {/* AnimatedScore component, all static for now */}
+            <div className="flex flex-col items-center font-extrabold text-black space-y-4">
               <AnimatedScore value={75} label="Engagement" color="green" delay={0.2} initialValue={0} />
               <AnimatedScore value={90} label="Average Quiz Score" color="green" delay={0.4} initialValue={0} />
               <AnimatedScore value={100} label="Completion Rate" color="green" delay={0.6} initialValue={0} />
             </div>
           </motion.div>
-
-              
-         
         </div>
+
+        {/* Radar Chart with Date Picker */}
+        <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 1.5 }}
+              className="bg-white rounded-2xl shadow-md border p-6 mt-10 min-h-[400px]"
+            >
+              {/* <h1 className="text-2xl font-bold mb-4 text-black">Metrics Dashboard</h1> */}
+              <h2 className="text-xl font-semibold mb-2 text-black">Pick a Date to View Metrics</h2>
+              <DatePicker
+                selected={selectedDate}
+                onChange={handleDateChange}
+                dateFormat="yyyy-MM-dd"
+                className="border px-2 py-1 rounded mb-4"
+                placeholderText="Select a date"
+              />
+              {radarData ? <Radar data={radarData} /> : <p className="text-gray-500">No data available for selected date.</p>}
+          </motion.div>
+
+
       </div>
     </div>
   );
 };
+
 
 export default MetricsDashboard;
