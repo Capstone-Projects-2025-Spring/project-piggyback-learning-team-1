@@ -511,26 +511,6 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
         </motion.div>
       )}
 
-      {imageData && (
-        <motion.div
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 0 }}
-          transition={{ duration: 10, delay: 1 }}
-          onAnimationComplete={() => setImageData(null)}
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            background: "white",
-            padding: "10px",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
-          }}
-        >
-          <img src={imageData} alt="Screenshot" style={{ width: "150px", height: "auto", borderRadius: "5px" }} />
-        </motion.div>
-      )}
-
       {loading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-4 rounded-lg shadow-lg">
