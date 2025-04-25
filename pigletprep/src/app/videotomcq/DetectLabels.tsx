@@ -316,6 +316,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   const saveQuizAttempt = async ( selectedAnswer: string, isCorrect: boolean, questionOverride?: string, correctAnswerOverride?: string) => {
     const timeToAnswer = startTime ? (Date.now() - startTime) / 1000 : 0;
     const questionType = typeQuestion || (showImageDetection ? "OD" : "MCQ");
+    const usedHints = questionType === "OD" ? 0 : hintsUsed;
     try {
       const response = await fetch('/api/database', {
         method: 'POST',
@@ -331,8 +332,8 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
           attempts: attempts + (isCorrect ? 1 : 0),
           metrics: {
             hints: {
-              used: hintsUsed > 0,
-              count: hintsUsed
+              used: usedHints > 0,
+              count: usedHints
             },
             attemptsBeforeSuccess: isCorrect ? attempts: null,
             timePerAttempt: timeToAnswer / (attempts + (isCorrect ? 1 : 0))
@@ -400,7 +401,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
                     setObjectDetectionPrompt(`Great job! You found the ${targetObject}!`);
                     
                     // Pass the dynamic question "Click on the [target]" directly to saveQuizAttempt
-                    saveQuizAttempt("Skipped", true, `Click on the ${targetObject}`, "Clicked");
+                    saveQuizAttempt("Clicked", true, `Click on the ${targetObject}`, "Clicked");
                     
                     setTimeout(() => {
                       setShowImageDetection(false);

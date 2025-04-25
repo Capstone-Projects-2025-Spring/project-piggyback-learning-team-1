@@ -16,11 +16,11 @@ const QuizAttemptSchema = new Schema({
     },
     attemptsBeforeSuccess: Number,
     timePerAttempt: Number,
-    objectDetection: {
-      targetObject: String,
-      timeToFind: Number
-    }
-  },
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now
+    },
   createdAt: {
     type: Date,
     default: Date.now
