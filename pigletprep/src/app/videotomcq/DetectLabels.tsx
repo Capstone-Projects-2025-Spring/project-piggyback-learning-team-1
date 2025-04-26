@@ -435,13 +435,10 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
                 <ImageDisplay
                   imageData={imageData}
                   targetObject={videoConfig.objectTargets?.[lastQuestionTime]}
-                  onLabelClick={() => {
+                  onLabelClick={async () => {
                     const targetObject = videoConfig.objectTargets?.[lastQuestionTime];
                     setObjectDetectionPrompt(`Great job! You found the ${targetObject}!`);
-                    
-                    // Pass the dynamic question "Click on the [target]" directly to saveQuizAttempt
                     saveQuizAttempt("Clicked", true, `Click on the ${targetObject}`, "Clicked");
-                    
                     setTimeout(() => {
                       setShowImageDetection(false);
                       setObjectDetectionPrompt(null);
