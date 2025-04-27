@@ -60,7 +60,15 @@ describe('VideoPage', () => {
   beforeEach(() => {
     (useRouter as jest.Mock).mockReturnValue(mockRouter);
     (useSearchParams as jest.Mock).mockReturnValue({
-      get: () => encodeURIComponent('https://example.com/video.mp4'),
+      get: (key: string) => {
+        if (key === "video") {
+          return encodeURIComponent("https://example.com/video.mp4");
+        }
+        if (key === "preferences") {
+          return null; // use defaults
+        }
+        return null;
+      }
     });
     // Reset the captured props.
     if (DetectLabelsMock) { DetectLabelsMock.lastProps = null; }
