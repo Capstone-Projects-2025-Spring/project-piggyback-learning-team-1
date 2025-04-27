@@ -211,58 +211,51 @@ const MetricsDashboard = () => {
 
   {/* Fetch data for the radar chart, separate useEffect */}
   useEffect(() => {
+    if (!selectedDate) return
+  
     const fetchRadarData = async (date: Date) => {
+      const formattedDate = date.toISOString().split('T')[0]
       try {
-        const formattedDate = date.toISOString().split('T')[0];
-        console.log(`Fetching radar data for date: ${formattedDate}`);
-  
-        const response = await fetch(`/api/metrics2/by-date?date=${formattedDate}`);
-  
-        if (!response.ok) {
-          console.error(`API error: ${response.status} ${response.statusText}`);
-          return;
+        const res = await fetch(`/api/metrics2/by-date?date=${formattedDate}`)
+        if (!res.ok) {
+          console.error(`API error: ${res.status} ${res.statusText}`)
+          return
+        }
+        const json = await res.json()
+        if (!json.success || !Array.isArray(json.data) || json.data.length === 0) {
+          console.log('No data for selected date')
+          return
         }
   
-        const data = await response.json();
-        console.log('API response:', data);
+        // json.data is now an array of:
+        // { videoTitle, totalAttempts, correctCount, incorrectCount, hintsUsed, averageTimePerAttempt }
+        const stats: {
+          videoTitle: string
+          totalAttempts: number
+          incorrectCount: number
+          averageTimePerAttempt: number
+          correctCount: number
+        }[] = json.data
   
-        if (!data.records || data.records.length === 0) {
-          console.log('No records found for selected date');
-          return;
-        }
-  
-        // Group by formatted video name
-        const grouped: Record<string, { timeToAnswer: number; attempts: number; inCorrect: number; count: number }> = {};
-  
-        data.records.forEach((record: { videoId: string; timeToAnswer: number; attempts: number; inCorrect: number; }) => {
-          const videoUrl = record.videoId || '';
-          const videoName = videoUrl.split('/').pop()?.split('?')[0] || 'Unknown';
-  
-          const formattedName = videoName
+        // Format labels
+        const labels = stats.map(s =>
+          s.videoTitle
             .replace(/_/g, ' ')
-            .replace(/\b\w/g, c => c.toUpperCase());
+            .replace(/\b\w/g, c => c.toUpperCase())
+        )
   
-          if (!grouped[formattedName]) {
-            grouped[formattedName] = { timeToAnswer: 0, attempts: 0, inCorrect: 0, count: 0 };
-          }
-  
-          grouped[formattedName].timeToAnswer += record.timeToAnswer || 0;
-          grouped[formattedName].attempts += record.attempts || 0;
-          grouped[formattedName].inCorrect += record.inCorrect || 0;
-          grouped[formattedName].count += 1;
-        });
-  
-        const labels = Object.keys(grouped);
-        const timeToAnswer = labels.map(label => grouped[label].timeToAnswer / grouped[label].count); // average
-        const attempts = labels.map(label => grouped[label].attempts); // total
-        const inCorrect = labels.map(label => grouped[label].inCorrect); // total
+        // Pull out the three series
+        const avgTime   = stats.map(s => s.averageTimePerAttempt)
+        const attempts  = stats.map(s => s.totalAttempts)
+        const incorrect = stats.map(s => s.incorrectCount)
+        const correct   = stats.map(s => s.correctCount)
   
         setRadarData({
           labels,
           datasets: [
             {
               label: 'Avg Time to Answer (s)',
-              data: timeToAnswer,
+              data: avgTime,
               backgroundColor: 'rgba(255, 99, 132, 0.2)',
               borderColor: 'rgba(255, 99, 132, 1)',
               borderWidth: 1,
@@ -276,27 +269,31 @@ const MetricsDashboard = () => {
             },
             {
               label: 'Incorrect Answers',
-              data: inCorrect,
+              data: incorrect,
+              backgroundColor: 'rgba(255, 159, 64, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1,
+            },
+            {
+              label: 'Correct Answers',
+              data: correct,
               backgroundColor: 'rgba(75, 192, 192, 0.2)',
               borderColor: 'rgba(75, 192, 192, 1)',
               borderWidth: 1,
             },
           ],
-        });
+        })
       } catch (error) {
-        console.error('Error fetching radar data:', error);
+        console.error('Error fetching radar data:', error)
       }
-    };
-  
-    if (selectedDate) {
-      fetchRadarData(selectedDate);
     }
-  }, [selectedDate]);
   
-  // Date picker handler
+    fetchRadarData(selectedDate)
+  }, [selectedDate])
   const handleDateChange = (date: Date | null) => {
-    setSelectedDate(date);
-  };
+    setSelectedDate(date)
+  }
+  
   
   // function to fetch total sessions
   // this is the number of times a person runs a video, that's consider a session
@@ -482,7 +479,7 @@ const MetricsDashboard = () => {
             className="bg-white rounded-2xl shadow-md border p-6 mt-10 min-h-[400px]"
           >
             {/* <h1 className="text-2xl font-bold mb-4 text-black">Metrics Dashboard</h1> */}
-            <h2 className="text-xl font-semibold mb-2 text-black">Pick a Date to View Metrics</h2>
+            <h2 className="text-xl font-semibold mb-4 text-black">Pick a Date to View Metrics</h2>
             <DatePicker
               selected={selectedDate}
               onChange={handleDateChange}
