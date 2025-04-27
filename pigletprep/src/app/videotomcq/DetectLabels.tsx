@@ -31,6 +31,7 @@ interface DetectLabelsProps {
 const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQuizDataReceived }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const processingRef = useRef(false);
 
   const [imageData, setImageData] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -88,17 +89,23 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
     const handleTimeUpdate = () => {
       if (!video) return;
 
+      // If already processing a quiz/detection, ignore additional calls
+      if (processingRef.current) return;
+
       const currentTime = Math.floor(video.currentTime);
 
       if (MCQtimes.includes(currentTime) && !showQuiz && currentTime !== lastQuestionTime) {
+        processingRef.current = true; // Set flag before processing
         setLastQuestionTime(currentTime);
         setTypeQuestion("MCQ");
+        video.pause();
         captureScreenshotForQuiz();
         console.log(`Quiz triggered at: ${currentTime}s`);
       }
 
       // Only trigger OD if enabled in preferences
       if (preferences.enableOD && ObjectTimes.includes(currentTime) && !showImageDetection && currentTime !== lastQuestionTime) {
+        processingRef.current = true; // Set flag before processing
         setLastQuestionTime(currentTime);
         setTypeQuestion("OD");
         captureScreenshotForObjectDetection();
@@ -198,6 +205,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
     videoRef.current?.pause();
 
     setLoading(false);
+    processingRef.current = false; // Reset processing flag
   };
 
   const friendlyIntro = [
@@ -275,6 +283,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
       setError((err as Error).message || "Error processing image");
     } finally {
       setLoading(false);
+      processingRef.current = false; // Reset processing flag
     }
   };
 
@@ -429,7 +438,6 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
               ref={videoRef}
               width="960"
               height="540"
-              controls
               crossOrigin="anonymous"
               style={{ display: "block" }}
               onEnded={handleVideoEnd}

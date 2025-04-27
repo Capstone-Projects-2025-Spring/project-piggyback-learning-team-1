@@ -61,18 +61,18 @@ export async function POST(req) {
         The transcript at this moment in the video says:
         "${transcriptText}"
 
-        Based on this transcript and the image from this part of the video, generate a multiple-choice question that a kindergartener can understand and answer.
+        Based on this transcript and the image from this part of the video, generate a multiple-choice question that a kid can understand and answer by watching the previous 20 seconds of the video.
       `.trim();
     }
     
     // Add subject focus if provided
     if (subjectFocus && subjectFocus.length > 0) {
       const subjects = subjectFocus.join(", ");
-      promptText += `\n\nFocus the question on these subjects, if applicable on screenshot and transcript: ${subjects}.`;
+      promptText += `\n\nTry to focus the question on these subjects: ${subjects}.`;
     }
 
     // Add the required format
-    promptText += " Respond with this format only after the colon here: Insert Question Here, A) Choice A B) Choice B C) Choice C D) Choice D Correct Answer: Correct Answer Here Hint: Hint Here";
+    promptText += "\n Respond with this format only after the colon here: Insert Question Here, A) Choice A B) Choice B C) Choice C D) Choice D Correct Answer: Correct Answer Here Hint: Hint Here";
 
     // Send to OpenAI
     const completion = await openai.chat.completions.create({
