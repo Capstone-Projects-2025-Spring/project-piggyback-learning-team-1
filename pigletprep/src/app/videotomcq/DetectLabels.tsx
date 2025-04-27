@@ -20,10 +20,15 @@ interface QuizData {
 
 interface DetectLabelsProps {
   videoSrc: string;
+  preferences: {
+    enableOD: boolean;
+    subjects: string[];
+    penaltyOption: string;
+  };
   onQuizDataReceived?: (data: QuizData) => void;
 }
 
-const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceived }) => {
+const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQuizDataReceived }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -92,7 +97,8 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
         console.log(`Quiz triggered at: ${currentTime}s`);
       }
 
-      if (ObjectTimes.includes(currentTime) && !showImageDetection && currentTime !== lastQuestionTime) {
+      // Only trigger OD if enabled in preferences
+      if (preferences.enableOD && ObjectTimes.includes(currentTime) && !showImageDetection && currentTime !== lastQuestionTime) {
         setLastQuestionTime(currentTime);
         setTypeQuestion("OD");
         captureScreenshotForObjectDetection();
@@ -105,7 +111,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     return () => {
       video.removeEventListener("timeupdate", handleTimeUpdate);
     };
-  }, [MCQtimes, ObjectTimes, lastQuestionTime, showQuiz, showImageDetection]);
+  }, [MCQtimes, ObjectTimes, lastQuestionTime, showQuiz, showImageDetection, preferences.enableOD]);
 
   useEffect(() => {
     if (showImageDetection) {
@@ -121,7 +127,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   useEffect(() => {
     if (showImageDetection) {
       console.log("Object detection visible");
-      
+
       // This is important: protect against anything that might hide the overlay
       const protectOverlay = setInterval(() => {
         if (!document.querySelector('[data-image-display="active"]')) {
@@ -129,7 +135,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
           setShowImageDetection(true);
         }
       }, 1000);
-      
+
       return () => clearInterval(protectOverlay);
     }
   }, [showImageDetection]);
@@ -247,6 +253,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
             transcriptName,
             currentTime,
           },
+          subjectFocus: preferences.subjects
         }),
       });
 
@@ -317,23 +324,39 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
         });
       }, 2000);
 
-      setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 10, 0);
-          setShowQuiz(false);
-          videoRef.current.play();
+      // Apply penalty based on preference
+      if (preferences.penaltyOption === "rewind") {
+        // Existing rewind behavior
+        setTimeout(() => {
+          if (videoRef.current) {
+            videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 20, 0);
+            setShowQuiz(false);
+            videoRef.current.play();
+          }
+        }, 1500);
+
+        setTimeout(() => {
+          setShowQuiz(true);
+          videoRef.current?.pause();
+        }, 20000);
+
+        setTimeout(() => setWrongAnswer(null), 1000);
+
+        // Only show skip button if using rewind penalty
+        if (attempts >= 1 && !questionComplete) {
+          setTimeout(() => setShowSkip(true), 2000);
         }
-      }, 1500);
-
-      setTimeout(() => {
-        setShowQuiz(true);
-        videoRef.current?.pause();
-      }, 12000);
-
-      setTimeout(() => setWrongAnswer(null), 1000);
-
-      if (attempts >= 1 && !questionComplete) {
-        setTimeout(() => setShowSkip(true), 2000);
+      } else {
+        // Auto-skip behavior for "skip" penalty option
+        setTimeout(() => {
+          setWrongAnswer(null);
+          if (questionComplete) return;
+          setShowSkip(false);
+          setFeedback({ message: "Nice try. The correct answer was...", isCorrect: true });
+          setQuestionComplete(true);
+          saveQuizAttempt("Auto-Skipped", false);
+          setShowContinueQuizButton(true);
+        }, 3000); // Give them time to see they were wrong
       }
     }
   };
@@ -528,7 +551,8 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
             </div>
           )}
 
-          {showSkip && (
+          {/* Only show skip button if penalty is rewind */}
+          {showSkip && preferences.penaltyOption === "rewind" && (
             <button
               className="w-full p-4 mt-4 bg-[rgba(50,50,60,0.7)] rounded-xl text-white hover:bg-[rgba(80,80,90,0.8)]"
               onClick={clickedSkip}

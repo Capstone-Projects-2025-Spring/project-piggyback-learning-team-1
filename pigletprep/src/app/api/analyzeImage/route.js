@@ -9,7 +9,7 @@ const openai = new OpenAI({
 
 export async function POST(req) {
   try {
-    const { imageBuffer, videoInfo } = await req.json();
+    const { imageBuffer, videoInfo, subjectFocus } = await req.json();
 
     if (!imageBuffer) {
       return NextResponse.json({ error: "No image provided." }, { status: 400 });
@@ -29,10 +29,10 @@ export async function POST(req) {
         if (fs.existsSync(transcriptPath)) {
           const transcriptData = JSON.parse(fs.readFileSync(transcriptPath, 'utf8'));
           
-          // Find entries around the current timestamp (-15 seconds & + 4 seconds)
+          // Find entries around the current timestamp (-20 seconds & current time)
           const currentTime = videoInfo.currentTime;
           const windowStart = Math.max(0, currentTime - 20);
-          const windowEnd = currentTime + 4;
+          const windowEnd = currentTime;
 
           console.log(`Searching for transcript entries between ${windowStart}s and ${windowEnd}s`);
           
@@ -62,11 +62,14 @@ export async function POST(req) {
         "${transcriptText}"
 
         Based on this transcript and the image from this part of the video, generate a multiple-choice question that a kindergartener can understand and answer.
-
-        Your question should be directly related to what's being discussed at this moment in the video.
       `.trim();
     }
     
+    // Add subject focus if provided
+    if (subjectFocus && subjectFocus.length > 0) {
+      const subjects = subjectFocus.join(", ");
+      promptText += `\n\nFocus the question on these subjects, if applicable on screenshot and transcript: ${subjects}.`;
+    }
 
     // Add the required format
     promptText += " Respond with this format only after the colon here: Insert Question Here, A) Choice A B) Choice B C) Choice C D) Choice D Correct Answer: Correct Answer Here Hint: Hint Here";
