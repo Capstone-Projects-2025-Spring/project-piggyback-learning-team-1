@@ -99,8 +99,11 @@ export default function ImageDisplay({
     <div
       className="relative"
       style={{
-        width: "640px",
-        height: "360px",
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        top: 0,
+        left: 0
       }}
     >
       {imageData && (

@@ -187,7 +187,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
     const dataUrl = canvas.toDataURL("image/png");
 
     const currentTime = Math.floor(video.currentTime);
-    const targetObject = videoConfig.objectTargets?.[currentTime] || "tiger";
+    const targetObject = videoConfig.objectTargets?.[currentTime];
 
     // Set the start time for measuring response time
     setStartTime(Date.now());
@@ -338,7 +338,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
         setTimeout(() => {
           setShowQuiz(true);
           videoRef.current?.pause();
-        }, 20000);
+        }, 21000);
 
         setTimeout(() => setWrongAnswer(null), 1000);
 
@@ -424,11 +424,11 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
     <div style={{ textAlign: "center" }}>
       {showDetection && (
         <div style={{ position: "relative", display: "inline-block" }}>
-          <div style={{ position: "relative", width: "640px", height: "360px" }}>
+          <div style={{ position: "relative", width: "960px", height: "540px" }}>
             <video
               ref={videoRef}
-              width="640"
-              height="360"
+              width="960"
+              height="540"
               controls
               crossOrigin="anonymous"
               style={{ display: "block" }}
@@ -450,7 +450,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
                 }}
               >
                 {objectDetectionPrompt && (
-                  <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-6 py-3 rounded-lg text-2xl font-bold z-30">
+                  <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-8 py-4 rounded-lg text-3xl font-bold z-30">
                     {objectDetectionPrompt}
                   </div>
                 )}
@@ -471,18 +471,19 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
                   }}
                 />
 
+                {/* Position the skip button appropriately for the larger video */}
                 {showContinueButton && (
-                  <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
+                  <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-30">
                     <button
                       onClick={async () => {
                         const t = Math.floor(videoRef.current!.currentTime);
-                        const obj = videoConfig.objectTargets?.[t] || "tiger";
+                        const obj = videoConfig.objectTargets?.[t];
                         await saveQuizAttempt("Skipped", false, `Click on the ${obj}`, "Clicked");
                         setShowImageDetection(false);
                         setObjectDetectionPrompt(null);
                         videoRef.current?.play();
                       }}
-                      className="px-6 py-3 bg-gray-600/70 hover:bg-gray-700/90 text-white rounded-lg shadow-lg"
+                      className="px-8 py-4 bg-gray-600/70 hover:bg-gray-700/90 text-white text-xl rounded-lg shadow-lg"
                     >
                       Skip Detection
                     </button>
