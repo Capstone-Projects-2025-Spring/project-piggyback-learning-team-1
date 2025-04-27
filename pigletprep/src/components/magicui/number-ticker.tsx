@@ -17,7 +17,7 @@ export function NumberTicker({
   value,
   startValue = 0,
   direction = "up",
-  delay = 3,
+  delay = 0,
   className,
   decimalPlaces = 0,
   ...props
