@@ -9,14 +9,35 @@ jest.mock('next/navigation', () => ({
   useSearchParams: jest.fn(),
 }));
 
-// ✅ Fix: Give mocked component a display name to remove lint error
+// Update mock to capture props
 jest.mock('@/app/videotomcq/DetectLabels', () => {
-  const DetectLabelsMock = () => (
-    <div data-testid="detect-labels">DetectLabels Component</div>
-  );
+  interface DetectLabelsProps {
+    videoSrc: string;
+    preferences: {
+      enableOD: boolean;
+      subjects: string[];
+      penaltyOption: string;
+    };
+  }
+
+  interface DetectLabelsMockType extends React.FC<DetectLabelsProps> {
+    lastProps: DetectLabelsProps | null;
+    displayName: string;
+  }
+
+  const DetectLabelsMock: DetectLabelsMockType = (props: DetectLabelsProps) => {
+    DetectLabelsMock.lastProps = props;
+    return <div data-testid="detect-labels">DetectLabels Component</div>;
+  };
+  
   DetectLabelsMock.displayName = 'DetectLabelsMock';
+  DetectLabelsMock.lastProps = null;
+  
   return DetectLabelsMock;
 });
+
+// Get access to the mock
+const DetectLabelsMock = jest.requireMock('@/app/videotomcq/DetectLabels').default;
 
 beforeAll(() => {
   Object.defineProperty(HTMLMediaElement.prototype, 'load', {
@@ -40,6 +61,7 @@ describe('VideoPage', () => {
     (useSearchParams as jest.Mock).mockReturnValue({
       get: () => encodeURIComponent('https://example.com/video.mp4'),
     });
+    DetectLabelsMock.lastProps = null;
   });
 
   afterEach(() => {
@@ -52,7 +74,19 @@ describe('VideoPage', () => {
     
     const buttons = screen.getAllByRole('button');
     expect(buttons[0]).toBeInTheDocument();
-
     expect(screen.getByTestId('detect-labels')).toBeInTheDocument();
+  });
+  
+  it('passes correct preferences to DetectLabels', () => {
+    render(<VideoPage />);
+    
+    // Verify correct preferences are passed
+    expect(DetectLabelsMock.lastProps).toBeDefined();
+    expect(DetectLabelsMock.lastProps.videoSrc).toEqual('https://example.com/video.mp4');
+    expect(DetectLabelsMock.lastProps.preferences).toMatchObject({
+      enableOD: true, // expected default value
+      subjects: expect.any(Array),  // adjust based on your defaults
+      penaltyOption: expect.any(String)  // adjust based on your defaults
+    });
   });
 });
