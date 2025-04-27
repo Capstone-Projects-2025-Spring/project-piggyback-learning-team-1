@@ -29,15 +29,15 @@ jest.mock('@/app/videotomcq/DetectLabels', () => {
     DetectLabelsMock.lastProps = props;
     return <div data-testid="detect-labels">DetectLabels Component</div>;
   };
-  
+
   DetectLabelsMock.displayName = 'DetectLabelsMock';
   DetectLabelsMock.lastProps = null;
-  
+
   return DetectLabelsMock;
 });
 
-// Get access to the mock
-const DetectLabelsMock = jest.requireMock('@/app/videotomcq/DetectLabels').default;
+// Get access to the mock (remove the .default so that DetectLabelsMock is defined)
+const DetectLabelsMock = jest.requireMock('@/app/videotomcq/DetectLabels');
 
 beforeAll(() => {
   Object.defineProperty(HTMLMediaElement.prototype, 'load', {
@@ -71,22 +71,22 @@ describe('VideoPage', () => {
 
   it('renders the DetectLabels component and the back button when URL is provided', () => {
     render(<VideoPage />);
-    
+
     const buttons = screen.getAllByRole('button');
     expect(buttons[0]).toBeInTheDocument();
     expect(screen.getByTestId('detect-labels')).toBeInTheDocument();
   });
-  
+
   it('passes correct preferences to DetectLabels', () => {
     render(<VideoPage />);
-    
+
     // Verify correct preferences are passed
     expect(DetectLabelsMock.lastProps).toBeDefined();
     expect(DetectLabelsMock.lastProps.videoSrc).toEqual('https://example.com/video.mp4');
     expect(DetectLabelsMock.lastProps.preferences).toMatchObject({
       enableOD: true, // expected default value
-      subjects: expect.any(Array),  // adjust based on your defaults
-      penaltyOption: expect.any(String)  // adjust based on your defaults
+      subjects: expect.any(Array), // adjust based on your defaults
+      penaltyOption: expect.any(String) // adjust based on your defaults
     });
   });
 });
