@@ -118,6 +118,22 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     }
   }, [showImageDetection]);
 
+  useEffect(() => {
+    if (showImageDetection) {
+      console.log("Object detection visible");
+      
+      // This is important: protect against anything that might hide the overlay
+      const protectOverlay = setInterval(() => {
+        if (!document.querySelector('[data-image-display="active"]')) {
+          console.log("Detection disappeared! Forcing visibility...");
+          setShowImageDetection(true);
+        }
+      }, 1000);
+      
+      return () => clearInterval(protectOverlay);
+    }
+  }, [showImageDetection]);
+
   const captureScreenshotForQuiz = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -400,6 +416,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
 
             {imageData && showImageDetection && (
               <div
+                data-image-display="active"
                 style={{
                   position: "absolute",
                   top: 0,
@@ -417,9 +434,9 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
 
                 <ImageDisplay
                   imageData={imageData}
-                  targetObject={videoConfig.objectTargets?.[lastQuestionTime] || "tiger"}
+                  targetObject={videoConfig.objectTargets?.[lastQuestionTime]}
                   onLabelClick={async () => {
-                    const targetObject = videoConfig.objectTargets?.[lastQuestionTime] || "tiger";
+                    const targetObject = videoConfig.objectTargets?.[lastQuestionTime];
                     setObjectDetectionPrompt(`Great job! You found the ${targetObject}!`);
                     await saveQuizAttempt("Clicked", true, `Click on the ${targetObject}`, "Clicked");
                     setTimeout(() => {
