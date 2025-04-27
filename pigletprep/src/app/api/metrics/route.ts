@@ -1,3 +1,5 @@
+// This route handles the GET request to total attmpts per video and total sessions
+
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import QuizAttempt from '@/models/QuizAttempt';
@@ -31,7 +33,7 @@ export async function GET() {
                         $sort: { totalAttempts: -1 } // Optional: sort by popularity
                 },
         {
-                $limit: 4 // Optional: limit the number of video groups returned
+                $limit: 5 // Optional: limit the number of video groups returned
         }
     ]);
 
