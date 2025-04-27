@@ -36,8 +36,9 @@ jest.mock('@/app/videotomcq/DetectLabels', () => {
   return DetectLabelsMock;
 });
 
-// Get access to the mock (remove the .default so that DetectLabelsMock is defined)
-const DetectLabelsMock = jest.requireMock('@/app/videotomcq/DetectLabels');
+// Get access to the mock, checking for default export if present.
+const moduleExport = jest.requireMock('@/app/videotomcq/DetectLabels');
+const DetectLabelsMock = moduleExport.default || moduleExport;
 
 beforeAll(() => {
   Object.defineProperty(HTMLMediaElement.prototype, 'load', {
@@ -61,7 +62,8 @@ describe('VideoPage', () => {
     (useSearchParams as jest.Mock).mockReturnValue({
       get: () => encodeURIComponent('https://example.com/video.mp4'),
     });
-    DetectLabelsMock.lastProps = null;
+    // Reset the captured props.
+    if (DetectLabelsMock) { DetectLabelsMock.lastProps = null; }
   });
 
   afterEach(() => {
