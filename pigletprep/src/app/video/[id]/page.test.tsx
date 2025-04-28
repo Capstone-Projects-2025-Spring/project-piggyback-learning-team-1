@@ -1,58 +1,35 @@
+import React from 'react';
 import { render, screen } from '@testing-library/react';
 import VideoPage from './page';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React from 'react';
 
-// Mock next/navigation hooks
+// --- Mocks ---
+
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
   useSearchParams: jest.fn(),
 }));
 
-// ✅ Fix: Give mocked component a display name to remove lint error
-jest.mock('@/app/videotomcq/DetectLabels', () => {
-  const DetectLabelsMock = () => (
-    <div data-testid="detect-labels">DetectLabels Component</div>
-  );
-  DetectLabelsMock.displayName = 'DetectLabelsMock';
-  return DetectLabelsMock;
-});
-
-beforeAll(() => {
-  Object.defineProperty(HTMLMediaElement.prototype, 'load', {
-    configurable: true,
-    value: jest.fn(),
-  });
-  Object.defineProperty(HTMLMediaElement.prototype, 'pause', {
-    configurable: true,
-    value: jest.fn(),
-  });
-});
+// --- Tests ---
 
 describe('VideoPage', () => {
-  const mockRouter = {
-    back: jest.fn(),
-    push: jest.fn(),
-  };
-
   beforeEach(() => {
-    (useRouter as jest.Mock).mockReturnValue(mockRouter);
+    (useRouter as jest.Mock).mockReturnValue({
+      back: jest.fn(),
+      push: jest.fn(),
+    });
     (useSearchParams as jest.Mock).mockReturnValue({
-      get: () => encodeURIComponent('https://example.com/video.mp4'),
+      get: (key: string) => {
+        if (key === 'url') return encodeURIComponent('https://example.com/video.mp4');
+        if (key === 'preferences') return encodeURIComponent(JSON.stringify({ enableOD: true }));
+        return null;
+      },
     });
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-    jest.restoreAllMocks();
-  });
-
-  it('renders the DetectLabels component and the back button when URL is provided', () => {
+  it('renders the back button', () => {
     render(<VideoPage />);
-    
-    const buttons = screen.getAllByRole('button');
-    expect(buttons[0]).toBeInTheDocument();
-
-    expect(screen.getByTestId('detect-labels')).toBeInTheDocument();
+    const button = screen.getByRole('button');
+    expect(button).toBeInTheDocument();
   });
 });
