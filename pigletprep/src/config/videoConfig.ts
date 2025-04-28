@@ -8,7 +8,7 @@ interface VideoInteractions {
 const videoConfigurations: Record<string, VideoInteractions> = {
   // Video about tigers
   'tigers': {
-    MCQtimes: [36, 65, 84, 124],
+    MCQtimes: [36, 65, 84, 128, 163],
     ObjectTimes: [47, 106],
     objectTargets: {
       47: 'tiger',
@@ -18,7 +18,7 @@ const videoConfigurations: Record<string, VideoInteractions> = {
   
   // Video about pandas
   'giant_pandas': {
-    MCQtimes: [15, 40, 90],
+    MCQtimes: [27, 50, 70, 101, 135, 149, 190, 234, 251],
     ObjectTimes: [86],
     objectTargets: {
         86: 'panda',
@@ -27,7 +27,7 @@ const videoConfigurations: Record<string, VideoInteractions> = {
   
   
   'husky': {
-    MCQtimes: [20, 60, 120],
+    MCQtimes: [20, 60, 95, 120, 150, 180, 203],
     ObjectTimes: [27, 72],
     objectTargets: {
         27: 'dog',
@@ -36,7 +36,7 @@ const videoConfigurations: Record<string, VideoInteractions> = {
   },
 
   'our_sun': {
-    MCQtimes: [20, 60, 120],
+    MCQtimes: [26, 49, 74, 102, 120],
     ObjectTimes: [35],
     objectTargets: {
         35: 'airplane',
@@ -44,7 +44,7 @@ const videoConfigurations: Record<string, VideoInteractions> = {
   },
 
   'australia': {
-    MCQtimes: [20, 60, 120],
+    MCQtimes: [29, 55, 75, 90],
     ObjectTimes: [44],
     objectTargets: {
         44: 'person',
