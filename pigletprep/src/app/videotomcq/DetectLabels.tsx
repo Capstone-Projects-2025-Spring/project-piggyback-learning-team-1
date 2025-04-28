@@ -438,7 +438,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
               ref={videoRef}
               width="960"
               height="540"
-              controls
+              autoPlay
               crossOrigin="anonymous"
               style={{ display: "block" }}
               onEnded={handleVideoEnd}
