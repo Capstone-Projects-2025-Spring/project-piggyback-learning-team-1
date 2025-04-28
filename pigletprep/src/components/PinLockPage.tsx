@@ -12,11 +12,11 @@ interface PinLockPageProps {
 
 export default function PinLockPage({ onClose, onSuccess }: PinLockPageProps) {
   const [pin, setPin] = useState('');
-  const correctPin = process.env.NEXT_PUBLIC_METRICS_PAGE_KEY // Set your correct pin here
+  // const correctPin = process.env.NEXT_PUBLIC_METRICS_PAGE_KEY // Set your correct pin here
   const router = useRouter();
 
   const handlePinSubmit = useCallback(() => {
-    if (pin === correctPin) {
+    if (pin === process.env.NEXT_PUBLIC_METRICS_PAGE_KEY) {
       onSuccess();
       setTimeout(() => {
         router.push('/MetricsPage'); // Redirect to MetricsPage after animation
