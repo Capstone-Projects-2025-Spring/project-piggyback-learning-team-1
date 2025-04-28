@@ -8,7 +8,7 @@ interface VideoInteractions {
 const videoConfigurations: Record<string, VideoInteractions> = {
   // Video about tigers
   'tigers': {
-    MCQtimes: [23, 60, 120],
+    MCQtimes: [36, 65, 84, 124],
     ObjectTimes: [47, 106],
     objectTargets: {
       47: 'tiger',

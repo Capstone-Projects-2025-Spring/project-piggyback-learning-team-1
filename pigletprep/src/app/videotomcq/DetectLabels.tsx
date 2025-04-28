@@ -20,12 +20,18 @@ interface QuizData {
 
 interface DetectLabelsProps {
   videoSrc: string;
+  preferences: {
+    enableOD: boolean;
+    subjects: string[];
+    penaltyOption: string;
+  };
   onQuizDataReceived?: (data: QuizData) => void;
 }
 
-const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceived }) => {
+const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQuizDataReceived }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const processingRef = useRef(false);
 
   const [imageData, setImageData] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -83,16 +89,23 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     const handleTimeUpdate = () => {
       if (!video) return;
 
+      // If already processing a quiz/detection, ignore additional calls
+      if (processingRef.current) return;
+
       const currentTime = Math.floor(video.currentTime);
 
       if (MCQtimes.includes(currentTime) && !showQuiz && currentTime !== lastQuestionTime) {
+        processingRef.current = true; // Set flag before processing
         setLastQuestionTime(currentTime);
         setTypeQuestion("MCQ");
+        video.pause();
         captureScreenshotForQuiz();
         console.log(`Quiz triggered at: ${currentTime}s`);
       }
 
-      if (ObjectTimes.includes(currentTime) && !showImageDetection && currentTime !== lastQuestionTime) {
+      // Only trigger OD if enabled in preferences
+      if (preferences.enableOD && ObjectTimes.includes(currentTime) && !showImageDetection && currentTime !== lastQuestionTime) {
+        processingRef.current = true; // Set flag before processing
         setLastQuestionTime(currentTime);
         setTypeQuestion("OD");
         captureScreenshotForObjectDetection();
@@ -105,7 +118,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     return () => {
       video.removeEventListener("timeupdate", handleTimeUpdate);
     };
-  }, [MCQtimes, ObjectTimes, lastQuestionTime, showQuiz, showImageDetection]);
+  }, [MCQtimes, ObjectTimes, lastQuestionTime, showQuiz, showImageDetection, preferences.enableOD]);
 
   useEffect(() => {
     if (showImageDetection) {
@@ -121,7 +134,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
   useEffect(() => {
     if (showImageDetection) {
       console.log("Object detection visible");
-      
+
       // This is important: protect against anything that might hide the overlay
       const protectOverlay = setInterval(() => {
         if (!document.querySelector('[data-image-display="active"]')) {
@@ -129,7 +142,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
           setShowImageDetection(true);
         }
       }, 1000);
-      
+
       return () => clearInterval(protectOverlay);
     }
   }, [showImageDetection]);
@@ -181,7 +194,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     const dataUrl = canvas.toDataURL("image/png");
 
     const currentTime = Math.floor(video.currentTime);
-    const targetObject = videoConfig.objectTargets?.[currentTime] || "tiger";
+    const targetObject = videoConfig.objectTargets?.[currentTime];
 
     // Set the start time for measuring response time
     setStartTime(Date.now());
@@ -192,6 +205,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     videoRef.current?.pause();
 
     setLoading(false);
+    processingRef.current = false; // Reset processing flag
   };
 
   const friendlyIntro = [
@@ -247,6 +261,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
             transcriptName,
             currentTime,
           },
+          subjectFocus: preferences.subjects
         }),
       });
 
@@ -268,6 +283,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
       setError((err as Error).message || "Error processing image");
     } finally {
       setLoading(false);
+      processingRef.current = false; // Reset processing flag
     }
   };
 
@@ -317,23 +333,39 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
         });
       }, 2000);
 
-      setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 10, 0);
-          setShowQuiz(false);
-          videoRef.current.play();
+      // Apply penalty based on preference
+      if (preferences.penaltyOption === "rewind") {
+        // Existing rewind behavior
+        setTimeout(() => {
+          if (videoRef.current) {
+            videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 20, 0);
+            setShowQuiz(false);
+            videoRef.current.play();
+          }
+        }, 1500);
+
+        setTimeout(() => {
+          setShowQuiz(true);
+          videoRef.current?.pause();
+        }, 21000);
+
+        setTimeout(() => setWrongAnswer(null), 1000);
+
+        // Only show skip button if using rewind penalty
+        if (attempts >= 1 && !questionComplete) {
+          setTimeout(() => setShowSkip(true), 2000);
         }
-      }, 1500);
-
-      setTimeout(() => {
-        setShowQuiz(true);
-        videoRef.current?.pause();
-      }, 12000);
-
-      setTimeout(() => setWrongAnswer(null), 1000);
-
-      if (attempts >= 1 && !questionComplete) {
-        setTimeout(() => setShowSkip(true), 2000);
+      } else {
+        // Auto-skip behavior for "skip" penalty option
+        setTimeout(() => {
+          setWrongAnswer(null);
+          if (questionComplete) return;
+          setShowSkip(false);
+          setFeedback({ message: "Nice try. The correct answer was...", isCorrect: true });
+          setQuestionComplete(true);
+          saveQuizAttempt("Auto-Skipped", false);
+          setShowContinueQuizButton(true);
+        }, 3000); // Give them time to see they were wrong
       }
     }
   };
@@ -401,12 +433,12 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
     <div style={{ textAlign: "center" }}>
       {showDetection && (
         <div style={{ position: "relative", display: "inline-block" }}>
-          <div style={{ position: "relative", width: "640px", height: "360px" }}>
+          <div style={{ position: "relative", width: "960px", height: "540px" }}>
             <video
               ref={videoRef}
-              width="640"
-              height="360"
-              controls
+              width="960"
+              height="540"
+              autoPlay
               crossOrigin="anonymous"
               style={{ display: "block" }}
               onEnded={handleVideoEnd}
@@ -427,7 +459,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
                 }}
               >
                 {objectDetectionPrompt && (
-                  <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-6 py-3 rounded-lg text-2xl font-bold z-30">
+                  <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-8 py-4 rounded-lg text-3xl font-bold z-30">
                     {objectDetectionPrompt}
                   </div>
                 )}
@@ -448,18 +480,19 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
                   }}
                 />
 
+                {/* Position the skip button appropriately for the larger video */}
                 {showContinueButton && (
-                  <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
+                  <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-30">
                     <button
                       onClick={async () => {
                         const t = Math.floor(videoRef.current!.currentTime);
-                        const obj = videoConfig.objectTargets?.[t] || "tiger";
+                        const obj = videoConfig.objectTargets?.[t];
                         await saveQuizAttempt("Skipped", false, `Click on the ${obj}`, "Clicked");
                         setShowImageDetection(false);
                         setObjectDetectionPrompt(null);
                         videoRef.current?.play();
                       }}
-                      className="px-6 py-3 bg-gray-600/70 hover:bg-gray-700/90 text-white rounded-lg shadow-lg"
+                      className="px-8 py-4 bg-gray-600/70 hover:bg-gray-700/90 text-white text-xl rounded-lg shadow-lg"
                     >
                       Skip Detection
                     </button>
@@ -528,7 +561,8 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, onQuizDataReceive
             </div>
           )}
 
-          {showSkip && (
+          {/* Only show skip button if penalty is rewind */}
+          {showSkip && preferences.penaltyOption === "rewind" && (
             <button
               className="w-full p-4 mt-4 bg-[rgba(50,50,60,0.7)] rounded-xl text-white hover:bg-[rgba(80,80,90,0.8)]"
               onClick={clickedSkip}

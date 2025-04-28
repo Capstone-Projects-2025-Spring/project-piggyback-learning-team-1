@@ -8,6 +8,7 @@ import PinLockPage from "../../components/PinLockPage";
 import { FaPlay } from "react-icons/fa";
 import { ShimmerButton } from "@/components/magicui/shimmer-button";
 import { RetroGrid } from "@/components/magicui/retro-grid";
+import PreferencesDialog from "../../components/PreferencesDialog";
 
 const videos = [ 
   { 
@@ -45,18 +46,43 @@ const videos = [
 export default function HomePage() {
   const router = useRouter();
   const [showPinLock, setShowPinLock] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<{s3Key: string, title: string} | null>(null);
 
-  const handleThumbnailClick = async (s3Key: string) => {
+  const handleThumbnailClick = (s3Key: string, title: string) => {
+    setSelectedVideo({s3Key, title});
+  };
+
+  
+  const handlePreferenceSubmit = async (preferences: {
+    enableOD: boolean;
+    subjects: string[];
+    penaltyOption: string;
+  }) => {
+    if (!selectedVideo) return;
+
     try {
-      const res = await fetch(`/api/presigned-url?id=${encodeURIComponent(s3Key)}`);
+      const res = await fetch(`/api/presigned-url?id=${encodeURIComponent(selectedVideo.s3Key)}`);
       const data = await res.json();
       if (data.url) {
-        router.push(`/video/${encodeURIComponent(s3Key)}?url=${encodeURIComponent(data.url)}`);
+        // Encode preferences as URL parameters
+        const preferencesParam = encodeURIComponent(JSON.stringify(preferences));
+        
+        // Store the values before resetting
+        const videoKey = selectedVideo.s3Key;
+        
+        // Reset selectedVideo before navigation
+        setSelectedVideo(null);
+        
+        router.push(`/video/${encodeURIComponent(videoKey)}?url=${encodeURIComponent(data.url)}&preferences=${preferencesParam}`);
       } else {
         console.error("Error fetching presigned URL:", data.error);
+        // Reset on error
+        setSelectedVideo(null);
       }
     } catch (error) {
       console.error("Fetch error:", error);
+      // Reset on error
+      setSelectedVideo(null);
     }
   };
 
@@ -105,7 +131,7 @@ export default function HomePage() {
 
               <ShimmerButton 
                 className="shadow-2xl hover:bg-gray-400 transition mt-4 gap-1 drop-shadow-lg mix-blend-difference bg-black/40"
-                onClick={() => handleThumbnailClick(videos[0].s3Key)}
+                onClick={() => handleThumbnailClick(videos[0].s3Key, videos[0].title)}
               >
                 <FaPlay className="text-black" size={27} />
                 <span className="ml-2 text-black font-bold text-lg">Play</span>
@@ -129,7 +155,7 @@ export default function HomePage() {
               key={video.youtubeId}
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
-              onClick={() => handleThumbnailClick(video.s3Key)}
+              onClick={() => handleThumbnailClick(video.s3Key, video.title)}
               className="relative cursor-pointer group"
             >
               <Image
@@ -178,6 +204,14 @@ export default function HomePage() {
       <footer className="w-full p-4 bg-gray-800 text-white flex justify-center items-center z-50">
         <p>&copy; Piglet Prep 2025. All rights reserved.</p>
       </footer>
+
+      {/* Preferences Dialog */}
+      {selectedVideo && (
+        <PreferencesDialog
+          onClose={() => setSelectedVideo(null)}
+          onSubmit={handlePreferenceSubmit}
+        />
+      )}
     </motion.div>
   );
 }
