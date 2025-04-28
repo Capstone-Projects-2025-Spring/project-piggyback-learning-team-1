@@ -321,9 +321,9 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
           setShowImageDetection(false);
           videoRef.current?.pause();
           
-          setLoading(false);            // ✅ move here
-          processingRef.current = false; // ✅ move here
-          break; // exit the loop after success
+          setLoading(false);
+          processingRef.current = false;
+          break;
         } else {
           console.error("Retrying after response error:", data.error);
         }
