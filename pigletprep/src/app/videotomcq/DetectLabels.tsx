@@ -490,6 +490,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
               width="960"
               height="540"
               autoPlay
+              controls
               crossOrigin="anonymous"
               style={{ display: "block" }}
               onEnded={handleVideoEnd}
@@ -510,7 +511,17 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
                 }}
               >
                 {objectDetectionPrompt && (
-                  <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-8 py-4 rounded-lg text-3xl font-bold z-30">
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "-90px", // move above the video container
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      zIndex: 30,
+                      whiteSpace: "nowrap", // prevents line wrapping
+                    }}
+                    className="bg-black/70 text-white px-8 py-4 rounded-lg text-3xl font-bold"
+                  >
                     {objectDetectionPrompt}
                   </div>
                 )}
@@ -531,9 +542,16 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
                   }}
                 />
 
-                {/* Position the skip button appropriately for the larger video */}
                 {showContinueButton && (
-                  <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-30">
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "-70px", // move below the video container
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      zIndex: 30,
+                    }}
+                  >
                     <button
                       onClick={async () => {
                         const t = Math.floor(videoRef.current!.currentTime);
