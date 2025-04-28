@@ -120,7 +120,7 @@ const config = {
     ({
       navbar: {
         /*TODO: Change to your project's title*/
-        title: title,
+        title: 'Piglet Prep',
         logo: {
           alt: 'My Site Logo',
           src: logo,
@@ -131,11 +131,6 @@ const config = {
             docId: 'intro',
             position: 'left',
             label: 'Documentation',
-          },{
-            to: '/tutorial/Intro',
-            label: 'Docusaurus Tutorial',
-            position: 'left',
-            activeBaseRegex: `/tutorial/`,
           },
           {
             href: 'https://github.com/'+process.env.ORG_NAME+'/'+process.env.PROJECT_NAME,
@@ -208,27 +203,27 @@ const config = {
       },
 
     }),
-  plugins: [
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'tutorial',
-        path: 'tutorial',
-        routeBasePath: 'tutorial',
-        sidebarPath: require.resolve('./sidebars.js'),
-        // ... other options
-      },
-    ],
-    [
-      "docusaurus2-dotenv-2",
-      {
-        systemvars: true,
-      },
-    ],
-    'plugin-image-zoom',
+  // plugins: [
+  //   [
+  //     '@docusaurus/plugin-content-docs',
+  //     {
+  //       id: 'tutorial',
+  //       path: 'tutorial',
+  //       routeBasePath: 'tutorial',
+  //       sidebarPath: require.resolve('./sidebars.js'),
+  //       // ... other options
+  //     },
+  //   ],
+  //   [
+  //     "docusaurus2-dotenv-2",
+  //     {
+  //       systemvars: true,
+  //     },
+  //   ],
+  //   'plugin-image-zoom',
 
 
-  ],
+  // ],
   scripts:['https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js',
       ...main_template_jira_scripts()
   ],

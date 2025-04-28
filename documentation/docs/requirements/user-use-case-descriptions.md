@@ -42,7 +42,7 @@ sidebar_position: 4
 2. Explanation of the question is given
 3. Option button to continue the video pops up
 
-### Use Case 5 (Optional) - User Answers an Object Detection Question
+## Use Case 5 (Optional) - User Answers an Object Detection Question
 *As a user, I indicated in the Learning Experience that I wanted to also answer object detection questions*
 1. Video pauses automatically
 2. Question asks user to identify an object on screen by clicking on it

@@ -27,6 +27,7 @@ sidebar_position: 3
   <li>Question will automatically be read out loud</li>
 
   <li>Users shall have the option to skip the question</li>
+  <li>After answering incorrectly, users cannot reselect options that they have previously selected</li>
 
   <li>
     Users will receive a session recap at the end of the video 
