@@ -23,7 +23,7 @@ const main_template_jira_scripts = () => {
 const rawProjectName = process.env.PROJECT_NAME || 'docs-dev-mode';
 
 // Transform PROJECT_NAME (or '\fallback) to a title-like string:
-const title = 'Piglet Prep'
+const title = rawProjectName
   .replaceAll('-', ' ')
   .split(' ')
   .map(word => {
@@ -50,8 +50,10 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  //organizationName: process.env.ORG_NAME, // Usually your GitHub org/user name.
-  //projectName: process.env.PROJECT_NAME, // Usually your repo name.
+  organizationName: process.env.ORG_NAME, // Usually your GitHub org/user name.
+  projectName: process.env.PROJECT_NAME, // Usually your repo name.
+
+  
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -75,6 +77,10 @@ const config = {
           routeBasePath: 'docs',
           path: 'docs',
           // Please change this to your repo
+           // Remove this to remove the "edit this page" links.
+           editUrl:
+           'https://github.com/'+process.env.ORG_NAME+'/'+process.env.PROJECT_NAME+'/edit/main/documentation/',
+         // remarkPlugins: [require('mdx-mermaid')],
 
         },
         // tutorials: {
