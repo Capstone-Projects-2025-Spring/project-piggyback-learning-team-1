@@ -246,46 +246,97 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
     }
   };
 
+  // const sendImageToGPT = async (base64Image: string) => {
+  //   try {
+  //     const base64String = base64Image.split(",")[1];
+  //     const transcriptName = getTranscriptNameFromUrl(videoSrc);
+  //     const currentTime = videoRef.current ? Math.floor(videoRef.current.currentTime) : 0;
+
+  //     const response = await fetch("/api/analyzeImage", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         imageBuffer: base64String,
+  //         videoInfo: {
+  //           transcriptName,
+  //           currentTime,
+  //         },
+  //         subjectFocus: preferences.subjects
+  //       }),
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (response.ok) {
+  //       setQuizData(data);
+  //       setShowQuiz(true);
+  //       setStartTime(Date.now());
+  //       speakQuestion(data.question);
+  //       onQuizDataReceived?.(data);
+  //       setShowDetection(true);
+  //       setShowImageDetection(false);
+  //       videoRef.current?.pause();
+  //     } else {
+  //       setError(data.error || "Error generating MCQ");
+  //     }
+  //   } catch (err) {
+  //     setError((err as Error).message || "Error processing image");
+  //   } finally {
+  //     setLoading(false);
+  //     processingRef.current = false; // Reset processing flag
+  //   }
+  // };
+
   const sendImageToGPT = async (base64Image: string) => {
-    try {
-      const base64String = base64Image.split(",")[1];
-      const transcriptName = getTranscriptNameFromUrl(videoSrc);
-      const currentTime = videoRef.current ? Math.floor(videoRef.current.currentTime) : 0;
-
-      const response = await fetch("/api/analyzeImage", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          imageBuffer: base64String,
-          videoInfo: {
-            transcriptName,
-            currentTime,
-          },
-          subjectFocus: preferences.subjects
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setQuizData(data);
-        setShowQuiz(true);
-        setStartTime(Date.now());
-        speakQuestion(data.question);
-        onQuizDataReceived?.(data);
-        setShowDetection(true);
-        setShowImageDetection(false);
-        videoRef.current?.pause();
-      } else {
-        setError(data.error || "Error generating MCQ");
+    setLoading(true);
+  
+    const base64String = base64Image.split(",")[1];
+    const transcriptName = getTranscriptNameFromUrl(videoSrc);
+    const currentTime = videoRef.current ? Math.floor(videoRef.current.currentTime) : 0;
+  
+    while (true) {
+      try {
+        const response = await fetch("/api/analyzeImage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            imageBuffer: base64String,
+            videoInfo: {
+              transcriptName,
+              currentTime,
+            },
+            subjectFocus: preferences.subjects,
+          }),
+        });
+  
+        const data = await response.json();
+  
+        if (response.ok && data) {
+          setQuizData(data);
+          setShowQuiz(true);
+          setStartTime(Date.now());
+          speakQuestion(data.question);
+          onQuizDataReceived?.(data);
+          setShowDetection(true);
+          setShowImageDetection(false);
+          videoRef.current?.pause();
+          
+          setLoading(false);            // ✅ move here
+          processingRef.current = false; // ✅ move here
+          break; // exit the loop after success
+        } else {
+          console.error("Retrying after response error:", data.error);
+        }
+      } catch (err) {
+        setError((err as Error).message || "Error processing image");
+        console.error("Retrying after fetch error:", (err as Error).message);
       }
-    } catch (err) {
-      setError((err as Error).message || "Error processing image");
-    } finally {
-      setLoading(false);
-      processingRef.current = false; // Reset processing flag
+  
+      await new Promise((resolve) => setTimeout(resolve, 3000));
     }
   };
+  
+  
 
   const handleContinueWatching = () => {
     window.speechSynthesis.cancel();
