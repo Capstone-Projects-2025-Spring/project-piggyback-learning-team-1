@@ -32,6 +32,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const processingRef = useRef(false);
+  const triggeredTimestampsRef = useRef<Set<number>>(new Set());
 
   const [imageData, setImageData] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -94,7 +95,16 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
 
       const currentTime = Math.floor(video.currentTime);
 
-      if (MCQtimes.includes(currentTime) && !showQuiz && currentTime !== lastQuestionTime) {
+      // Check if this timestamp has already triggered a question
+      if (triggeredTimestampsRef.current.has(currentTime)) {
+        // Skip this time - already handled
+        return;
+      }
+
+      if (MCQtimes.includes(currentTime) && !showQuiz) {
+        // Mark this time as triggered
+        triggeredTimestampsRef.current.add(currentTime);
+        
         processingRef.current = true; // Set flag before processing
         setLastQuestionTime(currentTime);
         setTypeQuestion("MCQ");
@@ -104,7 +114,10 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
       }
 
       // Only trigger OD if enabled in preferences
-      if (preferences.enableOD && ObjectTimes.includes(currentTime) && !showImageDetection && currentTime !== lastQuestionTime) {
+      if (preferences.enableOD && ObjectTimes.includes(currentTime) && !showImageDetection) {
+        // Mark this time as triggered
+        triggeredTimestampsRef.current.add(currentTime);
+        
         processingRef.current = true; // Set flag before processing
         setLastQuestionTime(currentTime);
         setTypeQuestion("OD");
@@ -118,7 +131,7 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
     return () => {
       video.removeEventListener("timeupdate", handleTimeUpdate);
     };
-  }, [MCQtimes, ObjectTimes, lastQuestionTime, showQuiz, showImageDetection, preferences.enableOD]);
+  }, [MCQtimes, ObjectTimes, showQuiz, showImageDetection, preferences.enableOD]);
 
   useEffect(() => {
     if (showImageDetection) {
@@ -386,19 +399,39 @@ const DetectLabels: React.FC<DetectLabelsProps> = ({ videoSrc, preferences, onQu
 
       // Apply penalty based on preference
       if (preferences.penaltyOption === "rewind") {
-        // Existing rewind behavior
         setTimeout(() => {
           if (videoRef.current) {
-            videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 20, 0);
+            // Hide the quiz UI while rewinding
             setShowQuiz(false);
+            
+            // Create a one-time event handler to detect when we reach the question time
+            const checkTimeHandler = () => {
+              if (!videoRef.current) return;
+              
+              const currentTime = Math.floor(videoRef.current.currentTime);
+              // If we've reached or passed the question timestamp
+              if (currentTime >= lastQuestionTime) {
+                // Stop exactly at the question time
+                videoRef.current.currentTime = lastQuestionTime;
+                // Pause and show quiz again
+                videoRef.current.pause();
+                setShowQuiz(true);
+                // Remove this listener after it fires once
+                videoRef.current.removeEventListener('timeupdate', checkTimeHandler);
+              }
+            };
+            
+            // Set video back 20 seconds (or more if needed to get before the question)
+            const rewindToTime = Math.max(lastQuestionTime - 20, 0);
+            videoRef.current.currentTime = rewindToTime;
+            
+            // Add the event listener to check when we reach question time
+            videoRef.current.addEventListener('timeupdate', checkTimeHandler);
+            
+            // Start playing from the rewound position
             videoRef.current.play();
           }
         }, 1500);
-
-        setTimeout(() => {
-          setShowQuiz(true);
-          videoRef.current?.pause();
-        }, 21000);
 
         setTimeout(() => setWrongAnswer(null), 1000);
 
