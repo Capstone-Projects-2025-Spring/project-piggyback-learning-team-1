@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   const params = {
     Bucket: process.env.S3_BUCKET_NAME,
     Key: `${id}`,
-    Expires: 600, // URL expires in 10 minutes
+    Expires: 660, // URL expires in 10 minutes
   };
 
   try {
