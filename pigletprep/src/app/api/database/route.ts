@@ -64,33 +64,33 @@ export async function GET(request: Request) {
       videoId: latestVideo.videoId,
     });
 
-    // Calculate correctCount for all the latest attempts
-    // Cannot acccess isCorrect because the attempt is per document 
-    const totalAttempts = allAttemptsForVideo.reduce((sum, attempt) => sum + (attempt.attempts || 0), 0); // sum of all attempts for the lastest video
-    // sum all incorrect attempts before the first correct attempt
-    const attemptsBeforeSuccess = allAttemptsForVideo.reduce(
-      (sum, attempt) => sum + (attempt.metrics?.attemptsBeforeSuccess || 0),
+    // Count correct answers directly (where isCorrect is true)
+    const correctCount = allAttemptsForVideo.filter(attempt => attempt.isCorrect === true).length;
+
+    // Count incorrect answers directly (where isCorrect is false)
+    const incorrectCount = allAttemptsForVideo.filter(attempt => attempt.isCorrect === false).length;
+
+    // Total attempts is simply the sum of correct and incorrect
+    const totalAttempts = correctCount + incorrectCount;
+
+    // Get hints used from all attempts
+    const hintsUsed = allAttemptsForVideo.reduce(
+      (sum, attempt) => sum + (attempt.metrics?.hints?.count || 0),
       0
     );
 
-    // The correct answers
-    const correctCount = totalAttempts - attemptsBeforeSuccess; // plan old math
+    const averageTimePerAttempt = latestVideo.metrics?.timePerAttempt ?? 0;
 
-    // const hintsUsed = allAttemptsForVideo.reduce((sum, attempt) => sum + (attempt.metrics?.hints?.count || 0), 0);
-    const hintsUsed = latestVideo.metrics?.hints?.count || 0; // get the hints used from the latest videoId
-   
-    const averageTimePerAttempt = latestVideo.metrics?.timePerAttempt ?? 0; // already calculated in Post Handler
-
-  
-
-    return NextResponse.json({ //  return all metrics as JSON
+    return NextResponse.json({
       success: true,
       data: {
         totalAttempts,
-        attemptsBeforeSuccess,
+        correctCount,
+        incorrectCount, // Now returning incorrect count explicitly
         hintsUsed,
         averageTimePerAttempt,
-        correctCount: correctCount < 0 ? 0 : correctCount,
+        // Keeping attemptsBeforeSuccess for backward compatibility if needed
+        attemptsBeforeSuccess: incorrectCount,
       },
     });
 
