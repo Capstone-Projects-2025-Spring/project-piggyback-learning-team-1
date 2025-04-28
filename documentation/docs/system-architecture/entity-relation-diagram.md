@@ -4,23 +4,18 @@ sidebar_position: 3
 
 # Class Diagram of MongoDB
 
-USER Table:
-- Contains basic user info like userId, username, and email.
-- userId acts as the primary identifier.
-
-PROGRESS Table:
-- Tracks each user's interaction with videos.
-- Contains progressId (unique record ID), userId (foreign key referencing the USER table), videoId (foreign key referencing the VIDEO table), a quiz score, and a timestamp for when the progress was recorded.
-
-VIDEO Table:
-- Holds information about each video ,videoId (primary key), title, and url to the YouTube video.
-Relationships:
-- One user can have multiple progress entries (one for each video they’ve interacted with).
-- Each progress entry connects a USER to a VIDEO via foreign keys.
-- This setup queries what videos a user watched and how they performed on each quiz.
+<b>Figure 2.</b> High level design of the MongoDB quiz database for the Piglet Prep application.
 
 <div align="center">
 
-![SD3](/img/Entity_RelationD.png)
+![MongoDBClass](/img/MongoDBClass.png)
 
 </div>
+
+### For our video learning platform with dynamic quizzing, a class diagram was more appropriate than an entity relationship diagram for a few reasons.
+
+### 1. Hierarchical structure of quiz data 
+The class diagram maps directly to the JSON structure we are using to exchange data with the MongoDB API. It clearly shows the hierarchical structure of our quiz data, such as attempts containing metrics containing hints.
+
+### 2. Object relationships and data structures
+Since our system relies heavily on many different shifting components, the class diagram better reflects how our application processes and interacts with the data.
