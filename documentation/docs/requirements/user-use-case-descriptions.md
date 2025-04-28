@@ -8,36 +8,26 @@ sidebar_position: 4
 2. User can roll over video to view description of content
 3. User selects a video by clicking on the icon
 
-## Use Case 2 - User Plays Video
-*As a user, I want to start watching my content*
-1. User is redirected to a seperate page
-2. User clicks the "Play" icon in the lower left corner
+## Use Case 2 - User Customizes Their Learning Experience
+*As a user, I want to customize my video questions*
+1. User is prompted to customize questions from a switchboard menu by clicking on highlighted icons
+2. Users can enable Object Detection Questions, change Subject Focus, and indicate Penalty Options
+2. User clicks the "Start Learning" icon in the lower left corner to begin playing the video
 
-## Use Case 3 - From here, users will be displayed one of two potential question types
-### Question Type A - User Answers a Multiple Choice Question
+## Use Case 3 - User Answers a Multiple Choice Question
 *As a user, I want to answer the question to continue the video*
 1. Video pauses automatically
-2. Question based on the current screen pops up
+2. Question based on the current video content pops up and reads outloud
 3. Set of multiple choice options pop up under question
-4. Time pops up in corner counting down time
-5. Video does not play until question is answered or timer runs out
-6. User selects an answer by clicking on it
+4. Video does not play until question is answered or skipped
+5. User selects an answer by clicking on it
 
-
-### Question Type B - User Answers an Object Detection Question
-*As a user, I want to answer the question to continue the video*
-1. Video pauses automatically
-2. Question prompts user to click on screen and identify an object
-3. Time pops up in corner counting down time
-4. Video does not play until question is answered or timer runs out
-5. User select the answer by clicking on the screen
-
-## Use Case 4 - After answering the quiz question, there are four possible outcomes
+## Use Case 4 - After answering the MCQ quiz question, there are three possible outcomes
 
 ### Outcome 1 - User Answers Incorrectly
 1. User receives notification of incorrect answer
 2. Video rewinds back to last checkpoint
-3. User receives hint about correct answer
+3. After reaching the initial checkpoint, user is reprompted the same question and receives a hint about the correct answer
 4. User answers question again, either repeating incorrect process or moving to correct process
 
 
@@ -48,26 +38,26 @@ sidebar_position: 4
 
 ### Outcome 3 - User Skips Question
 *As a user, I want to skip this question after answering incorrectly before*
-1. User can opt to skip a question by pressing the "Skip Question" option after answering the question at least once
+1. User can opt to skip a question by pressing the "Skip Question" option after answering the question at least twice
 2. Explanation of the question is given
 3. Option button to continue the video pops up
 
-
-### Outcome 4 - Question Times Out
-*As a user, I did not answer this question in time*
-1. Video rewinds back to last checkpoint
-2. User receives hint about correct answer
-3. User answers question again, either repeating incorrect process or moving to correct process
+### Use Case 5 (Optional) - User Answers an Object Detection Question
+*As a user, I indicated in the Learning Experience that I wanted to also answer object detection questions*
+1. Video pauses automatically
+2. Question asks user to identify an object on screen by clicking on it
+3. Video does not play until question is answered or skipped
+4. User selects the answer by clicking on the screen or skipping the question
 
 ## After answering the question, the linear process resumes
 
-## Use Case 5 - User Continues the Video
+## Use Case 6 - User Continues the Video
 *As a user, I want to continue the video*
-1. Video resumes after pressing the continue button
-2. Question process repeats every few minutes of video until end
+1. Video resumes after pressing the "Continue Watching" button
+2. Question process repeats every few minutes of the video until end
 
 
-## Use Case 5 - User Reviews Session Recap 
+## Use Case 7 - User Reviews Session Recap 
 *As a user, I want to review my session metrics*
 1. Video ends and summury of session pops up including questons answered correctly, incorrectly, hints used, and total time
 2. Option to exit back to main menu is presented

@@ -2,7 +2,8 @@
 sidebar_position: 3
 ---
 
-# Entity-Relation Diagram
+# Class Diagram of MongoDB
+
 USER Table:
 - Contains basic user info like userId, username, and email.
 - userId acts as the primary identifier.
