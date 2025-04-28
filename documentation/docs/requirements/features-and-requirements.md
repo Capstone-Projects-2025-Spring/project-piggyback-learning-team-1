@@ -15,16 +15,16 @@ sidebar_position: 3
     </ul>
   </li>
 
-  <li> Users will be able to customize their learning experience</li>
-    <ul>
-      <li>Special Object Detection Questions can be enabled in addition to regular MCQ questions</li>
-      <li>Each video session must have a Subject Focus(s) for the questions: Mathematical, Nature, or Animal focus</li>
-      <li>Penalty Options for wrong answers can either be having the video rewind, or auto skipping the question</li>
-    </ul>
-
   <li>The video will pause when the user receives the question</li>
 
   <li>Question will automatically be read out loud</li>
+
+  <li>
+    The video will rewind if an incorrect answer is selected
+    <ul>
+      <li>User should be able to rewind the video if they are unsure about the answer</li>
+    </ul>
+  </li>
 
   <li>Users shall have the option to skip the question</li>
 
