@@ -17,10 +17,10 @@
 
 ## Project Abstract
 
-This website is a child-friendly video platform designed to offer interactive educational content. Videos are enhanced with embedded Multiple Choice Questions (MCQs) to engage children and assess their understanding as they watch. The system allows users to sign in, track their progress, and review performance analytics.
+This website is a child-friendly video platform designed to offer interactive educational content. Videos are enhanced with embedded Multiple Choice Questions (MCQs) and Object Detection (OD) questions to engage children and assess their understanding as they watch. The system allows users to answer MCQs and OD questions based on each video real-time, customize their preference for each video, and allows researchers to review performance analytics.
 
 ## Piglet Prep on Web Browser
-You can access the deployed site here: https://github.com/Capstone-Projects-2025-Spring/project-piggyback-learning-team-1/releases/tag/1.1.0
+You can access the deployed site [here](https://pigletprep.vercel.app/).
 
 ## Running Piglet Prep Locally 
 1. Create a S3 bucket
