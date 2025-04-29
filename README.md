@@ -55,6 +55,10 @@ npm install
 npm run build
 npm start
 ```
+
+NOTE: To ensure video plays on video page, check to see if you have "Use graphics acceleration when available" enabled on browser.
+NOTE: Also in ".env.local" file, ensure there is no space between the "=" and your API keys.
+
 ## Collaborators
 
 [//]: # ( readme: collaborators -start )
