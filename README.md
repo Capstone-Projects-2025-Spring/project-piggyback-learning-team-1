@@ -23,8 +23,30 @@ This website is a child-friendly video platform designed to offer interactive ed
 You can access the deployed site here: https://github.com/Capstone-Projects-2025-Spring/project-piggyback-learning-team-1/releases/tag/1.1.0
 
 ## Running Piglet Prep Locally 
-
-Run the following commands in your terminal:
+1. Create a S3 bucket
+2. Download the following video as .mp4 and add to S3 buckets with the following filenames:
+    - [giant_pandas](https://www.youtube.com/watch?v=dqT-UlYlg1s&pp=ygUMZ2lhbnQgcGFuZGFz)
+    - [our_sun](https://www.youtube.com/watch?v=sePqPIXMsAc&pp=ygUPb3VyIHN1biBjYXJ0b29u)
+    - [husky](https://www.youtube.com/watch?v=msAnR82kydo&pp=ygUQaHVza3kgZG9kbyBtaWxlcw%3D%3D)
+    - [tigers](https://www.youtube.com/watch?v=FK3dav4bA4s&pp=ygUadGlnZXJzIG5hdGlvbmFsIGdlb2dyYXBoaWM%3D)
+    - [australia](https://www.youtube.com/watch?v=9ZyGSgeMnm4&pp=ygUXa2lkcyBndWlkZSB0byBhdXN0cmFpbGE%3D)
+4. Acquire API keys for:
+  - OpenAI (for ChatGPT)
+  - AWS (one for Rekognition and another for S3 access)
+  - MongoDB (for storing metrics)
+5. Create a .env.local file at project-piggyback-learning-team-1/pigletprep and add the following variables and match it with your API keys you created:
+```sh
+AWS_ACCESS_KEY_ID= // S3 API KEY
+AWS_SECRET_ACCESS_KEY= // S3 SECRET API KEY
+AWS_REGION= // AWS REGION
+AWS_REGION_NAME= // AWS REGION
+S3_BUCKET_NAME= // S3 BUCKET NAME
+OPENAI_API_KEY= // OPENAI API KEY
+MONGODB_URI= // MONGODB API KEY
+secretAccessKey= // AWS REKOG. KEY
+NEXT_PUBLIC_METRICS_PAGE_KEY= // CREATE A PIN FOR METRICS
+```
+6. Run the following commands in your terminal:
 
 ```sh
 cd pigletprep
