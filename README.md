@@ -34,17 +34,18 @@ You can access the deployed site here: https://github.com/Capstone-Projects-2025
   - OpenAI (for ChatGPT)
   - AWS (one for Rekognition and another for S3 access)
   - MongoDB (for storing metrics)
-5. Create a .env.local file at project-piggyback-learning-team-1/pigletprep and add the following variables and match it with your API keys you created:
+5. Create a .env.local file at project-piggyback-learning-team-1/pigletprep and add the following variables and match it with your API keys you created at the // mark:
 ```sh
-AWS_ACCESS_KEY_ID= // S3 API KEY
-AWS_SECRET_ACCESS_KEY= // S3 SECRET API KEY
-AWS_REGION= // AWS REGION
-AWS_REGION_NAME= // AWS REGION
-S3_BUCKET_NAME= // S3 BUCKET NAME
-OPENAI_API_KEY= // OPENAI API KEY
-MONGODB_URI= // MONGODB API KEY
-secretAccessKey= // AWS REKOG. KEY
-NEXT_PUBLIC_METRICS_PAGE_KEY= // CREATE A PIN FOR METRICS
+AWS_ACCESS_KEY_ID=//S3 API KEY
+AWS_SECRET_ACCESS_KEY=//S3 SECRET API KEY
+AWS_REGION=//AWS REGION
+AWS_REGION_NAME=//AWS REGION
+S3_BUCKET_NAME=//S3 BUCKET NAME
+OPENAI_API_KEY=//OPENAI API KEY
+MONGODB_URI=//MONGODB API KEY
+secretAccessKey=//AWS REKOG. SECRET KEY
+accessKeyId=//AWS REKOG. API KEY
+NEXT_PUBLIC_METRICS_PAGE_KEY=//CREATE A PIN FOR METRICS
 ```
 6. Run the following commands in your terminal:
 
